@@ -35,12 +35,12 @@ public class ClientApp {
         out.writeUTF(message);
 
         // 2) 서버에 보낼 데이터의 개수를 보낸다.
-        out.writeInt(3);
+        out.writeInt(0);
 
         // 3) 서버에 데이터를 보낸다.
-        out.writeUTF("aaaa");
-        out.writeUTF("bbbb");
-        out.writeUTF("cccc");
+        //        out.writeUTF("aaaa");
+        //        out.writeUTF("bbbb");
+        //        out.writeUTF("cccc");
 
         out.flush();
 
@@ -64,7 +64,7 @@ public class ClientApp {
         System.out.printf("작업 결과: %s\n", response);
         System.out.printf("데이터 개수: %d\n", length);
         if (data != null ) {
-          System.out.printf("데이터:");
+          System.out.println("데이터:");
           for (String str : data) {
             System.out.println(str);
           }
