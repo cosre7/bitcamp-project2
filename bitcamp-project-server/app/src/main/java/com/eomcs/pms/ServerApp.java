@@ -27,23 +27,26 @@ public class ServerApp {
       System.out.println("서버 실행!");
 
       // 클라이언트와 연결 수행
-      try (Socket socket = serverSocket.accept();
-          DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-          DataInputStream in = new DataInputStream(socket.getInputStream())) {
-
-        String request = in.readUTF();
-        System.out.println(request);
-
-        out.writeUTF("success");
-        out.flush();
-
-      } catch (Exception e) {
-        System.out.println("클라이언트의 요청을 처리하는 중에 오류 발생!");
-        e.printStackTrace();
-      }
+      processRequest(serverSocket.accept());
 
     } catch (Exception e) {
       System.out.println("서버 실행 중 오류 발생!");
+      e.printStackTrace();
+    }
+  }
+
+  private void processRequest(Socket socket) {
+    try (DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+        DataInputStream in = new DataInputStream(socket.getInputStream())) {
+
+      String request = in.readUTF();
+      System.out.println(request);
+
+      out.writeUTF("success");
+      out.flush();
+
+    } catch (Exception e) {
+      System.out.println("클라이언트의 요청을 처리하는 중에 오류 발생!");
       e.printStackTrace();
     }
   }
