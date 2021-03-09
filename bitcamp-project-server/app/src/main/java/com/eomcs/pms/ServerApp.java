@@ -7,17 +7,32 @@ import java.net.Socket;
 
 // 데이터를 파일에 보관하고 꺼내는 일을 할 애플리케이션
 public class ServerApp {
+
+  int port;
+
   public static void main(String[] args) {
+    ServerApp app = new ServerApp(8888);
+    app.service();
+  }
+
+  public ServerApp(int port) {
+    this.port = port;
+  }
+
+  public void service() {
+
     // 클라이언트 연결을 기다리는 서버 소켓 생성
-    try (ServerSocket serverSocket = new ServerSocket(8888)) {
+    try (ServerSocket serverSocket = new ServerSocket(this.port)) {
+
+      System.out.println("서버 실행!");
 
       // 클라이언트와 연결 수행
       try (Socket socket = serverSocket.accept();
           DataOutputStream out = new DataOutputStream(socket.getOutputStream());
           DataInputStream in = new DataInputStream(socket.getInputStream())) {
 
-        String response = in.readUTF();
-        System.out.println(response);
+        String request = in.readUTF();
+        System.out.println(request);
 
         out.writeUTF("success");
         out.flush();
