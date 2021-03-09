@@ -3,6 +3,7 @@ package com.eomcs.pms.table;
 import java.io.DataOutputStream;
 import java.util.List;
 
+// 1) 간다난 동작 테스트를 위해 임의의 값을 리턴한다.
 public class BoardTable implements DataTable {
   @Override
   public void service(String command, List<String> data, DataOutputStream out) throws Exception {
