@@ -3,6 +3,7 @@ package com.eomcs.pms;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import com.eomcs.util.Prompt;
 
 public class ClientApp {
@@ -43,8 +44,31 @@ public class ClientApp {
 
         out.flush();
 
+        // 서버가 보낸 데이터를 읽는다.
+        // 1) 작업 결과를 읽는다.
         String response = in.readUTF();
-        System.out.println(response);
+
+        // 2) 데이터의 개수를 읽는다.
+        int length = in.readInt();
+
+        // 3) 데이터의 개수 만큼 읽어 List 컬렉션에 보관한다.
+        ArrayList<String> data = null;
+        if (length > 0) {
+          data = new ArrayList<>();
+          for (int i = 0; i < length; i++) {
+            data.add(in.readUTF());
+          }
+        }
+
+        System.out.println("--------------------------------------");
+        System.out.printf("작업 결과: %s\n", response);
+        System.out.printf("데이터 개수: %d\n", length);
+        if (data != null ) {
+          System.out.printf("데이터:");
+          for (String str : data) {
+            System.out.println(str);
+          }
+        }
 
         if (message.equals("quit")) {
           break;
