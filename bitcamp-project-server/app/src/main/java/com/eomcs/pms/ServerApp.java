@@ -61,14 +61,23 @@ public class ServerApp {
         System.out.println("--------------------------------------");
         System.out.printf("명령: %s\n", request);
         System.out.printf("데이터 개수: %d\n", length);
-        System.out.printf("데이터:");
-        for (String str : data) {
-          System.out.println(str);
+        if (data != null ) {
+          System.out.printf("데이터:");
+          for (String str : data) {
+            System.out.println(str);
+          }
         }
 
+        // 1) 클라이언트에게 요청에 대한 작업 결과를 보낸다. 
         out.writeUTF("success");
+
+        // 2) 클라이언트에게 보낼 데이터의 개수를 보낸다.
+        // 개수가 1이면 밑의 데이터도 1개
         out.writeInt(1);
+
+        // 3) 클라이언트에게 데이터를 보낸다.
         out.writeUTF("test...ok!");
+
         out.flush();
 
         if (request.equals("quit")) {
