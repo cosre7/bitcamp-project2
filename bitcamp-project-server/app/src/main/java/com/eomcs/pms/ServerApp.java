@@ -62,7 +62,7 @@ public class ServerApp {
         System.out.printf("명령: %s\n", request);
         System.out.printf("데이터 개수: %d\n", length);
         if (data != null ) {
-          System.out.printf("데이터:");
+          System.out.println("데이터:");
           for (String str : data) {
             System.out.println(str);
           }
