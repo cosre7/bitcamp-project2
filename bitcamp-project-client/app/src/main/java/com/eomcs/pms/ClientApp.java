@@ -30,7 +30,17 @@ public class ClientApp {
       while (true) {
         String message = Prompt.inputString("명령> ");
 
+        // 1) 명령어를 보낸다.
         out.writeUTF(message);
+
+        // 2) 서버에 보낼 데이터의 개수를 보낸다.
+        out.writeInt(3);
+
+        // 3) 서버에 데이터를 보낸다.
+        out.writeUTF("aaaa");
+        out.writeUTF("bbbb");
+        out.writeUTF("cccc");
+
         out.flush();
 
         String response = in.readUTF();
