@@ -5,10 +5,24 @@ import java.io.DataOutputStream;
 import java.net.Socket;
 
 public class ClientApp {
+
+  String serverAddress;
+  int port;
+
   public static void main(String[] args) {
+    ClientApp app = new ClientApp("localhost", 8888);
+    app.excute();
+  }
+
+  public ClientApp(String serverAddress, int port) {
+    this.serverAddress = serverAddress;
+    this.port = port;
+  }
+
+  public void excute() {
 
     // 서버와 연결한다.
-    try (Socket socket = new Socket("localhost", 8888);
+    try (Socket socket = new Socket(this.serverAddress, this.port);
         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
         DataInputStream in = new DataInputStream(socket.getInputStream())) {
 
