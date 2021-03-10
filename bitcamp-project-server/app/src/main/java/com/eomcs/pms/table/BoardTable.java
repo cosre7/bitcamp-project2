@@ -89,6 +89,9 @@ public class BoardTable implements DataTable {
       case "board/delete":
         no = Integer.parseInt(request.getData().get(0));
         board = getBoard(no);
+        if (board == null) { 
+          throw new Exception("해당 번호의 게시글이 없습니다.");
+        } 
         list.remove(board);
         break;
       default:
