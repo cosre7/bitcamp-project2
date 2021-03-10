@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 public class JsonFileHandler {
+
   public static <T> List<T> loadObjects(File file, Class<T> elementType) {
     try (BufferedReader in = new BufferedReader(new FileReader(file))) {
 

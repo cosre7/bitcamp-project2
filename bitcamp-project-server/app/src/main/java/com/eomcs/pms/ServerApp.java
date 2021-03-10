@@ -81,8 +81,6 @@ public class ServerApp {
         } else {
           sendResponse(out, "error", "해당 요청을 처리할 수 없습니다!");
         }
-
-        out.flush();
       }
     } catch (Exception e) {
       System.out.println("클라이언트의 요청을 처리하는 중에 오류 발생!");
