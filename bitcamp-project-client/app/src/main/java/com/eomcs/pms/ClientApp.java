@@ -3,10 +3,19 @@ package com.eomcs.pms;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import com.eomcs.pms.handler.BoardListHandler;
+import com.eomcs.pms.handler.Command;
 import com.eomcs.util.Prompt;
 
 public class ClientApp {
+
+  //사용자가 입력한 명령을 저장할 컬렉션 객체 준비
+  ArrayDeque<String> commandStack = new ArrayDeque<>();
+  LinkedList<String> commandQueue = new LinkedList<>();
 
   String serverAddress;
   int port;
@@ -22,6 +31,15 @@ public class ClientApp {
   }
 
   public void excute() {
+
+    // 사용자 명령을 처리하는 객체를 맵에 보관한다.
+    HashMap<String,Command> commandMap = new HashMap<>();
+
+    //    commandMap.put("/board/add", new BoardAddHandler(boardList));
+    commandMap.put("/board/list", new BoardListHandler(boardList));
+    //    commandMap.put("/board/detail", new BoardDetailHandler(boardList));
+    //    commandMap.put("/board/update", new BoardUpdateHandler(boardList));
+    //    commandMap.put("/board/delete", new BoardDeleteHandler(boardList));
 
     // 서버와 연결한다.
     try (Socket socket = new Socket(this.serverAddress, this.port);
