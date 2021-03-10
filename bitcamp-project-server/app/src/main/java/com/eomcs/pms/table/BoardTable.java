@@ -48,6 +48,14 @@ public class BoardTable implements DataTable {
 
         // 새 게시글을 담은 Board 객체를 목록에 저장한다.
         list.add(board);
+
+        // 게시글을 목록에 추가하는 즉시 List 컬렉션의 전체 데이터를 파일에 저장한다.
+        // - 매번 전체 데이터를 파일에 저장하는 것은 비효율적이다.
+        // - 효율성에 대한 부분은 무시한다.
+        // - 현재 중요한 것은 서버 애플리케이션에서 데이터 파일을 관리한다는 점이다.
+        // - 어차피 이 애플리케이션은 진정한 성능을 제공하는 DBMS로 교체할 것이다.
+        // 
+        JsonFileHandler.saveObjects(jsonFile, list);
         break;
       case "board/selectall":
         for (Board b : list) {
@@ -85,6 +93,7 @@ public class BoardTable implements DataTable {
         board.setTitle(fields[1]);
         board.setContent(fields[2]);
 
+        JsonFileHandler.saveObjects(jsonFile, list);
         break;
       case "board/delete":
         no = Integer.parseInt(request.getData().get(0));
@@ -93,6 +102,8 @@ public class BoardTable implements DataTable {
           throw new Exception("해당 번호의 게시글이 없습니다.");
         } 
         list.remove(board);
+
+        JsonFileHandler.saveObjects(jsonFile, list);
         break;
       default:
         throw new Exception("해당 명령을 처리할 수 없습니다.");
