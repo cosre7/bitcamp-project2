@@ -11,6 +11,7 @@ import java.util.Set;
 import com.eomcs.pms.table.BoardTable;
 import com.eomcs.pms.table.DataTable;
 import com.eomcs.util.Request;
+import com.eomcs.util.Response;
 
 // 데이터를 파일에 보관하고 꺼내는 일을 할 애플리케이션
 public class ServerApp {
@@ -62,7 +63,9 @@ public class ServerApp {
         DataTable dataTable = findDataTable(request.getCommand());
 
         if (dataTable != null) {
-          dataTable.service(request, data, out);
+          Response response = new Response();
+          dataTable.service(request, response);
+
         } else {
           sendResponse(out, "error", "해당 요청을 처리할 수 없습니다!");
         }
