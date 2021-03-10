@@ -64,7 +64,19 @@ public class ServerApp {
 
         if (dataTable != null) {
           Response response = new Response();
-          dataTable.service(request, response);
+          try {
+            dataTable.service(request, response);
+            sendResponse(
+                out, 
+                "success", 
+                response.getDataList().toArray(new String[response.getDataList().size()]));
+
+          } catch (Exception e) {
+            sendResponse(
+                out,
+                "error",
+                e.getMessage());
+          }
 
         } else {
           sendResponse(out, "error", "해당 요청을 처리할 수 없습니다!");
