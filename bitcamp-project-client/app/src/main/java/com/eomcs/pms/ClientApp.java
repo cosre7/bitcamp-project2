@@ -6,7 +6,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import com.eomcs.driver.Statement;
 import com.eomcs.pms.handler.BoardAddHandler;
+import com.eomcs.pms.handler.BoardDeleteHandler;
+import com.eomcs.pms.handler.BoardDetailHandler;
 import com.eomcs.pms.handler.BoardListHandler;
+import com.eomcs.pms.handler.BoardSearchHandler;
+import com.eomcs.pms.handler.BoardUpdateHandler;
 import com.eomcs.pms.handler.Command;
 import com.eomcs.util.Prompt;
 
@@ -36,10 +40,10 @@ public class ClientApp {
 
     commandMap.put("/board/add", new BoardAddHandler());
     commandMap.put("/board/list", new BoardListHandler());
-    //    commandMap.put("/board/detail", new BoardDetailHandler());
-    //    commandMap.put("/board/update", new BoardUpdateHandler());
-    //    commandMap.put("/board/delete", new BoardDeleteHandler());
-    //    commandMap.put("/board/search", new BoardDeleteHandler());
+    commandMap.put("/board/detail", new BoardDetailHandler());
+    commandMap.put("/board/update", new BoardUpdateHandler());
+    commandMap.put("/board/delete", new BoardDeleteHandler());
+    commandMap.put("/board/search", new BoardSearchHandler());
     //
     //    commandMap.put("/member/add", new MemberAddHandler());
     //    commandMap.put("/member/list", new MemberListHandler());
