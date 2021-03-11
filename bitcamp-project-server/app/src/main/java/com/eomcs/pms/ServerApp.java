@@ -44,8 +44,9 @@ public class ServerApp {
 
       System.out.println("서버 실행!");
 
-      // 클라이언트와 연결 수행
-      processRequest(serverSocket.accept());
+      while (true) {
+        processRequest(serverSocket.accept());
+      }
 
     } catch (Exception e) {
       System.out.println("서버 실행 중 오류 발생!");
