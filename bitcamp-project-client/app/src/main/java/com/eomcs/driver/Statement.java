@@ -19,7 +19,7 @@ public class Statement implements AutoCloseable {
   }
 
   // 데이터를 입력, 변경, 삭제할 때 호출하는 메서드
-  public void excuteUpdate(String command, String... args) throws Exception {
+  public void executeUpdate(String command, String... args) throws Exception {
 
     request(command, args);
 
@@ -32,7 +32,7 @@ public class Statement implements AutoCloseable {
   }
 
   // 데이터 목록을 조회하거나 특정 항목을 조회할 때 호출하는 메서드
-  public Iterator<String> excuteQuery(String command, String... args) throws Exception {
+  public Iterator<String> executeQuery(String command, String... args) throws Exception {
 
     request(command, args);
 
