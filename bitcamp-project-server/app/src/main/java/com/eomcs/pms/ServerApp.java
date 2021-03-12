@@ -22,6 +22,7 @@ import com.eomcs.util.Response;
 //4) 로컬 클래스로 정의한 스레드 사용
 //5) 익명 클래스로 정의한 스레드 사용
 //6) 직접 스레드를 만들지 않고 스레드 객체를 사용할 Runnable구현체를 정의한다.
+//7) Runnable 구현체를 lambda 문법으로 정의한다.
 public class ServerApp {
 
   int port;
@@ -50,14 +51,10 @@ public class ServerApp {
       System.out.println("서버 실행!");
 
       while (true) {
-        Socket socket = serverSocket.accept();
-
-        new Thread(new Runnable() {
-          @Override
-          public void run() {
-            processRequest(socket);
-          }
-        }).start();
+        Socket socket = serverSocket.accept(); 
+        // 주의! 밑의 코드에 위 코드를 넣게되면 무한으로 스레드 생성
+        new Thread(() -> processRequest(socket)).start();
+        // 클라이언트가 들어오고 나서 스레드가 start되어야 한다!
       }
 
     } catch (Exception e) {
