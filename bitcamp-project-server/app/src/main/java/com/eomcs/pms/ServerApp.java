@@ -20,6 +20,7 @@ import com.eomcs.util.Response;
 //2) 스태틱 중첩 클래스로 정의한 스레드 사용
 //3) inner 클래스로 정의한 스레드 사용
 //4) 로컬 클래스로 정의한 스레드 사용
+//5) 익명 클래스로 정의한 스레드 사용
 public class ServerApp {
 
   int port;
@@ -36,20 +37,6 @@ public class ServerApp {
 
   public void service() {
 
-    // 로컬 클래스로 스레드를 정의한다.
-    class StatementHandlerThread4 extends Thread {
-      Socket socket;
-      public StatementHandlerThread4(Socket socket) {
-        this.socket = socket;
-      }
-
-      @Override
-      public void run() {
-        // 별도의 실행 흐름에서 수행할 작업이 있다면 이 메서드에 기술한다.
-        processRequest(this.socket);
-      }
-    }
-
     // 요청을 처리할 테이블 객체를 준비한다.
     tableMap.put("board/", new BoardTable());
     tableMap.put("member/", new MemberTable());
@@ -62,7 +49,14 @@ public class ServerApp {
       System.out.println("서버 실행!");
 
       while (true) {
-        new StatementHandlerThread4(serverSocket.accept()).start();
+        Socket socket = serverSocket.accept();
+        // 익명 클래스를 사용하여 스레드를 정의한다.
+        new Thread() {
+          @Override
+          public void run() {
+            processRequest(socket);
+          };
+        }.start();
       }
 
     } catch (Exception e) {
