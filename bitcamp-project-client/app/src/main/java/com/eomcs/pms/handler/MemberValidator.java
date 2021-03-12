@@ -5,8 +5,13 @@ import com.eomcs.util.Prompt;
 
 public class MemberValidator {
 
-  public static String inputMember(
-      String promptTitle, Statement stmt) throws Exception {
+  Statement stmt;
+
+  public MemberValidator(Statement stmt) {
+    this.stmt = stmt;
+  }
+
+  public String inputMember(String promptTitle) throws Exception {
 
     while (true) {
       String name = Prompt.inputString(promptTitle);
@@ -22,11 +27,11 @@ public class MemberValidator {
     }
   }
 
-  public static String inputMembers(
-      String promptTitle, Statement stmt) throws Exception {
+  public String inputMembers(
+      String promptTitle) throws Exception {
     String members = "";
     while (true) {
-      String name = inputMember(promptTitle, stmt);
+      String name = inputMember(promptTitle);
       if (name == null) {
         return members;
       } else {
