@@ -16,7 +16,10 @@ import com.eomcs.pms.table.TaskTable;
 import com.eomcs.util.Request;
 import com.eomcs.util.Response;
 
-// 데이터를 파일에 보관하고 꺼내는 일을 할 애플리케이션
+//1) 외부의 스레드 사용
+//2) 스태틱 중첩 클래스로 정의한 스레드 사용
+//3) inner 클래스로 정의한 스레드 사용
+//4) 로컬 클래스로 정의한 스레드 사용
 public class ServerApp {
 
   int port;
@@ -33,6 +36,20 @@ public class ServerApp {
 
   public void service() {
 
+    // 로컬 클래스로 스레드를 정의한다.
+    class StatementHandlerThread4 extends Thread {
+      Socket socket;
+      public StatementHandlerThread4(Socket socket) {
+        this.socket = socket;
+      }
+
+      @Override
+      public void run() {
+        // 별도의 실행 흐름에서 수행할 작업이 있다면 이 메서드에 기술한다.
+        processRequest(this.socket);
+      }
+    }
+
     // 요청을 처리할 테이블 객체를 준비한다.
     tableMap.put("board/", new BoardTable());
     tableMap.put("member/", new MemberTable());
@@ -45,7 +62,7 @@ public class ServerApp {
       System.out.println("서버 실행!");
 
       while (true) {
-        new StatementHandlerThread3(serverSocket.accept()).start();
+        new StatementHandlerThread4(serverSocket.accept()).start();
       }
 
     } catch (Exception e) {
@@ -153,18 +170,5 @@ public class ServerApp {
   // non-static 중첩 클래스 = inner 클래스
   // - inner 클래스는 바깥 클래스 입장에서 인스턴스 멤버이다.
   // - 따라서 바깥 클래스에 소속된 다른 인스턴스 멤버(필드나 메서드)에 바로 접근할 수 있다.
-  class StatementHandlerThread3 extends Thread {
 
-    Socket socket;
-
-    public StatementHandlerThread3(Socket socket) {
-      this.socket = socket;
-    }
-
-    @Override
-    public void run() {
-      // 별도의 실행 흐름에서 수행할 작업이 있다면 이 메서드에 기술한다.
-      processRequest(this.socket);
-    }
-  }
 }
