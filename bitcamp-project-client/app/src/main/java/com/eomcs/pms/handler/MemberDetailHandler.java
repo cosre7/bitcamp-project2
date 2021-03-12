@@ -1,6 +1,5 @@
 package com.eomcs.pms.handler;
 
-import java.util.Iterator;
 import com.eomcs.driver.Statement;
 import com.eomcs.util.Prompt;
 
@@ -12,9 +11,7 @@ public class MemberDetailHandler implements Command {
 
     int no = Prompt.inputInt("번호? ");
 
-    Iterator<String> results = stmt.executeQuery("member/select", Integer.toString(no));
-
-    String[] fields  = results.next().split(",");
+    String[] fields = stmt.executeQuery("member/select", Integer.toString(no)).next().split(",");
 
     System.out.printf("이름: %s\n", fields[1]);
     System.out.printf("이메일: %s\n", fields[2]);

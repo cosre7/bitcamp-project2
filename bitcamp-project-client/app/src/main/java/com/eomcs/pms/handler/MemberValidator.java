@@ -1,6 +1,5 @@
 package com.eomcs.pms.handler;
 
-import java.util.Iterator;
 import com.eomcs.driver.Statement;
 import com.eomcs.util.Prompt;
 
@@ -15,17 +14,14 @@ public class MemberValidator {
         return null;
       } 
 
-      Iterator<String> results = stmt.executeQuery("member/selectByName", name);
-
-      if (!results.hasNext()) {
+      try {
+        return stmt.executeQuery("member/selectByName", name).next().split(",")[1];
+      } catch (Exception e) {
         System.out.println("등록된 회원이 아닙니다.");
-        return null;
       }
-
-      String[] fields = results.next().split(",");
-      return fields[1];
     }
   }
+
   public static String inputMembers(
       String promptTitle, Statement stmt) throws Exception {
     String members = "";
