@@ -1,16 +1,13 @@
 package com.eomcs.pms.handler;
 
-import com.eomcs.driver.Statement;
 import com.eomcs.pms.domain.Project;
 import com.eomcs.util.Prompt;
 
 public class ProjectAddHandler implements Command {
 
-  Statement stmt;
   MemberValidator memberValidator;
 
-  public ProjectAddHandler(Statement stmt, MemberValidator memberValidator) {
-    this.stmt = stmt;
+  public ProjectAddHandler(MemberValidator memberValidator) {
     this.memberValidator = memberValidator;
   }
 
