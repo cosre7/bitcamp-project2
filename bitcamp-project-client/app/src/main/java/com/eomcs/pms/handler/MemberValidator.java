@@ -10,19 +10,18 @@ public class MemberValidator {
 
   public String inputMember(String promptTitle) throws Exception {
 
-    while (true) {
-      String name = Prompt.inputString(promptTitle);
-      if (name.length() == 0) {
-        return null;
-      } 
+    try (Connection con = DriverManager.getConnection( //
+        "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
+        PreparedStatement stmt = con.prepareStatement( //
+            "select count(*) from pms_member where name=?")) {
+      // name을 가진 데이터가 pms_member에 몇개가 있냐?
+      // 없으면 0 -> 무조건 결과는 있다!
 
-      try (Connection con = DriverManager.getConnection( //
-          "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
-          PreparedStatement stmt = con.prepareStatement( //
-              "select count(*) from pms_member where name=?")) {
-        // name을 가진 데이터가 pms_member에 몇개가 있냐?
-        // 없으면 0 -> 무조건 결과는 있다!
-
+      while (true) {
+        String name = Prompt.inputString(promptTitle);
+        if (name.length() == 0) {
+          return null;
+        } 
         stmt.setString(1, name);
 
         try (ResultSet rs = stmt.executeQuery()) {

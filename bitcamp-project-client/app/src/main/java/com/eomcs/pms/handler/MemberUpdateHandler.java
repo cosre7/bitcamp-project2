@@ -18,9 +18,9 @@ public class MemberUpdateHandler implements Command {
     try (Connection con = DriverManager.getConnection( //
         "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
         PreparedStatement stmt = con.prepareStatement( //
-            "select no,name,email,photo,tel from pms_member where no=?");
+            "select * from pms_member where no=?");
         PreparedStatement stmt2 = con.prepareStatement( //
-            "update pms_member set name=?, email=?, photo=?, tel=? where no=?")) {
+            "update pms_member set name=?,email=?,password=password(?),photo=?,tel=? where no=?")) {
 
       Member member = new Member();
 
@@ -40,6 +40,7 @@ public class MemberUpdateHandler implements Command {
 
       member.setName(Prompt.inputString(String.format("이름(%s)? ", member.getName())));
       member.setEmail(Prompt.inputString(String.format("이메일(%s)? ", member.getEmail())));
+      member.setPassword(Prompt.inputString("새암호? "));
       member.setPhoto(Prompt.inputString(String.format("사진(%s)? ", member.getPhoto())));
       member.setTel(Prompt.inputString(String.format("전화(%s)? ", member.getTel())));
 
@@ -51,9 +52,10 @@ public class MemberUpdateHandler implements Command {
 
       stmt2.setString(1, member.getName());
       stmt2.setString(2, member.getEmail());
-      stmt2.setString(3, member.getPhoto());
-      stmt2.setString(4, member.getTel());
-      stmt2.setInt(5, member.getNo());
+      stmt2.setString(3, member.getPassword());
+      stmt2.setString(4, member.getPhoto());
+      stmt2.setString(5, member.getTel());
+      stmt2.setInt(6, member.getNo());
       stmt2.executeUpdate();
 
       System.out.println("회원을 변경하였습니다.");
