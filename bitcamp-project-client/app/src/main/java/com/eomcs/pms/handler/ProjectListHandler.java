@@ -14,17 +14,38 @@ public class ProjectListHandler implements Command {
     try (Connection con = DriverManager.getConnection( 
         "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
         PreparedStatement stmt = con.prepareStatement( 
-            "select no,title,sdt,edt,owner,members from pms_project order by title asc");
+            "select"
+                + "    p.no,"
+                + "    p.title,"
+                + "    p.sdt,"
+                + "    p.edt,"
+                + "    m.no as owner_no,"
+                + "    m.name as owner_name"
+                + "  from pms_project p"
+                + "    inner join pms_member m on p.owner=m.no"
+                + "  order by title asc");
         ResultSet rs = stmt.executeQuery()) {
 
+      /*
+      select 
+         p.no,
+         p.title,
+         p.sdt,
+         p.edt,
+         m.no as owner_no,
+         m.name as owner_name
+      from pms_project p
+        inner join pms_member m on p.owner=m.no
+      order by title asc
+       */ // 일단 먼저 작성해서 명령창에서 sql이 바로 동작하는지 확인해보기
+
       while (rs.next()) {
-        System.out.printf("%d, %s, %s, %s, %s, [%s]\n", 
+        System.out.printf("%d, %s, %s, %s, %s\n", 
             rs.getInt("no"), 
             rs.getString("title"), 
             rs.getDate("sdt"), 
             rs.getDate("edt"), 
-            rs.getString("owner"),
-            rs.getString("members"));
+            rs.getString("owner_name"));
       }
     }
   }
