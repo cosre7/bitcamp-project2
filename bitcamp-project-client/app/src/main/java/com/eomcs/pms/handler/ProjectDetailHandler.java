@@ -35,44 +35,34 @@ public class ProjectDetailHandler implements Command {
                 + "  from pms_member_project mp"
                 + "    inner join pms_member m on mp.member_no=m.no"
                 + " where "
-                + "    mp.project_no=?");
-        ResultSet rs = stmt.executeQuery()) {
-      if (rs.next()) {
-        stmt.setInt(no, rs.getInt("no"));
-        while (true) {
-          // 1) 프로젝트의 팀원 목록 가져오기
-          stmt2.setInt(1, rs.getInt("no"));
-          String members = "";
-          try (ResultSet Rs = stmt.executeQuery()) {
-            while (memberRs.next()) {
-              if (members.length() > 0) {
-                members += "/";
-              }
-              members += memberRs.getString("name");
-            }
-          }
-          System.out.printf("프로젝트명: %s\n", rs.getString("title"));
-          System.out.printf("내용: %s\n", rs.getString("content"));
-          System.out.printf("시작일: %s\n", rs.getDate("sdt"));
-          System.out.printf("종료일: %s\n", rs.getDate("edt"));
-          System.out.printf("관리자: %s\n", rs.getString("owner_name"));
+                + "    mp.project_no=?")) {
 
-          StringBuilder strings = new StringBuilder(); // += 보다 더 좋다.
+      stmt.setInt(1, no);
 
-          stmt2.setInt(1, no);
-          try (ResultSet membersRs = stmt2.executeQuery()) {
-            while (membersRs.next()) {
-              if (strings.length()  > 0) {
-                strings.append(",");
-              }
-              strings.append(membersRs.getString("name"));
-            }
-          }
-          System.out.printf("팀원: ",  rs.getString("members"));
+      try (ResultSet rs = stmt.executeQuery()) {
+        if (!rs.next()) {
+          System.out.println("해당 번호의 프로젝트가 없습니다.");
+          return;
         }
-      } else {
-        System.out.println("해당 번호의 프로젝트가 없습니다.");
-        return;
+
+        System.out.printf("프로젝트명: %s\n", rs.getString("title"));
+        System.out.printf("내용: %s\n", rs.getString("content"));
+        System.out.printf("시작일: %s\n", rs.getDate("sdt"));
+        System.out.printf("종료일: %s\n", rs.getDate("edt"));
+        System.out.printf("관리자: %s\n", rs.getString("owner_name"));
+
+        StringBuilder strings = new StringBuilder(); // += 보다 더 좋다.
+
+        stmt2.setInt(1, no);
+        try (ResultSet membersRs = stmt2.executeQuery()) {
+          while (membersRs.next()) {
+            if (strings.length()  > 0) {
+              strings.append(",");
+            }
+            strings.append(membersRs.getString("name"));
+          }
+        }
+        System.out.printf("팀원: %s\n",  strings);
       }
     }
   }
