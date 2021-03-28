@@ -3,6 +3,7 @@ package com.eomcs.pms.handler;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import com.eomcs.pms.domain.Task;
 import com.eomcs.util.Prompt;
@@ -45,6 +46,11 @@ public class TaskAddHandler implements Command {
       stmt.setInt(3, t.getOwner().getNo());
       stmt.setInt(4, t.getStatus());
       stmt.executeUpdate();
+
+      try (ResultSet keyRs = stmt.getGeneratedKeys()) {
+        keyRs.next();
+        t.setNo(keyRs.getInt(1)); // 자동증가한 것이 1개
+      }
 
       con.commit();
       System.out.println("작업을 등록하였습니다.");
