@@ -18,8 +18,6 @@ public class Task {
         + "]";
   }
 
-  public Task() {}
-
   public int getNo() {
     return no;
   }
