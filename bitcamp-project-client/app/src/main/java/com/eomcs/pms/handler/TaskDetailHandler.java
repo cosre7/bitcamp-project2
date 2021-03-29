@@ -27,7 +27,7 @@ public class TaskDetailHandler implements Command {
                 + "    m.name as owner_name"
                 + "  from pms_task t"
                 + "    inner join pms_member m on t.owner=m.no"
-                + "  order by content asc")) {
+                + "  where t.no=?")) {
 
       stmt.setInt(1, no);
 
@@ -40,7 +40,7 @@ public class TaskDetailHandler implements Command {
         System.out.printf("내용: %s\n", rs.getString("content"));
         System.out.printf("종료일: %s\n", rs.getDate("deadline"));
         System.out.printf("상태: %s\n", Task.getStatusLabel(rs.getInt("status")));
-        System.out.printf("담당자: %s\n", rs.getString("owner"));
+        System.out.printf("담당자: %s\n", rs.getString("owner_name"));
       }
     }
   }

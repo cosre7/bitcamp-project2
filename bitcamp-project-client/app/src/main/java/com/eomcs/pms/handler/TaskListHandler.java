@@ -27,12 +27,14 @@ public class TaskListHandler implements Command {
                 + "  order by content asc");
         ResultSet rs = stmt.executeQuery()) {
 
-      System.out.printf("%d, %s, %s, %s, %s\n", 
-          rs.getInt("no"), 
-          rs.getString("content"), 
-          rs.getDate("deadline"), 
-          rs.getString("owner_name"),
-          Task.getStatusLabel(rs.getInt("status")));
+      while (rs.next()) {
+        System.out.printf("%d, %s, %s, %s, %s\n", 
+            rs.getInt("no"), 
+            rs.getString("content"), 
+            rs.getDate("deadline"), 
+            rs.getString("owner_name"),
+            Task.getStatusLabel(rs.getInt("status")));
+      }
     }
   }
 }
