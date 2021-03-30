@@ -17,7 +17,8 @@ public class BoardDeleteHandler implements Command {
       return;
     }
 
-    if (BoardDao.delete(no) == 0) {
+    BoardDao boardDao = new BoardDao();
+    if (boardDao.delete(no) == 0) {
       System.out.println("해당 번호의 게시글이 없습니다.");
     } else {
       System.out.println("게시글을 삭제하였습니다.");

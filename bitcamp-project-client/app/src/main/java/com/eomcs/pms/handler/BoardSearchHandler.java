@@ -16,7 +16,8 @@ public class BoardSearchHandler implements Command {
       return;
     }
 
-    List<Board> list = BoardDao.findByKeyword(keyword);
+    BoardDao boardDao = new BoardDao();
+    List<Board> list = boardDao.findByKeyword(keyword);
 
     if (list.size() == 0) {
       System.out.println("검색어에 해당하는 게시글이 없습니다.");

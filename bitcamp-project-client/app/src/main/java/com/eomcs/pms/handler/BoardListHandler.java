@@ -10,7 +10,8 @@ public class BoardListHandler implements Command {
   public void service() throws Exception {
     System.out.println("[게시글 목록]");
 
-    List<Board> boards = BoardDao.findAll();
+    BoardDao boardDao = new BoardDao();
+    List<Board> boards = boardDao.findAll();
 
     for (Board b : boards) {
       System.out.printf("%d, %s, %s, %s, %d\n", 

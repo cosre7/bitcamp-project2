@@ -20,7 +20,8 @@ public class BoardAddHandler implements Command {
     writer.setNo(Prompt.inputInt("작성자 번호? "));
     b.setWriter(writer);
 
-    BoardDao.insert(b);
+    BoardDao boardDao = new BoardDao();
+    boardDao.insert(b);
     System.out.println("게시글을 등록하였습니다.");
   }
 }

@@ -12,7 +12,8 @@ public class BoardUpdateHandler implements Command {
 
     int no = Prompt.inputInt("번호? ");
 
-    Board board = BoardDao.findByNo(no);
+    BoardDao boardDao = new BoardDao();
+    Board board = boardDao.findByNo(no);
     if (board == null) {
       System.out.println("해당 번호의 게시글이 없습니다.");
       return;
@@ -27,7 +28,7 @@ public class BoardUpdateHandler implements Command {
       return;
     }
 
-    BoardDao.update(board);
+    boardDao.update(board);
 
     System.out.println("게시글을 변경하였습니다.");
   }
