@@ -1,7 +1,6 @@
 package com.eomcs.pms.dao;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -78,7 +77,7 @@ public class MemberDao {
         member.setEmail(rs.getString("email"));
         member.setPhoto(rs.getString("photo"));
         member.setTel(rs.getString("tel"));
-        member.setRegisteredDate(new Date(rs.getTimestamp("cdt").getTime()));
+        member.setRegisteredDate(rs.getDate("cdt"));
 
         return member;
       }
@@ -105,6 +104,30 @@ public class MemberDao {
 
       stmt.setInt(1, no);
       return stmt.executeUpdate();
+    }
+  }
+
+  public Member findByName(String name) throws Exception {
+    try (PreparedStatement stmt = con.prepareStatement(
+        "select * from pms_member where name=?")) {
+
+      stmt.setString(1, name);
+
+      ResultSet rs = stmt.executeQuery();
+
+      if (!rs.next()) {
+        return null;
+      }
+
+      Member m = new Member();
+      m.setNo(rs.getInt("no"));
+      m.setName(rs.getString("name"));
+      m.setEmail(rs.getString("email"));
+      m.setPhoto(rs.getString("photo"));
+      m.setTel(rs.getString("tel"));
+      m.setRegisteredDate(rs.getDate("cdt"));
+
+      return m;
     }
   }
 }

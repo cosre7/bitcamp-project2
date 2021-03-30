@@ -1,13 +1,10 @@
 package com.eomcs.pms.handler;
 
-import java.text.SimpleDateFormat;
 import com.eomcs.pms.dao.MemberDao;
 import com.eomcs.pms.domain.Member;
 import com.eomcs.util.Prompt;
 
 public class MemberDetailHandler implements Command {
-
-  SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
   MemberDao memberDao;
 
@@ -31,7 +28,7 @@ public class MemberDetailHandler implements Command {
     System.out.printf("이메일: %s\n", m.getEmail());
     System.out.printf("사진: %s\n", m.getPhoto());
     System.out.printf("전화: %s\n", m.getTel());
-    System.out.printf("가입일: %s\n", formatter.format(m.getRegisteredDate()));
+    System.out.printf("가입일: %s\n", m.getRegisteredDate());
   }
 }
 
