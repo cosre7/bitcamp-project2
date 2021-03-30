@@ -1,6 +1,7 @@
 package com.eomcs.pms.dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -58,5 +59,66 @@ public class BoardDao {
       }
     }
     return list;
+  }
+
+  public static Board findByNo(int no) throws Exception {
+    try (Connection con = DriverManager.getConnection( //
+        "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
+        PreparedStatement stmt = con.prepareStatement( //
+            "select"
+            + " b.no,"
+            + " b.title,"
+            + " b.content,"
+            + " b.cdt,"
+            + " b.vw_cnt,"
+            + " b.like_cnt,"
+            + " m.no as writer_no,"
+            + " m.name as writer_name"
+            + " from pms_board b"
+            + "   inner join pms_member m on m.no=b.writer"
+            + " where b.no = ?")) {
+
+
+      stmt.setInt(1, no);
+
+      try (ResultSet rs = stmt.executeQuery()) {
+        if (!rs.next()) {
+          return null;
+        }
+
+        Board board = new Board();
+        board.setNo(rs.getInt("no"));
+        board.setTitle(rs.getString("title"));
+        board.setContent(rs.getString("content"));
+
+        //        Date date = rs.getDate("cdt"); // 날짜정보만 필요할 때
+        //        Time time = rs.getTime("cdt"); // 시간 정보만 필요할 때
+        //        Timestamp dateTime = rs.getTimestamp("cdt"); // 날짜, 시간 정보가 필요할 때
+        board.setRegisteredDate(new Date(rs.getTimestamp("cdt").getTime()));
+        // getDate에는 시간정보가 없기 때문에 위의 형태로 해준다.
+        board.setViewCount(rs.getInt("vw_cnt"));
+        board.setLike(rs.getInt("like_cnt"));
+
+        Member writer = new Member();
+        writer.setNo(rs.getInt("writer_no"));
+        writer.setName(rs.getString("writer_name"));
+        board.setWriter(writer);
+
+        return board;
+      }
+    }
+  }
+
+  public static int update(Board board) throws Exception {
+    try (Connection con = DriverManager.getConnection(
+        "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
+        PreparedStatement stmt = con.prepareStatement(
+            "update pms_board set title=?, content=? where no=?")) {
+
+      stmt.setString(1, board.getTitle());
+      stmt.setString(2, board.getContent());
+      stmt.setInt(3, board.getNo());
+      return stmt.executeUpdate();
+    }
   }
 }
