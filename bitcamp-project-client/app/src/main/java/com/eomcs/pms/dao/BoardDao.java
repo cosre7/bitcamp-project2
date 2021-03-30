@@ -13,8 +13,11 @@ import com.eomcs.pms.domain.Member;
 //    - 즉 DBMS에 연결
 // 2) 클래스가 로딩될 때 미리 Connection 객체 생성
 //    - DAO 당 한 번만 DBMS 연결
+// 3) 여러 DAO가 Connection 객체를 공유할 수 있도록 외부에서 생성한 후 주입한다.
 public class BoardDao {
 
+  // 외부에서 주입할 수 있도록 필드의 접근 범위를 public으로 확대한다.
+  // - 이 클래스의 메서드를 호출하기 전에 반드시 먼저 Connection 객체를 주입해야 한다.
   public static Connection con;
 
   public static int insert(Board board) throws Exception {

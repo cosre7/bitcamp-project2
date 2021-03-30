@@ -1,5 +1,6 @@
 package com.eomcs.pms;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayDeque;
 import java.util.HashMap;
@@ -61,8 +62,9 @@ public class ClientApp {
 
     // DAO 객체가 사용할 Connection 객체를 생성하여 주입한다.
     try {
-      BoardDao.con = DriverManager.getConnection(
+      Connection con = DriverManager.getConnection(
           "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
+      BoardDao.con = con;
     } catch (Exception e) {
       System.out.println("DB 커넥션 객체 생성 중 오류 발생!");
     }
