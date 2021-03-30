@@ -27,9 +27,8 @@ public class TaskAddHandler implements Command {
     try (Connection con = DriverManager.getConnection(
         "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
         PreparedStatement stmt = con.prepareStatement(
-            "select no,title from pms_project p order by title asc");
+            "select no,title from pms_project order by title asc");
         ResultSet rs = stmt.executeQuery()) {
-
 
       while (rs.next()) {
         Project p = new Project();
@@ -61,7 +60,7 @@ public class TaskAddHandler implements Command {
           selectedProjectNo = Integer.parseInt(input);
         } catch (Exception e) {
           System.out.println("숫자를 입력하세요!");
-          continue; // 다시 반복문 첫부분으로 올라간다.
+          continue;
         }
         for (Project p : projects) {
           if (p.getNo() == selectedProjectNo) {
@@ -83,8 +82,7 @@ public class TaskAddHandler implements Command {
         return;
       }
 
-      try (PreparedStatement stmt2 = con.prepareStatement( // 위쪽의 하나의 try 문으로 묶을 수도 있다.
-          // 하지만 이번의 경우 stmt2가 필요한 시점에서 만들었다
+      try (PreparedStatement stmt2 = con.prepareStatement(
           "insert into pms_task(content,deadline,owner,status,project_no) values(?,?,?,?,?)");) {
 
         stmt2.setString(1, t.getContent());
@@ -94,7 +92,7 @@ public class TaskAddHandler implements Command {
         stmt2.setInt(5, selectedProjectNo);
         stmt2.executeUpdate();
 
-        System.out.println("작업을 등록하였습니다.");
+        System.out.println("작업을 등록했습니다.");
       }
     }
   }

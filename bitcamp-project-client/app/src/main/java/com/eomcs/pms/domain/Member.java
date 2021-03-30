@@ -24,7 +24,6 @@ public class Member {
     this.setRegisteredDate(Date.valueOf(fields[6]));
   }
 
-
   @Override
   public String toString() {
     return "Member [no=" + no + ", name=" + name + ", email=" + email + ", password=" + password

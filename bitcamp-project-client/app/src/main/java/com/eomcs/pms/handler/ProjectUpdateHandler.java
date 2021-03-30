@@ -22,9 +22,9 @@ public class ProjectUpdateHandler implements Command {
 
     int no = Prompt.inputInt("번호? ");
 
-    try (Connection con = DriverManager.getConnection( 
+    try (Connection con = DriverManager.getConnection(
         "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
-        PreparedStatement stmt = con.prepareStatement( 
+        PreparedStatement stmt = con.prepareStatement(
             "select"
                 + "    p.no,"
                 + "    p.title,"
@@ -35,27 +35,27 @@ public class ProjectUpdateHandler implements Command {
                 + "    m.name as owner_name"
                 + "  from pms_project p"
                 + "    inner join pms_member m on p.owner=m.no"
-                + "  where p.no=?");
+                + " where p.no=?");
         PreparedStatement stmt2 = con.prepareStatement(
-            "select"
+            "select" 
                 + "    m.no,"
                 + "    m.name"
-                + "  from pms_member_project mp"
-                + "    inner join pms_member m on mp.member_no=m.no"
+                + " from pms_member_project mp"
+                + "     inner join pms_member m on mp.member_no=m.no"
                 + " where "
-                + "    mp.project_no=?");
+                + "     mp.project_no=?");
         PreparedStatement stmt3 = con.prepareStatement(
             "update pms_project set"
                 + " title=?,"
                 + " content=?,"
                 + " sdt=?,"
                 + " edt=?,"
-                + " owner=?,"
+                + " owner=?"
                 + " where no=?");
-        PreparedStatement stmt4 = con.prepareStatement(
+        PreparedStatement stmt4 = con.prepareStatement( 
             "delete from pms_member_project where project_no=?");
         PreparedStatement stmt5 = con.prepareStatement(
-            "insert into pms_member_project(member_no,project_no) values(?,?)")) {
+            "insert into pms_member_project(member_no,project_no) values(?,?)")) { 
 
       con.setAutoCommit(false);
 
@@ -68,7 +68,7 @@ public class ProjectUpdateHandler implements Command {
           System.out.println("해당 번호의 프로젝트가 없습니다.");
           return;
         }
-        project.setNo(no);
+        project.setNo(no); 
 
         // 2) 사용자에게서 변경할 데이터를 입력 받는다.
         project.setTitle(Prompt.inputString(
@@ -87,19 +87,17 @@ public class ProjectUpdateHandler implements Command {
           return;
         }
 
-        // 3) 프로젝트 팀원 정보를 입력받는다.
-        StringBuilder strings = new StringBuilder(); // += 보다 더 좋다.
-
+        // 3) 프로젝트 팀원 정보를 입력 받는다.
+        StringBuilder strings = new StringBuilder();
         stmt2.setInt(1, no);
         try (ResultSet membersRs = stmt2.executeQuery()) {
           while (membersRs.next()) {
-            if (strings.length()  > 0) {
+            if (strings.length() > 0) {
               strings.append(",");
             }
             strings.append(membersRs.getString("name"));
           }
         }
-
         project.setMembers(memberValidator.inputMembers(
             String.format("팀원(%s)?(완료: 빈 문자열) ", strings)));
 
@@ -108,6 +106,7 @@ public class ProjectUpdateHandler implements Command {
           System.out.println("프로젝트 변경을 취소하였습니다.");
           return;
         }
+
         // 4) DBMS에게 프로젝트 변경을 요청한다.
         stmt3.setString(1, project.getTitle());
         stmt3.setString(2, project.getContent());
@@ -130,12 +129,11 @@ public class ProjectUpdateHandler implements Command {
 
         con.commit();
 
-        System.out.println("프로젝트를 변경하였습니다.");
+        System.out.println("프로젝트을 변경하였습니다.");
       }
     }
   }
 }
-
 
 
 

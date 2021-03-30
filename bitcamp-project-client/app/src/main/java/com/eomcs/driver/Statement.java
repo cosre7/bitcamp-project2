@@ -18,9 +18,8 @@ public class Statement implements AutoCloseable {
     out = new DataOutputStream(socket.getOutputStream());
   }
 
-  // 데이터를 입력, 변경, 삭제할 때 호출하는 메서드
+  // 데이터를 입력, 변경, 삭제할 때 호출하는 메서드 
   public void executeUpdate(String command, String... args) throws Exception {
-
     request(command, args);
 
     // 서버의 응답 결과를 받는다.
@@ -33,7 +32,6 @@ public class Statement implements AutoCloseable {
 
   // 데이터 목록을 조회하거나 특정 항목을 조회할 때 호출하는 메서드
   public Iterator<String> executeQuery(String command, String... args) throws Exception {
-
     request(command, args);
 
     // 서버의 응답 결과를 받는다.
@@ -69,19 +67,8 @@ public class Statement implements AutoCloseable {
     try {in.close();} catch (Exception e) {}
     try {out.close();} catch (Exception e) {}
     try {socket.close();} catch (Exception e) {}
-    // 닫다가 예외가 발생해도 닫혀야 함으로 꼭 각각 따로하기!
   }
 }
-
-
-
-
-
-
-
-
-
-
 
 
 

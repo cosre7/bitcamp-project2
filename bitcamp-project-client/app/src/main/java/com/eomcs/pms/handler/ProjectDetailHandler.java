@@ -16,7 +16,7 @@ public class ProjectDetailHandler implements Command {
 
     try (Connection con = DriverManager.getConnection(
         "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
-        PreparedStatement stmt = con.prepareStatement( 
+        PreparedStatement stmt = con.prepareStatement(
             "select"
                 + "    p.no,"
                 + "    p.title,"
@@ -27,15 +27,15 @@ public class ProjectDetailHandler implements Command {
                 + "    m.name as owner_name"
                 + "  from pms_project p"
                 + "    inner join pms_member m on p.owner=m.no"
-                + "  where p.no=?");
+                + " where p.no=?");
         PreparedStatement stmt2 = con.prepareStatement(
-            "select"
+            "select" 
                 + "    m.no,"
                 + "    m.name"
-                + "  from pms_member_project mp"
-                + "    inner join pms_member m on mp.member_no=m.no"
+                + " from pms_member_project mp"
+                + "     inner join pms_member m on mp.member_no=m.no"
                 + " where "
-                + "    mp.project_no=?")) {
+                + "     mp.project_no=?")) {
 
       stmt.setInt(1, no);
 
@@ -51,18 +51,18 @@ public class ProjectDetailHandler implements Command {
         System.out.printf("종료일: %s\n", rs.getDate("edt"));
         System.out.printf("관리자: %s\n", rs.getString("owner_name"));
 
-        StringBuilder strings = new StringBuilder(); // += 보다 더 좋다.
+        StringBuilder strings = new StringBuilder();
 
         stmt2.setInt(1, no);
         try (ResultSet membersRs = stmt2.executeQuery()) {
           while (membersRs.next()) {
-            if (strings.length()  > 0) {
+            if (strings.length() > 0) {
               strings.append(",");
             }
             strings.append(membersRs.getString("name"));
           }
         }
-        System.out.printf("팀원: %s\n",  strings);
+        System.out.printf("팀원: %s\n", strings);
       }
     }
   }

@@ -18,11 +18,12 @@ public class ProjectDeleteHandler implements Command {
       System.out.println("프로젝트 삭제를 취소하였습니다.");
       return;
     }
-    try (Connection con = DriverManager.getConnection( //
+
+    try (Connection con = DriverManager.getConnection(
         "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
-        PreparedStatement stmt = con.prepareStatement( //
+        PreparedStatement stmt = con.prepareStatement(
             "delete from pms_member_project where project_no=?");
-        PreparedStatement stmt2 = con.prepareStatement( //
+        PreparedStatement stmt2 = con.prepareStatement(
             "delete from pms_project where no=?")) {
 
       con.setAutoCommit(false);
@@ -34,7 +35,7 @@ public class ProjectDeleteHandler implements Command {
       // 2) 프로젝트 정보 삭제
       stmt2.setInt(1, no);
       if (stmt2.executeUpdate() == 0) {
-        System.out.println("해당 번호의 프로젝트가 없습니다."); 
+        System.out.println("해당 번호의 프로젝트가 없습니다.");
 
       } else {
         con.commit();

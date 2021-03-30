@@ -13,14 +13,13 @@ public class MemberAddHandler implements Command {
     System.out.println("[회원 등록]");
 
     Member m = new Member();
-
     m.setName(Prompt.inputString("이름? "));
     m.setEmail(Prompt.inputString("이메일? "));
     m.setPassword(Prompt.inputString("암호? "));
     m.setPhoto(Prompt.inputString("사진? "));
     m.setTel(Prompt.inputString("전화? "));
 
-    try (Connection con = DriverManager.getConnection( 
+    try (Connection con = DriverManager.getConnection(
         "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
         PreparedStatement stmt = con.prepareStatement(
             "insert into pms_member(name,email,password,photo,tel) values(?,?,password(?),?,?)");) {
@@ -30,11 +29,11 @@ public class MemberAddHandler implements Command {
       stmt.setString(3, m.getPassword());
       stmt.setString(4, m.getPhoto());
       stmt.setString(5, m.getTel());
-
       stmt.executeUpdate();
 
       System.out.println("회원을 등록하였습니다.");
     }
+
   }
 }
 

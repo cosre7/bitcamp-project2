@@ -13,12 +13,10 @@ public class MemberValidator {
 
   public Member inputMember(String promptTitle) throws Exception {
 
-    try (Connection con = DriverManager.getConnection( //
+    try (Connection con = DriverManager.getConnection(
         "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
-        PreparedStatement stmt = con.prepareStatement( //
+        PreparedStatement stmt = con.prepareStatement(
             "select no,name,email from pms_member where name=?")) {
-      // name을 가진 데이터가 pms_member에 몇개가 있냐?
-      // 없으면 0 -> 무조건 결과는 있다!
 
       while (true) {
         String name = Prompt.inputString(promptTitle);
@@ -34,7 +32,7 @@ public class MemberValidator {
             member.setName(rs.getString("name"));
             member.setEmail(rs.getString("email"));
             return member;
-          } 
+          }
           System.out.println("등록되지 않은 회원입니다.");
         }
       }
@@ -46,10 +44,10 @@ public class MemberValidator {
 
     while (true) {
       Member member = inputMember(promptTitle);
-      if (member == null) { // 입력을 끝내겠다!
+      if (member == null) {
         return members;
       } else {
-        members.add(member); // 찾은 member를 List에 담기
+        members.add(member);
       }
     }
   }

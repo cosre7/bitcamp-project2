@@ -31,7 +31,7 @@ import com.eomcs.util.Prompt;
 
 public class ClientApp {
 
-  //사용자가 입력한 명령을 저장할 컬렉션 객체 준비
+  // 사용자가 입력한 명령을 저장할 컬렉션 객체 준비
   ArrayDeque<String> commandStack = new ArrayDeque<>();
   LinkedList<String> commandQueue = new LinkedList<>();
 
@@ -43,6 +43,7 @@ public class ClientApp {
 
     try {
       app.execute();
+
     } catch (Exception e) {
       System.out.println("클라이언트 실행 중 오류 발생!");
       e.printStackTrace();
@@ -86,7 +87,6 @@ public class ClientApp {
     commandMap.put("/task/update", new TaskUpdateHandler(memberValidator));
     commandMap.put("/task/delete", new TaskDeleteHandler());
 
-    // 서버와 연결한다.
     try {
 
       while (true) {
@@ -112,7 +112,7 @@ public class ClientApp {
             case "quit":
             case "exit":
               System.out.println("안녕!");
-              return; // 메서드를 나가기
+              return;
             default:
               Command commandHandler = commandMap.get(command);
 
@@ -133,6 +133,7 @@ public class ClientApp {
     } catch (Exception e) {
       System.out.println("서버와 통신 하는 중에 오류 발생!");
     }
+
     Prompt.close();
   }
 

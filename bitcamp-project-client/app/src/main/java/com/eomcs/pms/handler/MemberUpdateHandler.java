@@ -15,15 +15,16 @@ public class MemberUpdateHandler implements Command {
 
     int no = Prompt.inputInt("번호? ");
 
-    try (Connection con = DriverManager.getConnection( //
+    try (Connection con = DriverManager.getConnection(
         "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
-        PreparedStatement stmt = con.prepareStatement( //
-            "select * from pms_member where no=?");
-        PreparedStatement stmt2 = con.prepareStatement( //
+        PreparedStatement stmt = con.prepareStatement(
+            "select * from pms_member where no = ?");
+        PreparedStatement stmt2 = con.prepareStatement(
             "update pms_member set name=?,email=?,password=password(?),photo=?,tel=? where no=?")) {
 
       Member member = new Member();
 
+      // 1) 기존 데이터 조회
       stmt.setInt(1, no);
       try (ResultSet rs = stmt.executeQuery()) {
         if (!rs.next()) {
@@ -31,13 +32,14 @@ public class MemberUpdateHandler implements Command {
           return;
         }
 
-        member.setNo(no);
+        member.setNo(no); 
         member.setName(rs.getString("name"));
         member.setEmail(rs.getString("email"));
         member.setPhoto(rs.getString("photo"));
         member.setTel(rs.getString("tel"));
       }
 
+      // 2) 사용자에게서 변경할 데이터를 입력 받는다.
       member.setName(Prompt.inputString(String.format("이름(%s)? ", member.getName())));
       member.setEmail(Prompt.inputString(String.format("이메일(%s)? ", member.getEmail())));
       member.setPassword(Prompt.inputString("새암호? "));
@@ -50,6 +52,7 @@ public class MemberUpdateHandler implements Command {
         return;
       }
 
+      // 3) DBMS에게 데이터 변경을 요청한다.
       stmt2.setString(1, member.getName());
       stmt2.setString(2, member.getEmail());
       stmt2.setString(3, member.getPassword());
@@ -62,6 +65,8 @@ public class MemberUpdateHandler implements Command {
     }
   }
 }
+
+
 
 
 
