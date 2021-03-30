@@ -11,8 +11,9 @@ import com.eomcs.pms.domain.Board;
 import com.eomcs.pms.domain.Member;
 
 public class BoardDao {
+
   public static int insert(Board board) throws Exception {
-    try (Connection con = DriverManager.getConnection( // try : 단지 자동 close를 위해 사용, 예외용 아님
+    try (Connection con = DriverManager.getConnection(
         "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
         PreparedStatement stmt =
             con.prepareStatement("insert into pms_board(title, content, writer) values(?,?,?)");) {
@@ -22,14 +23,15 @@ public class BoardDao {
       stmt.setInt(3, board.getWriter().getNo());
 
       return stmt.executeUpdate();
-    }
+    } 
   }
 
   public static List<Board> findAll() throws Exception {
     ArrayList<Board> list = new ArrayList<>();
-    try (Connection con = DriverManager.getConnection( 
+
+    try (Connection con = DriverManager.getConnection(
         "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
-        PreparedStatement stmt = con.prepareStatement( 
+        PreparedStatement stmt = con.prepareStatement(
             "select"
                 + " b.no,"
                 + " b.title,"
@@ -39,7 +41,7 @@ public class BoardDao {
                 + " m.no as writer_no,"
                 + " m.name as writer_name"
                 + " from pms_board b"
-                + "    inner join pms_member m on m.no=b.writer"
+                + "   inner join pms_member m on m.no=b.writer"
                 + " order by b.no desc");
         ResultSet rs = stmt.executeQuery()) {
 
@@ -58,26 +60,26 @@ public class BoardDao {
         list.add(board);
       }
     }
+
     return list;
   }
 
   public static Board findByNo(int no) throws Exception {
-    try (Connection con = DriverManager.getConnection( //
+    try (Connection con = DriverManager.getConnection(
         "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
-        PreparedStatement stmt = con.prepareStatement( //
+        PreparedStatement stmt = con.prepareStatement(
             "select"
-            + " b.no,"
-            + " b.title,"
-            + " b.content,"
-            + " b.cdt,"
-            + " b.vw_cnt,"
-            + " b.like_cnt,"
-            + " m.no as writer_no,"
-            + " m.name as writer_name"
-            + " from pms_board b"
-            + "   inner join pms_member m on m.no=b.writer"
-            + " where b.no = ?")) {
-
+                + " b.no,"
+                + " b.title,"
+                + " b.content,"
+                + " b.cdt,"
+                + " b.vw_cnt,"
+                + " b.like_cnt,"
+                + " m.no as writer_no,"
+                + " m.name as writer_name"
+                + " from pms_board b"
+                + "   inner join pms_member m on m.no=b.writer"
+                + " where b.no = ?")) {
 
       stmt.setInt(1, no);
 
@@ -90,12 +92,7 @@ public class BoardDao {
         board.setNo(rs.getInt("no"));
         board.setTitle(rs.getString("title"));
         board.setContent(rs.getString("content"));
-
-        //        Date date = rs.getDate("cdt"); // 날짜정보만 필요할 때
-        //        Time time = rs.getTime("cdt"); // 시간 정보만 필요할 때
-        //        Timestamp dateTime = rs.getTimestamp("cdt"); // 날짜, 시간 정보가 필요할 때
         board.setRegisteredDate(new Date(rs.getTimestamp("cdt").getTime()));
-        // getDate에는 시간정보가 없기 때문에 위의 형태로 해준다.
         board.setViewCount(rs.getInt("vw_cnt"));
         board.setLike(rs.getInt("like_cnt"));
 
@@ -121,4 +118,84 @@ public class BoardDao {
       return stmt.executeUpdate();
     }
   }
+
+  public static int updateViewCount(int no) throws Exception {
+    try (Connection con = DriverManager.getConnection(
+        "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
+        PreparedStatement stmt = con.prepareStatement(
+            "update pms_board set vw_cnt=vw_cnt + 1 where no=?")) {
+
+      stmt.setInt(1, no);
+      return stmt.executeUpdate();
+    }
+  }
+
+  public static int delete(int no) throws Exception {
+    try (Connection con = DriverManager.getConnection(
+        "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
+        PreparedStatement stmt = con.prepareStatement(
+            "delete from pms_board where no=?")) {
+
+      stmt.setInt(1, no);
+      return stmt.executeUpdate();
+    }
+  }
+
+  public static List<Board> findByKeyword(String keyword) throws Exception {
+    ArrayList<Board> list = new ArrayList<>();
+
+    try (Connection con = DriverManager.getConnection(
+        "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
+        PreparedStatement stmt = con.prepareStatement(
+            "select"
+                + " b.no,"
+                + " b.title,"
+                + " b.cdt,"
+                + " b.vw_cnt,"
+                + " b.like_cnt,"
+                + " m.no as writer_no,"
+                + " m.name as writer_name"
+                + " from pms_board b"
+                + "   inner join pms_member m on m.no=b.writer"
+                + " where b.title like concat('%',?,'%')"
+                + "   or b.content like concat('%',?,'%')"
+                + "   or m.name like concat('%',?,'%')"
+                + " order by b.no desc")) {
+
+      stmt.setString(1, keyword);
+      stmt.setString(2, keyword);
+      stmt.setString(3, keyword);
+
+      ResultSet rs = stmt.executeQuery();
+
+      while (rs.next()) {
+        Board board = new Board();
+        board.setNo(rs.getInt("no"));
+        board.setTitle(rs.getString("title"));
+        board.setRegisteredDate(rs.getDate("cdt"));
+        board.setViewCount(rs.getInt("vw_cnt"));
+
+        Member writer = new Member();
+        writer.setNo(rs.getInt("writer_no"));
+        writer.setName(rs.getString("writer_name"));
+        board.setWriter(writer);
+
+        list.add(board);
+      }
+    }
+
+    return list;
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+

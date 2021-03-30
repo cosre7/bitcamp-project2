@@ -17,7 +17,6 @@ public class Board {
         + ", registeredDate=" + registeredDate + ", viewCount=" + viewCount + ", like=" + like
         + "]";
   }
-
   public int getNo() {
     return no;
   }

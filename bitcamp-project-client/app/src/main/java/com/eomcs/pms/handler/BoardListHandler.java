@@ -11,12 +11,13 @@ public class BoardListHandler implements Command {
     System.out.println("[게시글 목록]");
 
     List<Board> boards = BoardDao.findAll();
+
     for (Board b : boards) {
       System.out.printf("%d, %s, %s, %s, %d\n", 
           b.getNo(), 
           b.getTitle(), 
-          b.getWriter().getName(), 
-          b.getRegisteredDate(), // getString을 하게되면 시간까지!
+          b.getWriter().getName(),
+          b.getRegisteredDate(),
           b.getViewCount());
     }
   }
