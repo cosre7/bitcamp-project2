@@ -15,13 +15,12 @@ public class BoardUpdateHandler implements Command {
 
     int no = Prompt.inputInt("번호? ");
 
-    try (Connection con = DriverManager.getConnection( 
+    try (Connection con = DriverManager.getConnection(
         "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
         PreparedStatement stmt = con.prepareStatement(
             "select no,title,content from pms_board where no=?");
         PreparedStatement stmt2 = con.prepareStatement(
             "update pms_board set title=?, content=? where no=?")) {
-
 
       Board board = new Board();
 
@@ -32,10 +31,10 @@ public class BoardUpdateHandler implements Command {
           System.out.println("해당 번호의 게시글이 없습니다.");
           return;
         }
-        board.setNo(no);
+
+        board.setNo(no); 
         board.setTitle(rs.getString("title"));
         board.setContent(rs.getString("content"));
-
       }
 
       // 2) 사용자에게서 변경할 데이터를 입력 받는다.
@@ -43,7 +42,6 @@ public class BoardUpdateHandler implements Command {
       board.setContent(Prompt.inputString(String.format("내용(%s)? ", board.getContent())));
 
       String input = Prompt.inputString("정말 변경하시겠습니까?(y/N) ");
-
       if (!input.equalsIgnoreCase("Y")) {
         System.out.println("게시글 변경을 취소하였습니다.");
         return;
