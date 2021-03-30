@@ -4,8 +4,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import com.eomcs.pms.dao.MemberDao;
 
 public class MemberListHandler implements Command {
+
+  MemberDao memberDao;
+
+  public MemberListHandler(MemberDao memberDao) {
+    this.memberDao = memberDao;
+  }
 
   @Override
   public void service() throws Exception {
