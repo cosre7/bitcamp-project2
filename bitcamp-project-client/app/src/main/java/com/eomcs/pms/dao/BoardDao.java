@@ -12,11 +12,20 @@ import com.eomcs.pms.domain.Member;
 
 public class BoardDao {
 
+  static Connection con;
+
+  static {
+    try {
+      con = DriverManager.getConnection(
+          "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
+    } catch (Exception e) {
+      System.out.println("DB 커넥션 객체 생성 중 오류 발생!");
+    }
+  }
   public static int insert(Board board) throws Exception {
-    try (Connection con = DriverManager.getConnection(
-        "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
-        PreparedStatement stmt =
-            con.prepareStatement("insert into pms_board(title, content, writer) values(?,?,?)");) {
+
+    try (PreparedStatement stmt = con.prepareStatement(
+        "insert into pms_board(title, content, writer) values(?,?,?)");) {
 
       stmt.setString(1, board.getTitle());
       stmt.setString(2, board.getContent());
@@ -29,20 +38,18 @@ public class BoardDao {
   public static List<Board> findAll() throws Exception {
     ArrayList<Board> list = new ArrayList<>();
 
-    try (Connection con = DriverManager.getConnection(
-        "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
-        PreparedStatement stmt = con.prepareStatement(
-            "select"
-                + " b.no,"
-                + " b.title,"
-                + " b.cdt,"
-                + " b.vw_cnt,"
-                + " b.like_cnt,"
-                + " m.no as writer_no,"
-                + " m.name as writer_name"
-                + " from pms_board b"
-                + "   inner join pms_member m on m.no=b.writer"
-                + " order by b.no desc");
+    try (PreparedStatement stmt = con.prepareStatement(
+        "select"
+            + " b.no,"
+            + " b.title,"
+            + " b.cdt,"
+            + " b.vw_cnt,"
+            + " b.like_cnt,"
+            + " m.no as writer_no,"
+            + " m.name as writer_name"
+            + " from pms_board b"
+            + "   inner join pms_member m on m.no=b.writer"
+            + " order by b.no desc");
         ResultSet rs = stmt.executeQuery()) {
 
       while (rs.next()) {
@@ -65,21 +72,19 @@ public class BoardDao {
   }
 
   public static Board findByNo(int no) throws Exception {
-    try (Connection con = DriverManager.getConnection(
-        "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
-        PreparedStatement stmt = con.prepareStatement(
-            "select"
-                + " b.no,"
-                + " b.title,"
-                + " b.content,"
-                + " b.cdt,"
-                + " b.vw_cnt,"
-                + " b.like_cnt,"
-                + " m.no as writer_no,"
-                + " m.name as writer_name"
-                + " from pms_board b"
-                + "   inner join pms_member m on m.no=b.writer"
-                + " where b.no = ?")) {
+    try (PreparedStatement stmt = con.prepareStatement(
+        "select"
+            + " b.no,"
+            + " b.title,"
+            + " b.content,"
+            + " b.cdt,"
+            + " b.vw_cnt,"
+            + " b.like_cnt,"
+            + " m.no as writer_no,"
+            + " m.name as writer_name"
+            + " from pms_board b"
+            + "   inner join pms_member m on m.no=b.writer"
+            + " where b.no = ?")) {
 
       stmt.setInt(1, no);
 
@@ -107,10 +112,8 @@ public class BoardDao {
   }
 
   public static int update(Board board) throws Exception {
-    try (Connection con = DriverManager.getConnection(
-        "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
-        PreparedStatement stmt = con.prepareStatement(
-            "update pms_board set title=?, content=? where no=?")) {
+    try (PreparedStatement stmt = con.prepareStatement(
+        "update pms_board set title=?, content=? where no=?")) {
 
       stmt.setString(1, board.getTitle());
       stmt.setString(2, board.getContent());
@@ -120,10 +123,8 @@ public class BoardDao {
   }
 
   public static int updateViewCount(int no) throws Exception {
-    try (Connection con = DriverManager.getConnection(
-        "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
-        PreparedStatement stmt = con.prepareStatement(
-            "update pms_board set vw_cnt=vw_cnt + 1 where no=?")) {
+    try (PreparedStatement stmt = con.prepareStatement(
+        "update pms_board set vw_cnt=vw_cnt + 1 where no=?")) {
 
       stmt.setInt(1, no);
       return stmt.executeUpdate();
@@ -131,10 +132,8 @@ public class BoardDao {
   }
 
   public static int delete(int no) throws Exception {
-    try (Connection con = DriverManager.getConnection(
-        "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
-        PreparedStatement stmt = con.prepareStatement(
-            "delete from pms_board where no=?")) {
+    try (PreparedStatement stmt = con.prepareStatement(
+        "delete from pms_board where no=?")) {
 
       stmt.setInt(1, no);
       return stmt.executeUpdate();
@@ -144,23 +143,21 @@ public class BoardDao {
   public static List<Board> findByKeyword(String keyword) throws Exception {
     ArrayList<Board> list = new ArrayList<>();
 
-    try (Connection con = DriverManager.getConnection(
-        "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
-        PreparedStatement stmt = con.prepareStatement(
-            "select"
-                + " b.no,"
-                + " b.title,"
-                + " b.cdt,"
-                + " b.vw_cnt,"
-                + " b.like_cnt,"
-                + " m.no as writer_no,"
-                + " m.name as writer_name"
-                + " from pms_board b"
-                + "   inner join pms_member m on m.no=b.writer"
-                + " where b.title like concat('%',?,'%')"
-                + "   or b.content like concat('%',?,'%')"
-                + "   or m.name like concat('%',?,'%')"
-                + " order by b.no desc")) {
+    try (PreparedStatement stmt = con.prepareStatement(
+        "select"
+            + " b.no,"
+            + " b.title,"
+            + " b.cdt,"
+            + " b.vw_cnt,"
+            + " b.like_cnt,"
+            + " m.no as writer_no,"
+            + " m.name as writer_name"
+            + " from pms_board b"
+            + "   inner join pms_member m on m.no=b.writer"
+            + " where b.title like concat('%',?,'%')"
+            + "   or b.content like concat('%',?,'%')"
+            + "   or m.name like concat('%',?,'%')"
+            + " order by b.no desc")) {
 
       stmt.setString(1, keyword);
       stmt.setString(2, keyword);
