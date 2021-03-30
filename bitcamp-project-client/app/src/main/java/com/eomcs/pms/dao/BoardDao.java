@@ -2,7 +2,6 @@ package com.eomcs.pms.dao;
 
 import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -12,18 +11,12 @@ import com.eomcs.pms.domain.Member;
 
 // 1) 메서드를 호출 할 때 마다 Connection 객체 생성
 //    - 즉 DBMS에 연결
+// 2) 클래스가 로딩될 때 미리 Connection 객체 생성
+//    - DAO 당 한 번만 DBMS 연결
 public class BoardDao {
 
-  static Connection con;
+  public static Connection con;
 
-  static {
-    try {
-      con = DriverManager.getConnection(
-          "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
-    } catch (Exception e) {
-      System.out.println("DB 커넥션 객체 생성 중 오류 발생!");
-    }
-  }
   public static int insert(Board board) throws Exception {
 
     try (PreparedStatement stmt = con.prepareStatement(
