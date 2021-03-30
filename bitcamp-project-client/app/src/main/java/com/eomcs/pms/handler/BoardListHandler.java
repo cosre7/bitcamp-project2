@@ -14,17 +14,24 @@ public class BoardListHandler implements Command {
     try (Connection con = DriverManager.getConnection( 
         "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
         PreparedStatement stmt = con.prepareStatement( 
-            "select no,title,writer,cdt,vw_cnt from pms_board order by no desc");
-        // select * 를 해버리면 content까지 읽어온다.
-        // 쓰지도 않을 데이터..심지어 되게 큰 용량일것
-        // 걍 받지도말자.
+            "select"
+                + " b.no,"
+                + " b.title,"
+                + " b.cdt,"
+                + " b.vw_cnt,"
+                + " b.like_cnt,"
+                + " m.no as writer_no,"
+                + " m.name as writer_name"
+                + " from pms_board b"
+                + "    inner hoin pms_member m on m.no=b.writer"
+                + " order by b.no desc");
         ResultSet rs = stmt.executeQuery()) {
 
       while (rs.next()) {
         System.out.printf("%d, %s, %s, %s, %d\n", 
             rs.getInt("no"), 
             rs.getString("title"), 
-            rs.getString("writer"), 
+            rs.getString("writer_name"), 
             rs.getDate("cdt"), // getString을 하게되면 시간까지!
             rs.getInt("vw_cnt"));
       }
