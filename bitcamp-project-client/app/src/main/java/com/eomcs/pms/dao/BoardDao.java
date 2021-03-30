@@ -10,6 +10,8 @@ import java.util.List;
 import com.eomcs.pms.domain.Board;
 import com.eomcs.pms.domain.Member;
 
+// 1) 메서드를 호출 할 때 마다 Connection 객체 생성
+//    - 즉 DBMS에 연결
 public class BoardDao {
 
   static Connection con;
