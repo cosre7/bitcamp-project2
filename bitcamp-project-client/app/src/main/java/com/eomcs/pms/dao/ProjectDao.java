@@ -24,7 +24,7 @@ public class ProjectDao {
     try (PreparedStatement stmt = con.prepareStatement(
         "insert into pms_project(title,content,sdt,edt,owner) values(?,?,?,?,?)",
         Statement.RETURN_GENERATED_KEYS)) {
-
+      //Statement.RETURN_GENERATED_KEYS: 자동증가된 키값을 받겠다!
       con.setAutoCommit(false);
 
       // 1) 프로젝트를 추가한다.
@@ -50,7 +50,7 @@ public class ProjectDao {
 
       return count;
 
-    } finally {
+    } finally { // 예외가 발생하던 하지않던 무조건 수행 하는 블럭!
       con.setAutoCommit(true);
     }
   }
@@ -199,6 +199,8 @@ public class ProjectDao {
   }
 
   public List<Member> findAllMembers(int projectNo) throws Exception {
+    // 프로젝트에 참여하고 있는 멤버를 리스트로 리턴
+    // 비어있어도 리스트를 리턴 -> null은 없다.
     ArrayList<Member> list = new ArrayList<>();
 
     try (PreparedStatement stmt = con.prepareStatement(
@@ -225,6 +227,7 @@ public class ProjectDao {
   }
 
   public int deleteMembers(int projectNo) throws Exception {
+    // 들어있던 멤버를 다 지워버리고 새로 다 넣어버리는 것
     try (PreparedStatement stmt = con.prepareStatement(
         "delete from pms_member_project where project_no=?")) {
       stmt.setInt(1, projectNo);
