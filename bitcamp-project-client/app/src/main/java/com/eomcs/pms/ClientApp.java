@@ -8,6 +8,10 @@ import com.eomcs.pms.dao.BoardDao;
 import com.eomcs.pms.dao.MemberDao;
 import com.eomcs.pms.dao.ProjectDao;
 import com.eomcs.pms.dao.TaskDao;
+import com.eomcs.pms.dao.mariadb.BoardDaoImpl;
+import com.eomcs.pms.dao.mariadb.MemberDaoImpl;
+import com.eomcs.pms.dao.mariadb.ProjectDaoImpl;
+import com.eomcs.pms.dao.mariadb.TaskDaoImpl;
 import com.eomcs.pms.handler.BoardAddHandler;
 import com.eomcs.pms.handler.BoardDeleteHandler;
 import com.eomcs.pms.handler.BoardDetailHandler;
@@ -62,10 +66,10 @@ public class ClientApp {
   public void execute() throws Exception {
 
     // 핸들러가 사용할 DAO 객체 준비
-    BoardDao boardDao = new BoardDao();
-    MemberDao memebrDao = new MemberDao();
-    ProjectDao projectDao = new ProjectDao();
-    TaskDao taskDao = new TaskDao();
+    BoardDao boardDao = new BoardDaoImpl();
+    MemberDao memebrDao = new MemberDaoImpl();
+    ProjectDao projectDao = new ProjectDaoImpl();
+    TaskDao taskDao = new TaskDaoImpl();
 
     // 사용자 명령을 처리하는 객체를 맵에 보관한다.
     HashMap<String,Command> commandMap = new HashMap<>();
