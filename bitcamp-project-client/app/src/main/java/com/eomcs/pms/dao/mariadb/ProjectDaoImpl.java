@@ -1,7 +1,6 @@
 package com.eomcs.pms.dao.mariadb;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -15,11 +14,14 @@ public class ProjectDaoImpl implements ProjectDao {
 
   Connection con;
 
-  public ProjectDaoImpl() throws Exception {
-    this.con = DriverManager.getConnection(
-        "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
+  //Connection 객체를 자체적으로 생성하지 않고 외부에서 주입받는다.
+  // - Connection 객체를 여러 DAO가 공유할 수 있다.
+  // - 교체하기도 쉽다.
+  public ProjectDaoImpl(Connection con) throws Exception {
+    this.con = con;
   }
 
+  @Override
   public int insert(Project project) throws Exception {
 
     try (PreparedStatement stmt = con.prepareStatement(
@@ -56,6 +58,7 @@ public class ProjectDaoImpl implements ProjectDao {
     }
   }
 
+  @Override
   public List<Project> findAll() throws Exception {
     ArrayList<Project> list = new ArrayList<>();
 
@@ -92,6 +95,7 @@ public class ProjectDaoImpl implements ProjectDao {
     return list;
   }
 
+  @Override
   public Project findByNo(int no) throws Exception {
     try (PreparedStatement stmt = con.prepareStatement(
         "select"
@@ -131,6 +135,7 @@ public class ProjectDaoImpl implements ProjectDao {
     }
   }
 
+  @Override
   public int update(Project project) throws Exception {
     try (PreparedStatement stmt = con.prepareStatement(
         "update pms_project set"
@@ -168,6 +173,7 @@ public class ProjectDaoImpl implements ProjectDao {
     }
   }
 
+  @Override
   public int delete(int no) throws Exception {
     try (PreparedStatement stmt = con.prepareStatement(
         "delete from pms_project where no=?")) {
@@ -189,6 +195,7 @@ public class ProjectDaoImpl implements ProjectDao {
     }
   }
 
+  @Override
   public int insertMember(int projectNo, int memberNo) throws Exception {
     try (PreparedStatement stmt = con.prepareStatement(
         "insert into pms_member_project(member_no,project_no) values(?,?)")) {
@@ -199,6 +206,7 @@ public class ProjectDaoImpl implements ProjectDao {
     }
   }
 
+  @Override
   public List<Member> findAllMembers(int projectNo) throws Exception {
     // 프로젝트에 참여하고 있는 멤버를 리스트로 리턴
     // 비어있어도 리스트를 리턴 -> null은 없다.
@@ -227,6 +235,7 @@ public class ProjectDaoImpl implements ProjectDao {
     return list;
   }
 
+  @Override
   public int deleteMembers(int projectNo) throws Exception {
     // 들어있던 멤버를 다 지워버리고 새로 다 넣어버리는 것
     try (PreparedStatement stmt = con.prepareStatement(
