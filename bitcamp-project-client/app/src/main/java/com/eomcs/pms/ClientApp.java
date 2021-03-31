@@ -63,7 +63,7 @@ public class ClientApp {
 
     // 핸들러가 사용할 DAO 객체 준비
     BoardDao boardDao = new BoardDao();
-    MemberDao memberDao = new MemberDao();
+    MemberDao memebrDao = new MemberDao();
     ProjectDao projectDao = new ProjectDao();
     TaskDao taskDao = new TaskDao();
 
@@ -77,13 +77,13 @@ public class ClientApp {
     commandMap.put("/board/delete", new BoardDeleteHandler(boardDao));
     commandMap.put("/board/search", new BoardSearchHandler(boardDao));
 
-    commandMap.put("/member/add", new MemberAddHandler(memberDao));
-    commandMap.put("/member/list", new MemberListHandler(memberDao));
-    commandMap.put("/member/detail", new MemberDetailHandler(memberDao));
-    commandMap.put("/member/update", new MemberUpdateHandler(memberDao));
-    commandMap.put("/member/delete", new MemberDeleteHandler(memberDao));
+    commandMap.put("/member/add", new MemberAddHandler(memebrDao));
+    commandMap.put("/member/list", new MemberListHandler(memebrDao));
+    commandMap.put("/member/detail", new MemberDetailHandler(memebrDao));
+    commandMap.put("/member/update", new MemberUpdateHandler(memebrDao));
+    commandMap.put("/member/delete", new MemberDeleteHandler(memebrDao));
 
-    MemberValidator memberValidator = new MemberValidator(memberDao);
+    MemberValidator memberValidator = new MemberValidator(memebrDao);
 
     commandMap.put("/project/add", new ProjectAddHandler(projectDao, memberValidator));
     commandMap.put("/project/list", new ProjectListHandler(projectDao));

@@ -19,6 +19,7 @@ public class TaskUpdateHandler implements Command {
     this.memberValidator = memberValidator;
   }
 
+
   @Override
   public void service() throws Exception {
     System.out.println("[작업 변경]");
@@ -43,7 +44,7 @@ public class TaskUpdateHandler implements Command {
       System.out.printf("  %d, %s\n", p.getNo(), p.getTitle());
     }
 
-    // 현재 작업이 소속된 프로젝트를 변경한다.
+    // 5) 현재 작업이 소속된 프로젝트를 변경한다.
     int selectedProjectNo = 0;
     loop: while (true) {
       try {
@@ -68,7 +69,7 @@ public class TaskUpdateHandler implements Command {
       task.setProjectNo(selectedProjectNo);
     }
 
-    // 사용자에게서 변경할 데이터를 입력 받는다.
+    // 2) 사용자에게서 변경할 데이터를 입력 받는다.
     task.setContent(Prompt.inputString(String.format("내용(%s)? ", task.getContent())));
     task.setDeadline(Prompt.inputDate(String.format("마감일(%s)? ", task.getDeadline())));
     task.setStatus(Prompt.inputInt(String.format(
@@ -88,10 +89,9 @@ public class TaskUpdateHandler implements Command {
       return;
     }
 
-    // DBMS에게 게시글 변경을 요청한다.
+    //DBMS에게 게시글 변경을 요청한다.
     taskDao.update(task);
 
     System.out.println("작업을 변경하였습니다.");
   }
 }
-

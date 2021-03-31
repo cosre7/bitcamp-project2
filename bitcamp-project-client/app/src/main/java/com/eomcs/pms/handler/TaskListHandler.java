@@ -35,11 +35,11 @@ public class TaskListHandler implements Command {
     if (projectNo == 0) {
       tasks = taskDao.findAll();
     } else {
-      tasks = taskDao.findByProjectNo(projectNo);
+      tasks = taskDao.findByProject(projectNo);
     }
 
     if (tasks.size() == 0) {
-      System.out.println("해당 번호의 프로젝트가 없거나 또는 등록된 작업이 없습니다.");
+      System.out.println("해당 번호의 프로젝트가 없거나 등록된 작업이 없습니다.");
       return;
     }
 
@@ -49,9 +49,9 @@ public class TaskListHandler implements Command {
         System.out.printf("'%s' 작업 목록: \n", t.getProjectTitle());
         projectNo = t.getProjectNo();
       }
-      System.out.printf("%d, %s, %s, %s, %s\n",
-          t.getNo(),
-          t.getContent(),
+      System.out.printf("%d, %s, %s, %s, %s\n", 
+          t.getNo(), 
+          t.getContent(), 
           t.getDeadline(),
           t.getOwner().getName(),
           Task.getStatusLabel(t.getStatus()));

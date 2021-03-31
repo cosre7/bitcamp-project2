@@ -19,6 +19,7 @@ public class TaskDao {
   }
 
   public int insert(Task task) throws Exception {
+
     try (PreparedStatement stmt = con.prepareStatement(
         "insert into pms_task(content,deadline,owner,status,project_no) values(?,?,?,?,?)");) {
 
@@ -31,49 +32,17 @@ public class TaskDao {
     }
   }
 
-  public List<Task> findAll() throws Exception { // findAll : 모든 프로젝트의 작업 목록 // findByProjectNo : 특정 프로젝트의 작업 목록
-    ArrayList<Task> list = new ArrayList<>();
-
-    try (PreparedStatement stmt = con.prepareStatement(
-        "select "
-            + "   t.no,"
-            + "   t.content,"
-            + "   t.deadline,"
-            + "   t.status,"
-            + "   m.no as owner_no,"
-            + "   m.name as owner_name,"
-            + "   p.no as project_no,"
-            + "   p.title as project_title"
-            + " from pms_task t "
-            + "   inner join pms_member m on t.owner=m.no"
-            + "   inner join pms_project p on t.project_no=p.no"
-            + " order by p.no desc, t.content asc");
-        ResultSet rs = stmt.executeQuery()) {
-
-      while (rs.next()) {
-        Task task = new Task();
-        task.setNo(rs.getInt("no"));
-        task.setContent(rs.getString("content"));
-        task.setDeadline(rs.getDate("deadline"));
-
-        Member owner = new Member();
-        owner.setNo(rs.getInt("owner_no"));
-        owner.setName(rs.getString("owner_name"));
-        task.setOwner(owner);
-
-        task.setStatus(rs.getInt("status"));
-
-        task.setProjectNo(rs.getInt("project_no"));
-        task.setProjectTitle(rs.getString("project_title"));
-
-        list.add(task);
-      }
-      return list;
-    }
+  public List<Task> findAll() throws Exception {
+    return findAll(0);
   }
 
-  public List<Task> findByProjectNo(int projectNo) throws Exception {
+  public List<Task> findByProject(int projectNo) throws Exception {
+    return findAll(projectNo);
+  }
+
+  public List<Task> findAll(int projectNo) throws Exception {
     ArrayList<Task> list = new ArrayList<>();
+
     try (PreparedStatement stmt = con.prepareStatement(
         "select "
             + "   t.no,"
@@ -87,10 +56,13 @@ public class TaskDao {
             + " from pms_task t "
             + "   inner join pms_member m on t.owner=m.no"
             + "   inner join pms_project p on t.project_no=p.no"
-            + "  where t.project_no=?"
+            + " where "
+            + "   t.project_no=? or 0=?"
             + " order by p.no desc, t.content asc")) {
 
       stmt.setInt(1, projectNo);
+      stmt.setInt(2, projectNo);
+
       ResultSet rs = stmt.executeQuery();
 
       while (rs.next()) {
@@ -113,8 +85,8 @@ public class TaskDao {
       }
       return list;
     }
-
   }
+
   public Task findByNo(int no) throws Exception {
     try (PreparedStatement stmt = con.prepareStatement(
         "select "
@@ -135,7 +107,6 @@ public class TaskDao {
 
       try (ResultSet rs = stmt.executeQuery()) {
         if (!rs.next()) {
-          System.out.println("해당 번호의 작업이 없습니다.");
           return null;
         }
 
@@ -143,7 +114,6 @@ public class TaskDao {
         task.setNo(rs.getInt("no"));
         task.setContent(rs.getString("content"));
         task.setDeadline(rs.getDate("deadline"));
-
         task.setStatus(rs.getInt("status"));
 
         Member owner = new Member();
