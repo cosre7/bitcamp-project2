@@ -27,6 +27,7 @@ dependencies {
     
     testImplementation 'junit:junit:4.13'
     implementation 'com.google.guava:guava:29.0-jre'
+    implementation 'org.mybatis:mybatis:3.5.6'
 }
 
 application {
