@@ -132,6 +132,15 @@
     values(#{memberNo}, #{projectNo}) <!-- map에 저장한 이름  memberNo : map.getMemberNo -->
   </insert>
   
+  <insert id="insertMembers" parameterType="map">
+    insert into pms_member_project(member_no,project_no) 
+    values
+    <!-- collection(list)가 들어있는 프로퍼티, 꺼낸 이름을 m이라 한다, 여러개 생성 -> 구분은 , 로-->
+    <foreach collection="members" item="m" separator=","> <!-- 한 번에 여러 insert를 실행하는 방법 -->
+      (#{m.no}, #{projectNo}) 
+    </foreach>
+  </insert>
+  
   <delete id="deleteMembers" parameterType="int">
     delete from pms_member_project 
     where project_no=#{value}

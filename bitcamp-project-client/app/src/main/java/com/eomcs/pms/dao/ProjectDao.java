@@ -20,6 +20,8 @@ public interface ProjectDao {
 
   int insertMember(int projectNo, int memberNo) throws Exception;
 
+  int insertMembers(int projectNo, List<Member> members) throws Exception;
+
   List<Member> findAllMembers(int projectNo) throws Exception;
 
   int deleteMembers(int projectNo) throws Exception;

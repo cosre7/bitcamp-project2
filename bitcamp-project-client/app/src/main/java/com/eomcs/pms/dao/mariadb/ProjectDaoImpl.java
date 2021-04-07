@@ -21,9 +21,10 @@ public class ProjectDaoImpl implements ProjectDao {
     int count = sqlSession.insert("ProjectMapper.insert", project);
 
     // 2) 프로젝트의 팀원 정보를 입력한다.
-    for (Member member : project.getMembers()) {
-      insertMember(project.getNo(), member.getNo());
-    }
+    //    for (Member member : project.getMembers()) {
+    //      insertMember(project.getNo(), member.getNo());
+    //    }
+    insertMembers(project.getNo(), project.getMembers());
 
     return count;
   }
@@ -66,9 +67,10 @@ public class ProjectDaoImpl implements ProjectDao {
     deleteMembers(project.getNo());
 
     // 3) 프로젝트 멤버를 추가한다.
-    for (Member member : project.getMembers()) {
-      insertMember(project.getNo(), member.getNo());
-    }
+    //    for (Member member : project.getMembers()) {
+    //      insertMember(project.getNo(), member.getNo());
+    //    }
+    insertMembers(project.getNo(), project.getMembers());
 
     return count;
   }
@@ -89,6 +91,14 @@ public class ProjectDaoImpl implements ProjectDao {
     params.put("projectNo", projectNo);
     params.put("memberNo", memberNo);
     return sqlSession.insert("ProjectMapper.insertMember", params);
+  }
+
+  @Override
+  public int insertMembers(int projectNo, List<Member> members) throws Exception {
+    HashMap<String,Object> params = new HashMap<>();
+    params.put("projectNo", projectNo);
+    params.put("members", members);
+    return sqlSession.insert("ProjectMapper.insertMembers", params);
   }
 
   @Override
