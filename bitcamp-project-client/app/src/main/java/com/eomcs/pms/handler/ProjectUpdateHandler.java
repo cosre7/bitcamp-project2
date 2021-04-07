@@ -22,24 +22,25 @@ public class ProjectUpdateHandler implements Command {
 
     int no = Prompt.inputInt("번호? ");
 
-    Project project = projectDao.findByNo(no);
+    Project oldProject = projectDao.findByNo(no);
 
-    if (project == null) {
+    if (oldProject == null) {
       System.out.println("해당 번호의 프로젝트가 없습니다.");
       return;
     }
 
     // 사용자에게서 변경할 데이터를 입력 받는다.
+    Project project = new Project();
     project.setTitle(Prompt.inputString(
-        String.format("프로젝트명(%s)? ", project.getTitle())));
+        String.format("프로젝트명(%s)? ", oldProject.getTitle())));
     project.setContent(Prompt.inputString(
-        String.format("내용(%s)? ", project.getContent())));
+        String.format("내용(%s)? ", oldProject.getContent())));
     project.setStartDate(Prompt.inputDate(
-        String.format("시작일(%s)? ", project.getStartDate())));
+        String.format("시작일(%s)? ", oldProject.getStartDate())));
     project.setEndDate(Prompt.inputDate(
-        String.format("종료일(%s)? ", project.getEndDate())));
+        String.format("종료일(%s)? ", oldProject.getEndDate())));
     project.setOwner(memberValidator.inputMember(
-        String.format("만든이(%s)?(취소: 빈 문자열) ", project.getOwner().getName())));
+        String.format("만든이(%s)?(취소: 빈 문자열) ", oldProject.getOwner().getName())));
 
     if (project.getOwner() == null) {
       System.out.println("프로젝트 변경을 취소합니다.");

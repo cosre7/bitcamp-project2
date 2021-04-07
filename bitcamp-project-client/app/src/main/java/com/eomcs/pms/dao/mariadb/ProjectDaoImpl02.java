@@ -7,11 +7,11 @@ import com.eomcs.pms.dao.ProjectDao;
 import com.eomcs.pms.domain.Member;
 import com.eomcs.pms.domain.Project;
 
-public class ProjectDaoImpl implements ProjectDao {
+public class ProjectDaoImpl02 implements ProjectDao {
 
   SqlSession sqlSession;
 
-  public ProjectDaoImpl(SqlSession sqlSession) throws Exception {
+  public ProjectDaoImpl02(SqlSession sqlSession) throws Exception {
     this.sqlSession = sqlSession;
   }
 
@@ -30,28 +30,20 @@ public class ProjectDaoImpl implements ProjectDao {
 
   @Override
   public List<Project> findAll() throws Exception {
-    // 1) 프로젝트 정보를 가져올 때 멤버 목록도 함께 가져오기
-    return sqlSession.selectList("ProjectMapper.findAll");
-
-    // 2) 프로젝트의 멤버 목록을 따로 가져오기
-    //    List<Project> projects = sqlSession.selectList("ProjectMapper.findAll");
-    //    for (Project p : projects) {
-    //      p.setMembers(findAllMembers(p.getNo()));
-    //    }
-    //    return projects;
-    //    // 그냥 프로젝트를 리턴하지 않고 멤버 정보를 담은 프로젝트를 리턴하는 것!
+    List<Project> projects = sqlSession.selectList("ProjectMapper.findAll");
+    for (Project p : projects) {
+      p.setMembers(findAllMembers(p.getNo()));
+    }
+    return projects;
+    // 그냥 프로젝트를 리턴하지 않고 멤버 정보를 담은 프로젝트를 리턴하는 것!
   }
 
   @Override
   public Project findByNo(int no) throws Exception {
-    // 1) 프로젝트 정보를 가져올 때 멤버 목록도 함께 가져오기
-    return sqlSession.selectOne("ProjectMapper.findByNo", no);
-
-    // 2) 프로젝트의 멤버 목록을 따로 가져오기
-    //    Project project =  sqlSession.selectOne("ProjectMapper.findByNo", no); // 프로젝트 정보 가져오기
-    //    project.setMembers(findAllMembers(no)); // 멤버 정보 가져오기와서 프로젝트 정보에 추가
-    //    return project;
-    //    // 그냥 프로젝트를 리턴하지 않고 멤버 정보를 담은 프로젝트를 리턴하는 것!
+    Project project =  sqlSession.selectOne("ProjectMapper.findByNo", no); // 프로젝트 정보 가져오기
+    project.setMembers(findAllMembers(no)); // 멤버 정보 가져오기와서 프로젝트 정보에 추가
+    return project;
+    // 그냥 프로젝트를 리턴하지 않고 멤버 정보를 담은 프로젝트를 리턴하는 것!
   }
 
   @Override

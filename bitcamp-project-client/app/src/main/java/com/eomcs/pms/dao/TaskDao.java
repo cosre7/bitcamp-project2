@@ -16,4 +16,9 @@ public interface TaskDao {
   int update(Task task) throws Exception;
 
   int delete(int no) throws Exception;
+
+  ////기존의 프로그램에 영향을 주지 않으면서 메서드를 추가하기 위한 문법
+  //  default int deleteByProjectNo(int projectNo) throws Exception {return 0;}; 
+
+  int deleteByProjectNo(int projectNo) throws Exception;
 }
