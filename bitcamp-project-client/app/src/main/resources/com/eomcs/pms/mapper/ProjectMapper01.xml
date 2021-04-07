@@ -16,6 +16,11 @@
       <id column="owner_no" property="no"/>
       <result column="owner_name" property="name"/>
     </association>
+    
+    <collection property="members" ofType="com.eomcs.pms.domain.Member">
+      <id column="member_no" property="no"/>
+      <result column="member_name" property="name"/>
+    </collection>
   </resultMap>
   
   <insert id="insert" parameterType="com.eomcs.pms.domain.Project"
@@ -27,6 +32,29 @@
     keyColumn="no" : pk값 가져오기
     keyProperty="no" : 가져온 값을 project의 setNo를 호출해서 넣어라
     PreparedStatement stmt = con.preparedStatement
+    
+    위의 SQL은 내부적으로 다음과 같이 실행된다.
+    
+    int insert(String sqlid, Project project) {
+      // ProjectMapper.xml 파일에서 sqlid로 찾은 SQL 문을 꺼내온다.
+      // 그리고 다음과 같이 실행할 것이다.
+      PreparedStatement stmt = con.prepareStatement(
+        "insert into pms_project(title,content,sdt,edt,owner) values(?,?,?,?,?)",
+        Statement.RETURN_GENERATED_KEYS);
+      
+      stmt.setString(1, project.getTitle());
+      stmt.setString(2, project.getContent());
+      stmt.setString(3, project.getStartDate());
+      stmt.setString(4, project.getEndDate());
+      stmt.setString(5, project.getOwner().getNo());
+      int count = stmt.executeUpdate();
+      
+      ResultSet keyRs = stmt.getGeneratedKeys();
+      keyRs.next();
+      int projectNo = keyRs.getInt(1);
+      
+      project.setNo(projectNo);
+    }
    -->
   
   <select id="findAll" resultMap="projectMap">

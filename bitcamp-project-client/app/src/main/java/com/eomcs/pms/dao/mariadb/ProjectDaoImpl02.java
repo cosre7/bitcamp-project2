@@ -30,19 +30,27 @@ public class ProjectDaoImpl02 implements ProjectDao {
 
   @Override
   public List<Project> findAll() throws Exception {
-    List<Project> projects = sqlSession.selectList("ProjectMapper.findAll");
-    for (Project p : projects) {
-      p.setMembers(findAllMembers(p.getNo()));
-    }
-    return projects;
+    // 1) 프로젝트 정보를 가져올 때 멤버 목록도 함께 가져오기
+    return sqlSession.selectList("ProjectMapper.findAll");
+
+    // 2) 프로젝트의 멤버 목록을 따로 가져오기
+    //    List<Project> projects = sqlSession.selectList("ProjectMapper.findAll");
+    //    for (Project p : projects) {
+    //      p.setMembers(findAllMembers(p.getNo()));
+    //    }
+    //    return projects;
     // 그냥 프로젝트를 리턴하지 않고 멤버 정보를 담은 프로젝트를 리턴하는 것!
   }
 
   @Override
   public Project findByNo(int no) throws Exception {
-    Project project =  sqlSession.selectOne("ProjectMapper.findByNo", no); // 프로젝트 정보 가져오기
-    project.setMembers(findAllMembers(no)); // 멤버 정보 가져오기와서 프로젝트 정보에 추가
-    return project;
+    // 1) 프로젝트 정보를 가져올 때 멤버 목록도 함께 가져오기
+    return sqlSession.selectList("ProjectMapper.findByNo", no);
+
+    // 2) 프로젝트의 멤버 목록을 따로 가져오기
+    //    Project project =  sqlSession.selectOne("ProjectMapper.findByNo", no); // 프로젝트 정보 가져오기
+    //    project.setMembers(findAllMembers(no)); // 멤버 정보 가져오기와서 프로젝트 정보에 추가
+    //    return project;
     // 그냥 프로젝트를 리턴하지 않고 멤버 정보를 담은 프로젝트를 리턴하는 것!
   }
 
@@ -51,7 +59,7 @@ public class ProjectDaoImpl02 implements ProjectDao {
     // 1) 프로젝트 정보를 변경한다.
     int count = sqlSession.update("ProjectMapper.update", project);
 
-    // 2) 프로젝트의 기존 모든 멤버를 삭제한다.
+    // 2) 프로젝트의 기존 멤버를 모두 삭제한다.
     deleteMembers(project.getNo());
 
     // 3) 프로젝트 멤버를 추가한다.
