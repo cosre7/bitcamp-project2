@@ -67,16 +67,19 @@
       inner join pms_member m on p.owner=m.no
       left outer join pms_member_project mp on mp.project_no=p.no
       left outer join pms_member m2 on mp.member_no=m2.no
-      
-    <if test="item == 1">
-      where p.title like concat('%', #{keyword}, '%')
-    </if>
-    <if test="item == 2">
-      where m.name like concat('%', #{keyword}, '%')
-    </if>         
-    <if test="item == 3">
-      where m2.name like concat('%', #{keyword}, '%')
-    </if>
+    <where> <!-- 1,2,3이 아니면 where 절 자체가 사라진다. -->
+	    <choose> <!-- choose/when 문법: 1아니면 2아니면 3일때 (3개중에 하나는 꼭 일때) -->
+		    <when test="item == 1">
+		      p.title like concat('%', #{keyword}, '%')
+		    </when>
+		    <when test="item == 2">
+		      m.name like concat('%', #{keyword}, '%')
+		    </when>         
+		    <when test="item == 3">
+		      m2.name like concat('%', #{keyword}, '%')
+		    </when>
+	    </choose>
+    </where>
     order by title asc
   </select>
   
