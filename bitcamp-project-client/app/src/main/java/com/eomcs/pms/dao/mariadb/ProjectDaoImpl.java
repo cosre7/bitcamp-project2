@@ -29,17 +29,11 @@ public class ProjectDaoImpl implements ProjectDao {
   }
 
   @Override
-  public List<Project> findAll() throws Exception {
-    // 1) 프로젝트 정보를 가져올 때 멤버 목록도 함께 가져오기
-    return sqlSession.selectList("ProjectMapper.findAll");
-
-    // 2) 프로젝트의 멤버 목록을 따로 가져오기
-    //    List<Project> projects = sqlSession.selectList("ProjectMapper.findAll");
-    //    for (Project p : projects) {
-    //      p.setMembers(findAllMembers(p.getNo()));
-    //    }
-    //    return projects;
-    //    // 그냥 프로젝트를 리턴하지 않고 멤버 정보를 담은 프로젝트를 리턴하는 것!
+  public List<Project> findByKeyword(String item, String keyword) throws Exception {
+    HashMap<String,Object> params = new HashMap<>();
+    params.put("item", item);
+    params.put("keyword", keyword);
+    return sqlSession.selectList("ProjectMapper.findByKeyword", params);
   }
 
   @Override

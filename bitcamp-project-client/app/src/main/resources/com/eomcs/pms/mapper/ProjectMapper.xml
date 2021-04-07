@@ -33,24 +33,7 @@
     keyProperty="no" : 가져온 값을 project의 setNo를 호출해서 넣어라
     PreparedStatement stmt = con.preparedStatement
    -->
-  
-  <select id="findAll" resultMap="projectMap">
-    select
-      p.no,
-      p.title,
-      p.sdt,
-      p.edt,
-      m.no as owner_no,
-      m.name as owner_name,
-      m2.no as member_no,
-      m2.name as member_name
-    from pms_project p
-      inner join pms_member m on p.owner=m.no
-      left outer join pms_member_project mp on mp.project_no=p.no
-      left outer join pms_member m2 on mp.member_no=m2.no
-    order by title asc
-  </select>
-  
+
   <select id="findByNo" resultMap="projectMap" parameterType="int"> <!-- resultMap 규칙에 따라 컬럼값을 객체에 담는다 -->
     select
       p.no,
@@ -67,6 +50,33 @@
       left outer join pms_member_project mp on mp.project_no=p.no
       left outer join pms_member m2 on mp.member_no=m2.no
     where p.no=#{value}
+  </select>
+  
+  <select id="findByKeyword" resultMap="projectMap" parameterType="map"> 
+    select
+      p.no,
+      p.title,
+      p.content,
+      p.sdt,
+      p.edt,
+      m.no as owner_no,
+      m.name as owner_name,
+      m2.no as member_no,
+      m2.name as member_name
+    from pms_project p
+      inner join pms_member m on p.owner=m.no
+      left outer join pms_member_project mp on mp.project_no=p.no
+      left outer join pms_member m2 on mp.member_no=m2.no
+      
+    <if test="item == 1">
+      where p.title like concat('%', #{keyword}, '%')
+    </if>
+    <if test="item == 2">
+      where m_name like concat('%', #{keyword}, '%')
+    </if>         
+    <if test="item == 3">
+      where m2_name like concat('%', #{keyword}, '%')
+    </if>
   </select>
   
   <update id="update" parameterType="project">
