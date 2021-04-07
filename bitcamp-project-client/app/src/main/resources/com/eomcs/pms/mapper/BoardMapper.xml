@@ -25,20 +25,6 @@
     values(#{title}, #{content}, #{writer.no}) <!-- writer.no : getWriter().getNo()와 같은 문장 -->   
   </insert>
   
-  <select id="findAll" resultMap="boardMap">
-    select
-      b.no,
-      b.title,
-      b.cdt,
-      b.vw_cnt,
-      b.like_cnt,
-      m.no as writer_no,
-      m.name as writer_name
-    from pms_board b
-      inner join pms_member m on m.no=b.writer
-    order by b.no desc
-  </select>
-  
   <select id="findByKeyword" resultMap="boardMap" parameterType="string">
     select
       b.no,
@@ -50,10 +36,14 @@
       m.name as writer_name
     from pms_board b
       inner join pms_member m on m.no=b.writer
-    where 
-      b.title like concat('%', #{value},'%')
-      or b.content like concat('%', #{value},'%')
-      or m.name like concat('%', #{value},'%')
+      
+    <if test="value != null">
+      where 
+        b.title like concat('%', #{value},'%')
+        or b.content like concat('%', #{value},'%')
+        or m.name like concat('%', #{value},'%')
+    </if>
+    
     order by b.no desc
   </select>
   
