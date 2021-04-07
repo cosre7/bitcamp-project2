@@ -23,6 +23,23 @@
     </collection>
   </resultMap>
   
+  <sql id="select1">
+    select
+      p.no,
+      p.title,
+      p.content,
+      p.sdt,
+      p.edt,
+      m.no as owner_no,
+      m.name as owner_name,
+      m2.no as member_no,
+      m2.name as member_name
+    from pms_project p
+      inner join pms_member m on p.owner=m.no
+      left outer join pms_member_project mp on mp.project_no=p.no
+      left outer join pms_member m2 on mp.member_no=m2.no
+  </sql>
+  
   <insert id="insert" parameterType="project"
           useGeneratedKeys="true" keyColumn="no" keyProperty="no">
     insert into pms_project(title,content,sdt,edt,owner) 
@@ -53,20 +70,7 @@
   </select>
   
   <select id="findByKeyword" resultMap="projectMap" parameterType="map"> 
-    select
-      p.no,
-      p.title,
-      p.content,
-      p.sdt,
-      p.edt,
-      m.no as owner_no,
-      m.name as owner_name,
-      m2.no as member_no,
-      m2.name as member_name
-    from pms_project p
-      inner join pms_member m on p.owner=m.no
-      left outer join pms_member_project mp on mp.project_no=p.no
-      left outer join pms_member m2 on mp.member_no=m2.no
+    <include refid="select1"/>
     <where> <!-- 1,2,3이 아니면 where 절 자체가 사라진다. -->
 	    <choose> <!-- choose/when 문법: 1아니면 2아니면 3일때 (3개중에 하나는 꼭 일때) -->
 		    <when test="item == 1">
@@ -84,20 +88,7 @@
   </select>
   
   <select id="findByKeywords" resultMap="projectMap" parameterType="map"> 
-    select
-      p.no,
-      p.title,
-      p.content,
-      p.sdt,
-      p.edt,
-      m.no as owner_no,
-      m.name as owner_name,
-      m2.no as member_no,
-      m2.name as member_name
-    from pms_project p
-      inner join pms_member m on p.owner=m.no
-      left outer join pms_member_project mp on mp.project_no=p.no
-      left outer join pms_member m2 on mp.member_no=m2.no
+    <include refid="select1"/>
     <where>
 	    <if test="title != ''">
 	      p.title like concat('%', #{title}, '%')
