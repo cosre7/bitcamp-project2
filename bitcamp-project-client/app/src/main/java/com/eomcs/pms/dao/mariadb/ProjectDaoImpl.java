@@ -37,6 +37,15 @@ public class ProjectDaoImpl implements ProjectDao {
   }
 
   @Override
+  public List<Project> findByKeywords(String title, String owner, String member) throws Exception {
+    HashMap<String,Object> params = new HashMap<>();
+    params.put("title", title);
+    params.put("owner", owner);
+    params.put("member", member);
+    return sqlSession.selectList("ProjectMapper.findByKeywords", params);
+  }
+
+  @Override
   public Project findByNo(int no) throws Exception {
     // 1) 프로젝트 정보를 가져올 때 멤버 목록도 함께 가져오기
     return sqlSession.selectOne("ProjectMapper.findByNo", no);
