@@ -5,7 +5,7 @@
 
 <mapper namespace="BoardMapper">
   
-  <resultMap id="boardMap" type="com.eomcs.pms.domain.Board">
+  <resultMap id="boardMap" type="board">
     <id column="no" property="no"/>
     <result column="title" property="title"/>
     <result column="content" property="content"/>
@@ -14,13 +14,13 @@
     <result column="like_cnt" property="like"/>
     
     <!-- 게시글1 멤버정보1 -> 1:1 관계이기 때문에 collection이 아니라 association -->
-    <association property="writer" javaType="com.eomcs.pms.domain.Member"> 
+    <association property="writer" javaType="member"> 
       <id column="writer_no" property="no"/>
       <result column="writer_name" property="name"/>
     </association>
   </resultMap>
   
-  <insert id="insert" parameterType="com.eomcs.pms.domain.Board">
+  <insert id="insert" parameterType="board">
     insert into pms_board(title, content, writer) 
     values(#{title}, #{content}, #{writer.no}) <!-- writer.no : getWriter().getNo()와 같은 문장 -->   
   </insert>
@@ -72,7 +72,7 @@
     where b.no=#{value}
   </select>
   
-  <update id="update" parameterType="com.eomcs.pms.domain.Board">
+  <update id="update" parameterType="board">
     update pms_board set 
      title=#{title}, 
      content=#{content} 
@@ -89,8 +89,6 @@
     delete from pms_board 
     where no=#{value}
   </delete>
-  
-
 </mapper>
 
 

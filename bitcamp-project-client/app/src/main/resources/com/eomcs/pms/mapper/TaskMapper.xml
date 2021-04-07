@@ -5,7 +5,7 @@
 
 <mapper namespace="TaskMapper">
   
-  <resultMap id="taskMap" type="com.eomcs.pms.domain.Task">
+  <resultMap id="taskMap" type="task">
     <id column="no" property="no"/>
     <result column="title" property="title"/>
     <result column="content" property="content"/>
@@ -14,13 +14,13 @@
     <result column="like_cnt" property="like"/>
     
     <!-- 게시글1 멤버정보1 -> 1:1 관계이기 때문에 collection이 아니라 association -->
-    <association property="writer" javaType="com.eomcs.pms.domain.Member"> 
+    <association property="writer" javaType="member"> 
       <id column="writer_no" property="no"/>
       <result column="writer_name" property="name"/>
     </association>
   </resultMap>
   
-  <insert id="insert" parameterType="com.eomcs.pms.domain.Task">
+  <insert id="insert" parameterType="task">
     insert into pms_task(content,deadline,owner,status,project_no) 
     values(#{content}, #{deadline}, #{owner.no}, #{status}, #{projectNo})   
   </insert>
@@ -74,7 +74,7 @@
     where t.no=#{value}
   </select>
   
-  <update id="update" parameterType="com.eomcs.pms.domain.Task">
+  <update id="update" parameterType="task">
     update pms_task set 
       content=#{content},
       deadline=#{deadline},
