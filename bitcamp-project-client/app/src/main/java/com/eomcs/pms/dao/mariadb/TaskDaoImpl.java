@@ -24,7 +24,7 @@ public class TaskDaoImpl implements TaskDao {
   }
 
   @Override
-  public List<Task> findByProject(int projectNo) throws Exception {
+  public List<Task> findByProjectNo(int projectNo) throws Exception {
     return sqlSession.selectList("TaskMapper.findByProjectNo", projectNo);
   }
 

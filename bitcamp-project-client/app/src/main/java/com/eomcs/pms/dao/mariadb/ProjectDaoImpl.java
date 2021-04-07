@@ -31,31 +31,28 @@ public class ProjectDaoImpl implements ProjectDao {
 
   @Override
   public List<Project> findByKeyword(String item, String keyword) throws Exception {
+
     HashMap<String,Object> params = new HashMap<>();
     params.put("item", item);
     params.put("keyword", keyword);
+
     return sqlSession.selectList("ProjectMapper.findByKeyword", params);
   }
 
   @Override
   public List<Project> findByKeywords(String title, String owner, String member) throws Exception {
+
     HashMap<String,Object> params = new HashMap<>();
     params.put("title", title);
     params.put("owner", owner);
     params.put("member", member);
+
     return sqlSession.selectList("ProjectMapper.findByKeywords", params);
   }
 
   @Override
   public Project findByNo(int no) throws Exception {
-    // 1) 프로젝트 정보를 가져올 때 멤버 목록도 함께 가져오기
     return sqlSession.selectOne("ProjectMapper.findByNo", no);
-
-    // 2) 프로젝트의 멤버 목록을 따로 가져오기
-    //    Project project =  sqlSession.selectOne("ProjectMapper.findByNo", no); // 프로젝트 정보 가져오기
-    //    project.setMembers(findAllMembers(no)); // 멤버 정보 가져오기와서 프로젝트 정보에 추가
-    //    return project;
-    //    // 그냥 프로젝트를 리턴하지 않고 멤버 정보를 담은 프로젝트를 리턴하는 것!
   }
 
   @Override

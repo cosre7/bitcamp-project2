@@ -35,7 +35,7 @@ public class TaskListHandler implements Command {
     if (projectNo == 0) {
       tasks = taskDao.findAll();
     } else {
-      tasks = taskDao.findByProject(projectNo);
+      tasks = taskDao.findByProjectNo(projectNo);
     }
 
     if (tasks.size() == 0) {

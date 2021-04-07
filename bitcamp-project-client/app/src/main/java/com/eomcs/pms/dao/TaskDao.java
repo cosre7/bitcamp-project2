@@ -9,7 +9,7 @@ public interface TaskDao {
 
   List<Task> findAll() throws Exception ;
 
-  List<Task> findByProject(int projectNo) throws Exception;
+  List<Task> findByProjectNo(int projectNo) throws Exception;
 
   Task findByNo(int no) throws Exception;
 

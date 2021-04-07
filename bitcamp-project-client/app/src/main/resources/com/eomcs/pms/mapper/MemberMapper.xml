@@ -16,7 +16,7 @@
   
   <insert id="insert" parameterType="member">
     insert into pms_member(name,email,password,photo,tel) 
-    values(#{name}, #{email}, #{password}, #{photo}, #{tel})
+    values(#{name}, #{email}, password(#{password}), #{photo}, #{tel})
   </insert>
 
   <select id="findAll" resultMap="memberMap">
@@ -37,7 +37,6 @@
       email,
       photo,
       tel
-      cdt
     from pms_member 
     where name =#{value}
     order by name asc

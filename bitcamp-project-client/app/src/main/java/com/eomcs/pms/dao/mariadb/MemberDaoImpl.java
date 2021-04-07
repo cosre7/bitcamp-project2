@@ -40,6 +40,10 @@ public class MemberDaoImpl implements MemberDao {
 
   @Override
   public Member findByName(String name) throws Exception {
-    return sqlSession.selectOne("memberMapper.findByName", name);
+    List<Member> members = sqlSession.selectOne("MemberMapper.findByName", name);
+    if (members.size() == 0) {
+      return null;
+    }
+    return members.get(0);
   }
 }
