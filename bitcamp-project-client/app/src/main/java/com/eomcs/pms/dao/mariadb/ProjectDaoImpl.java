@@ -63,9 +63,6 @@ public class ProjectDaoImpl implements ProjectDao {
       deleteMembers(project.getNo());
 
       // 3) 프로젝트 멤버를 추가한다.
-      //    for (Member member : project.getMembers()) {
-      //      insertMember(project.getNo(), member.getNo());
-      //    }
       insertMembers(project.getNo(), project.getMembers());
 
       sqlSession.commit();
