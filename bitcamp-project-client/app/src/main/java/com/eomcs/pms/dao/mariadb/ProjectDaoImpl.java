@@ -20,10 +20,18 @@ public class ProjectDaoImpl implements ProjectDao {
     // 1) 프로젝트 정보를 입력한다.
     int count = sqlSession.insert("ProjectMapper.insert", project);
 
-    // 2) 프로젝트의 팀원 정보를 입력한다.
-    //    for (Member member : project.getMembers()) {
-    //      insertMember(project.getNo(), member.getNo());
-    //    }
+    // 일부러 예외를 발생시킨다.
+    // => 그러면 프로젝트 멤버는 등록되지 않을 것이다.
+    // => 자동 커밋 모드
+    //    - 그럼에도 프로젝트 정보는 등록된 상태로 있을 것이다.
+    // => 수동 커밋 모드
+    //    - 이전에 수행한 작업을 취소하기 때문에 프로젝트 정보는 등록되지 않는다. <중요> 
+    if (count > 0) { 
+      // 무조건 0 이상이긴하지만 insertMembers(project.getNo(), project.getMembers()); 코드에 닿지 않는 에러 제어용 if
+      throw new Exception("프로젝트 등록 후 일부러 예외 발생!");
+    }
+
+    // 2) 멤버를 입력한다.
     insertMembers(project.getNo(), project.getMembers());
 
     return count;
