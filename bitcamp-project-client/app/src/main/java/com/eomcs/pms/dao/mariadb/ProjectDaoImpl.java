@@ -96,7 +96,9 @@ public class ProjectDaoImpl implements ProjectDao {
     HashMap<String,Object> params = new HashMap<>();
     params.put("projectNo", projectNo);
     params.put("memberNo", memberNo);
-    return sqlSession.insert("ProjectMapper.insertMember", params);
+    int count = sqlSession.insert("ProjectMapper.insertMember", params);
+    sqlSession.commit();
+    return count;
   }
 
   @Override
@@ -104,7 +106,9 @@ public class ProjectDaoImpl implements ProjectDao {
     HashMap<String,Object> params = new HashMap<>();
     params.put("projectNo", projectNo);
     params.put("members", members);
-    return sqlSession.insert("ProjectMapper.insertMembers", params);
+    int count = sqlSession.insert("ProjectMapper.insertMembers", params);
+    sqlSession.commit();
+    return count;
   }
 
   @Override
@@ -114,7 +118,9 @@ public class ProjectDaoImpl implements ProjectDao {
 
   @Override
   public int deleteMembers(int projectNo) throws Exception {
-    return sqlSession.delete("ProjectMapper.deleteMembers", projectNo);
+    int count = sqlSession.delete("ProjectMapper.deleteMembers", projectNo);
+    sqlSession.commit();
+    return count;
   }
 }
 
