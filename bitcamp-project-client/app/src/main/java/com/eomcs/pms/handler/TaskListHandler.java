@@ -39,7 +39,7 @@ public class TaskListHandler implements Command {
     }
 
     if (tasks.size() == 0) {
-      System.out.println("해당 번호의 프로젝트가 없거나 등록된 작업이 없습니다.");
+      System.out.println("해당 번호의 프로젝트가 없거나 또는 등록된 작업이 없습니다.");
       return;
     }
 

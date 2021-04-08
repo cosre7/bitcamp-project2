@@ -26,13 +26,13 @@ public class TaskUpdateHandler implements Command {
 
     int no = Prompt.inputInt("번호? ");
 
-    Task oldtask = taskDao.findByNo(no);
-    if (oldtask == null) {
+    Task oldTask = taskDao.findByNo(no);
+    if (oldTask == null) {
       System.out.println("해당 번호의 작업이 없습니다.");
       return;
     }
 
-    System.out.printf("현재 프로젝트: %s\n", oldtask.getProjectTitle());
+    System.out.printf("현재 프로젝트: %s\n", oldTask.getProjectTitle());
 
     List<Project> projects = projectDao.findByKeyword(null, null);
     System.out.println("프로젝트들:");
@@ -44,7 +44,7 @@ public class TaskUpdateHandler implements Command {
       System.out.printf("  %d, %s\n", p.getNo(), p.getTitle());
     }
 
-    // 5) 현재 작업이 소속된 프로젝트를 변경한다.
+    // 현재 작업이 소속된 프로젝트를 변경한다.
     int selectedProjectNo = 0;
     loop: while (true) {
       try {
@@ -72,14 +72,14 @@ public class TaskUpdateHandler implements Command {
       task.setProjectNo(selectedProjectNo);
     }
 
-    // 2) 사용자에게서 변경할 데이터를 입력 받는다.
-    task.setContent(Prompt.inputString(String.format("내용(%s)? ", oldtask.getContent())));
-    task.setDeadline(Prompt.inputDate(String.format("마감일(%s)? ", oldtask.getDeadline())));
+    // 사용자에게서 변경할 데이터를 입력 받는다.
+    task.setContent(Prompt.inputString(String.format("내용(%s)? ", oldTask.getContent())));
+    task.setDeadline(Prompt.inputDate(String.format("마감일(%s)? ", oldTask.getDeadline())));
     task.setStatus(Prompt.inputInt(String.format(
-        "상태(%s)?\n0: 신규\n1: 진행중\n2: 완료\n> ", 
-        Task.getStatusLabel(oldtask.getStatus()))));
+        "상태(%s)?\n0: 신규\n1: 진행중\n2: 완료\n> ",
+        Task.getStatusLabel(oldTask.getStatus()))));
     task.setOwner(memberValidator.inputMember(
-        String.format("담당자(%s)?(취소: 빈 문자열) ", oldtask.getOwner().getName())));
+        String.format("담당자(%s)?(취소: 빈 문자열) ", oldTask.getOwner().getName())));
 
     if(task.getOwner() == null) {
       System.out.println("작업 변경을 취소합니다.");
@@ -92,7 +92,7 @@ public class TaskUpdateHandler implements Command {
       return;
     }
 
-    //DBMS에게 게시글 변경을 요청한다.
+    // DBMS에게 게시글 변경을 요청한다.
     taskDao.update(task);
 
     System.out.println("작업을 변경하였습니다.");

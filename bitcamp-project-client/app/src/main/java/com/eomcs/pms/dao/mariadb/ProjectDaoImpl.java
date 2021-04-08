@@ -17,32 +17,14 @@ public class ProjectDaoImpl implements ProjectDao {
 
   @Override
   public int insert(Project project) throws Exception {
-    try {
-      // 1) 프로젝트 정보를 입력한다.
-      int count = sqlSession.insert("ProjectMapper.insert", project);
+    // 1) 프로젝트 정보를 입력한다.
+    int count = sqlSession.insert("ProjectMapper.insert", project);
 
-      // 일부러 예외를 발생시킨다.
-      // => 그러면 프로젝트 멤버는 등록되지 않을 것이다.
-      // => 자동 커밋 모드
-      //    - 그럼에도 프로젝트 정보는 등록된 상태로 있을 것이다.
-      // => 수동 커밋 모드
-      //    - 이전에 수행한 작업을 취소하기 때문에 프로젝트 정보는 등록되지 않는다. <중요> 
-      if (count > 0) { 
-        // 무조건 0 이상이긴하지만 insertMembers(project.getNo(), project.getMembers()); 코드에 닿지 않는 에러 제어용 if
-        throw new Exception("프로젝트 등록 후 일부러 예외 발생!");
-      }
+    // 2) 프로젝트의 팀원 정보를 입력한다.
+    insertMembers(project.getNo(), project.getMembers());
 
-      // 2) 멤버를 입력한다.
-      insertMembers(project.getNo(), project.getMembers());
-
-      return count;
-    } catch (Exception e) {
-      // 이전에 성공한 작업이 있으면 모두 취소한다
-      sqlSession.rollback();
-
-      // 예외 상황을 이 메서드의 호출자에게 알려야 한다.
-      throw e;
-    }
+    sqlSession.commit();
+    return count;
   }
 
   @Override
@@ -77,7 +59,7 @@ public class ProjectDaoImpl implements ProjectDao {
       // 1) 프로젝트 정보를 변경한다.
       int count = sqlSession.update("ProjectMapper.update", project);
 
-      // 2) 프로젝트의 기존 모든 멤버를 삭제한다.
+      // 2) 프로젝트의 기존 멤버를 모두 삭제한다.
       deleteMembers(project.getNo());
 
       // 3) 프로젝트 멤버를 추가한다.
@@ -86,24 +68,30 @@ public class ProjectDaoImpl implements ProjectDao {
       //    }
       insertMembers(project.getNo(), project.getMembers());
 
+      sqlSession.commit();
       return count;
     } catch (Exception e) {
-      // 이전에 성공한 작업이 있으면 모두 취소한다
       sqlSession.rollback();
 
-      // 예외 상황을 이 메서드의 호출자에게 알려야 한다.
       throw e;
     }
   }
 
   @Override
   public int delete(int no) throws Exception {
-    // 부모테이블의 데이터를 삭제하려면 자식테이블부터 삭제해야한다.
-    // 1) 프로젝트에 소속된 팀원 정보 삭제
-    deleteMembers(no);
+    try {
+      // 1) 프로젝트에 소속된 팀원 정보 삭제
+      deleteMembers(no);
 
-    // 2) 프로젝트 삭제
-    return sqlSession.delete("ProjectMapper.delete", no);
+      // 2) 프로젝트 삭제
+      int count = sqlSession.delete("ProjectMapper.delete", no);
+      sqlSession.commit();
+      return count;
+    } catch (Exception e) {
+      sqlSession.rollback();
+
+      throw e;
+    }
   }
 
   @Override
@@ -129,7 +117,18 @@ public class ProjectDaoImpl implements ProjectDao {
 
   @Override
   public int deleteMembers(int projectNo) throws Exception {
-    // 들어있던 멤버를 다 지워버리고 새로 다 넣어버리는 것
     return sqlSession.delete("ProjectMapper.deleteMembers", projectNo);
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+

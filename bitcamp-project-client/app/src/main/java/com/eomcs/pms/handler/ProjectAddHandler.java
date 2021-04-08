@@ -6,8 +6,8 @@ import com.eomcs.util.Prompt;
 
 public class ProjectAddHandler implements Command {
 
-  MemberValidator memberValidator;
   ProjectDao projectDao;
+  MemberValidator memberValidator;
 
   public ProjectAddHandler(ProjectDao projectDao, MemberValidator memberValidator) {
     this.projectDao = projectDao;
@@ -29,6 +29,7 @@ public class ProjectAddHandler implements Command {
       System.out.println("프로젝트 입력을 취소합니다.");
       return;
     }
+
     p.setMembers(memberValidator.inputMembers("팀원?(완료: 빈 문자열) "));
 
     projectDao.insert(p);

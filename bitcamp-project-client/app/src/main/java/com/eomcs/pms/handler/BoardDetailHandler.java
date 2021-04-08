@@ -9,6 +9,7 @@ public class BoardDetailHandler implements Command {
 
   SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+
   // 핸들러가 사용할 DAO : 의존 객체(dependency)
   BoardDao boardDao;
 

@@ -18,8 +18,7 @@ public class ProjectSearchHandler implements Command {
   public void service() throws Exception {
     System.out.println("[프로젝트 검색]");
 
-    String item = Prompt.inputString(
-        "항목(1:프로젝트명, 2:관리자명, 3:팀원, 그 외: 전체)? ");
+    String item = Prompt.inputString("항목(1:프로젝트명, 2:관리자명, 3:팀원, 그 외: 전체)? ");
     String keyword = null;
     if (item.equals("1") || 
         item.equals("2") || 
@@ -52,3 +51,11 @@ public class ProjectSearchHandler implements Command {
     }
   }
 }
+
+
+
+
+
+
+
+

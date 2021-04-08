@@ -8,7 +8,7 @@ import com.eomcs.pms.domain.Board;
 public class BoardDaoImpl implements BoardDao {
 
   // auto commit 객체 받기
-  SqlSession sqlSession; 
+  SqlSession sqlSession;
 
   public BoardDaoImpl(SqlSession sqlSession) throws Exception {
     this.sqlSession = sqlSession;
@@ -16,10 +16,7 @@ public class BoardDaoImpl implements BoardDao {
 
   @Override
   public int insert(Board board) throws Exception {
-    // 이전 작업이 없기 때문에 롤백이 필요없다.
-    int count = sqlSession.insert("BoardMapper.insert", board);
-    sqlSession.commit();
-    return count;
+    return sqlSession.insert("BoardMapper.insert", board);
   }
 
   @Override
@@ -29,29 +26,24 @@ public class BoardDaoImpl implements BoardDao {
 
   @Override
   public int update(Board board) throws Exception {
-    int count = sqlSession.update("BoardMapper.update", board);
-    sqlSession.commit();
-    return count;
+    return sqlSession.update("BoardMapper.update", board);
   }
 
   @Override
   public int updateViewCount(int no) throws Exception {
-    int count = sqlSession.update("BoardMapper.updateViewCount", no);
-    sqlSession.commit();
-    return count;
+    return sqlSession.update("BoardMapper.updateViewCount", no);
   }
 
   @Override
   public int delete(int no) throws Exception {
-    int count = sqlSession.delete("BoardMapper.delete", no);
-    sqlSession.commit();
-    return count;
+    return sqlSession.delete("BoardMapper.delete", no);
   }
 
   @Override
   public List<Board> findByKeyword(String keyword) throws Exception {
     return sqlSession.selectList("BoardMapper.findByKeyword", keyword);
-  }  
+  }
+
 }
 
 

@@ -1,6 +1,8 @@
 package com.eomcs.pms;
 
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -79,11 +81,17 @@ public class ClientApp {
     // SqlSessionFactory 객체 준비
     SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(mybatisConfigStream);
 
-    SqlSession sqlSession = sqlSessionFactory.openSession(false);
+    // DAO가 사용할 SqlSession 객체 준비
+    // => 단 auto commit 으로 동작하는 SqlSession 객체를 준비한다.
+    SqlSession sqlSession = sqlSessionFactory.openSession(true);
+
+    // DB Connection 객체 생성
+    Connection con = DriverManager.getConnection(
+        "jdbc:mysql://localhost:3306/studydb?user=study&password=1111");
 
     // 핸들러가 사용할 DAO 객체 준비
     BoardDao boardDao = new BoardDaoImpl(sqlSession);
-    MemberDao memebrDao = new MemberDaoImpl(sqlSession);
+    MemberDao memberDao = new MemberDaoImpl(sqlSession);
     ProjectDao projectDao = new ProjectDaoImpl(sqlSession);
     TaskDao taskDao = new TaskDaoImpl(sqlSession);
 
@@ -97,13 +105,13 @@ public class ClientApp {
     commandMap.put("/board/delete", new BoardDeleteHandler(boardDao));
     commandMap.put("/board/search", new BoardSearchHandler(boardDao));
 
-    commandMap.put("/member/add", new MemberAddHandler(memebrDao));
-    commandMap.put("/member/list", new MemberListHandler(memebrDao));
-    commandMap.put("/member/detail", new MemberDetailHandler(memebrDao));
-    commandMap.put("/member/update", new MemberUpdateHandler(memebrDao));
-    commandMap.put("/member/delete", new MemberDeleteHandler(memebrDao));
+    commandMap.put("/member/add", new MemberAddHandler(memberDao));
+    commandMap.put("/member/list", new MemberListHandler(memberDao));
+    commandMap.put("/member/detail", new MemberDetailHandler(memberDao));
+    commandMap.put("/member/update", new MemberUpdateHandler(memberDao));
+    commandMap.put("/member/delete", new MemberDeleteHandler(memberDao));
 
-    MemberValidator memberValidator = new MemberValidator(memebrDao);
+    MemberValidator memberValidator = new MemberValidator(memberDao);
 
     commandMap.put("/project/add", new ProjectAddHandler(projectDao, memberValidator));
     commandMap.put("/project/list", new ProjectListHandler(projectDao));
@@ -138,7 +146,7 @@ public class ClientApp {
             case "history":
               printCommandHistory(commandStack.iterator());
               break;
-            case "history2": 
+            case "history2":
               printCommandHistory(commandQueue.iterator());
               break;
             case "quit":
@@ -166,7 +174,7 @@ public class ClientApp {
       System.out.println("서버와 통신 하는 중에 오류 발생!");
     }
 
-    sqlSession.close();
+    con.close();
     Prompt.close();
   }
 

@@ -17,3 +17,15 @@ public interface MemberDao {
 
   Member findByName(String name) throws Exception;
 }
+
+
+
+
+
+
+
+
+
+
+
+

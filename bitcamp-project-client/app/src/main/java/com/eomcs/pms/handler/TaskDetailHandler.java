@@ -8,8 +8,8 @@ public class TaskDetailHandler implements Command {
 
   TaskDao taskDao;
 
-  public TaskDetailHandler(TaskDao taskDao) {
-    this.taskDao = taskDao;
+  public TaskDetailHandler(TaskDao taskdao) {
+    this.taskDao = taskdao;
   }
 
   @Override

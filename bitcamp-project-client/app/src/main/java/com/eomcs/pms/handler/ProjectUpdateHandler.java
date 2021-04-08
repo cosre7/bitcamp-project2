@@ -8,8 +8,8 @@ import com.eomcs.util.Prompt;
 
 public class ProjectUpdateHandler implements Command {
 
-  MemberValidator memberValidator;
   ProjectDao projectDao;
+  MemberValidator memberValidator;
 
   public ProjectUpdateHandler(ProjectDao projectDao, MemberValidator memberValidator) {
     this.projectDao = projectDao;
@@ -31,6 +31,7 @@ public class ProjectUpdateHandler implements Command {
 
     // 사용자에게서 변경할 데이터를 입력 받는다.
     Project project = new Project();
+    project.setNo(no);
     project.setTitle(Prompt.inputString(
         String.format("프로젝트명(%s)? ", oldProject.getTitle())));
     project.setContent(Prompt.inputString(
@@ -49,13 +50,14 @@ public class ProjectUpdateHandler implements Command {
 
     // 프로젝트 팀원 정보를 입력 받는다.
     StringBuilder strBuilder = new StringBuilder();
-    List<Member> members = project.getMembers();
+    List<Member> members = oldProject.getMembers();
     for (Member m : members) {
       if (strBuilder.length() > 0) {
         strBuilder.append("/");
       }
       strBuilder.append(m.getName());
     }
+
     project.setMembers(memberValidator.inputMembers(
         String.format("팀원(%s)?(완료: 빈 문자열) ", strBuilder)));
 

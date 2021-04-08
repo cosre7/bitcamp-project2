@@ -26,7 +26,6 @@ public class ProjectDeleteHandler implements Command {
       return;
     }
 
-    // 자식테이블부터 삭제하고 부모테이블 삭제하기!
     // 1) 프로젝트의 작업들을 모두 삭제한다.
     taskDao.deleteByProjectNo(no);
 

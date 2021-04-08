@@ -26,6 +26,7 @@ public class TaskAddHandler implements Command {
     // 1) 현재 등록된 프로젝트 목록을 가져온다.
     List<Project> projects = projectDao.findByKeyword(null, null);
 
+
     // 2) 프로젝트 목록을 출력한다.
     System.out.println("프로젝트들:");
     if (projects.size() == 0) {

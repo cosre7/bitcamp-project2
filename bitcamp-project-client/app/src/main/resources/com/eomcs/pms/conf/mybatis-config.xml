@@ -7,7 +7,7 @@
   <properties resource="com/eomcs/pms/conf/jdbc.properties"></properties>
 
   <typeAliases>
-    <package name="com.eomcs.pms.domain"/> <!-- 패키지 밑의 모든 클래스에 별명 부여하기 -->
+    <package name="com.eomcs.pms.domain"/>
   </typeAliases>
 
   <environments default="development">
@@ -29,3 +29,11 @@
     <mapper resource="com/eomcs/pms/mapper/ProjectMapper.xml"/>
   </mappers>
 </configuration>
+
+
+
+
+
+
+
+
