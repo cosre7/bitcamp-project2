@@ -7,13 +7,13 @@ import com.eomcs.pms.domain.Board;
 
 public class BoardDaoImpl implements BoardDao {
 
-  // auto commit 객체 받기
   SqlSession sqlSession;
 
   public BoardDaoImpl(SqlSession sqlSession) throws Exception {
     this.sqlSession = sqlSession;
   }
 
+  // 커밋/롤백 제어(트랜잭션 처리 코드)는 BoardService에서 제어하도록!
   @Override
   public int insert(Board board) throws Exception {
     return sqlSession.insert("BoardMapper.insert", board);
