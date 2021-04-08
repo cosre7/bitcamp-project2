@@ -12,7 +12,7 @@
     <result column="sdt" property="startDate"/>
     <result column="edt" property="endDate"/>
     
-    <association property="owner" javaType="member"> 
+    <association property="owner" javaType="member">
       <id column="owner_no" property="no"/>
       <result column="owner_name" property="name"/>
     </association>
@@ -27,7 +27,6 @@
     select
       p.no,
       p.title,
-      p.content,
       p.sdt,
       p.edt,
       m.no as owner_no,
@@ -40,18 +39,72 @@
       left outer join pms_member m2 on mp.member_no=m2.no
   </sql>
   
+  
   <insert id="insert" parameterType="project"
           useGeneratedKeys="true" keyColumn="no" keyProperty="no">
     insert into pms_project(title,content,sdt,edt,owner) 
-    values(#{title}, #{content}, #{startDate}, #{endDate}, #{owner.no})   
+    values(#{title}, #{content}, #{startDate}, #{endDate}, #{owner.no})
   </insert>
   <!-- 
-    keyColumn="no" : pk값 가져오기
-    keyProperty="no" : 가져온 값을 project의 setNo를 호출해서 넣어라
-    PreparedStatement stmt = con.preparedStatement
+    위의 SQL은 내부적으로 다음과 같이 실행된다.
+    
+    int insert(String sqlid, Project project) {
+      // ProjectMapper.xml 파일에서 sqlid로 찾은 SQL 문을 꺼내온다.
+      // 그리고 다음과 같이 실행할 것이다.
+      PreparedStatement stmt = con.prepareStatement(
+        "insert into pms_project(title,content,sdt,edt,owner) values(?,?,?,?,?)",
+        Statement.RETURN_GENERATED_KEYS);
+      
+      stmt.setString(1, project.getTitle());
+      stmt.setString(2, project.getContent());
+      stmt.setString(3, project.getStartDate());
+      stmt.setString(4, project.getEndDate());
+      stmt.setString(5, project.getOwner().getNo());
+      int count = stmt.executeUpdate();
+      
+      ResultSet keyRs = stmt.getGeneratedKeys();
+      keyRs.next();
+      int projectNo = keyRs.getInt(1);
+      
+      project.setNo(projectNo);
+    }
    -->
-
-  <select id="findByNo" resultMap="projectMap" parameterType="int"> <!-- resultMap 규칙에 따라 컬럼값을 객체에 담는다 -->
+  
+  <select id="findByKeyword" resultMap="projectMap" parameterType="map">
+    <include refid="select1"/>
+    <where>
+      <choose>
+        <when test="item == 1">
+        p.title like concat('%', #{keyword}, '%')
+        </when>
+        <when test="item == 2">
+        m.name like concat('%', #{keyword}, '%')
+        </when>
+        <when test="item == 3">
+        m2.name like concat('%', #{keyword}, '%')
+        </when>
+      </choose>
+    </where>
+    order by title asc
+  </select>
+  
+  <select id="findByKeywords" resultMap="projectMap" parameterType="map">
+    <include refid="select1"/>
+    <where>
+      <if test="title != ''">
+        p.title like concat('%', #{title}, '%')
+      </if>
+      <if test="owner != ''">
+        and m.name = #{owner}
+      </if>
+      <if test="member != ''">
+        and m2.name = #{member}
+      </if>
+    </where>
+    order by title asc
+  </select>
+  
+  <select id="findByNo" resultMap="projectMap" parameterType="int">
     select
       p.no,
       p.title,
@@ -69,40 +122,6 @@
     where p.no=#{value}
   </select>
   
-  <select id="findByKeyword" resultMap="projectMap" parameterType="map"> 
-    <include refid="select1"/>
-    <where> <!-- 1,2,3이 아니면 where 절 자체가 사라진다. -->
-	    <choose> <!-- choose/when 문법: 1아니면 2아니면 3일때 (3개중에 하나는 꼭 일때) -->
-		    <when test="item == 1">
-		      p.title like concat('%', #{keyword}, '%')
-		    </when>
-		    <when test="item == 2">
-		      m.name like concat('%', #{keyword}, '%')
-		    </when>         
-		    <when test="item == 3">
-		      m2.name like concat('%', #{keyword}, '%')
-		    </when>
-	    </choose>
-    </where>
-    order by title asc
-  </select>
-  
-  <select id="findByKeywords" resultMap="projectMap" parameterType="map"> 
-    <include refid="select1"/>
-    <where>
-	    <if test="title != ''">
-	      p.title like concat('%', #{title}, '%')
-	    </if>
-	    <if test="owner !=''">
-	      and m.name=#{owner}
-	    </if>         
-	    <if test="member != ''">
-	      and m2.name=#{member}
-	    </if>
-    </where>
-    order by title asc
-  </select>
-  
   <update id="update" parameterType="project">
     update pms_project set
       title=#{title},
@@ -110,7 +129,7 @@
       sdt=#{startDate},
       edt=#{endDate},
       owner=#{owner.no}
-    where no=#{no}  
+    where no=#{no}
   </update>
   
   <delete id="delete" parameterType="int">
@@ -118,17 +137,17 @@
     where no=#{value}
   </delete>
 
-  <insert id="insertMember" parameterType="map"> <!-- 2개의 파라미터를 받을 수 없다 -> map으로 받는다. -->
+
+  <insert id="insertMember" parameterType="map">
     insert into pms_member_project(member_no,project_no) 
-    values(#{memberNo}, #{projectNo}) <!-- map에 저장한 이름  memberNo : map.getMemberNo -->
+    values(#{memberNo}, #{projectNo})
   </insert>
   
   <insert id="insertMembers" parameterType="map">
     insert into pms_member_project(member_no,project_no) 
     values
-    <!-- collection(list)가 들어있는 프로퍼티, 꺼낸 이름을 m이라 한다, 여러개 생성 -> 구분은 , 로-->
-    <foreach collection="members" item="m" separator=","> <!-- 한 번에 여러 insert를 실행하는 방법 -->
-      (#{m.no}, #{projectNo}) 
+    <foreach collection="members" item="m" separator=",">
+      (#{m.no}, #{projectNo})
     </foreach>
   </insert>
   
@@ -138,12 +157,12 @@
   </delete>
   
   <select id="findAllMembers" resultType="member" parameterType="int">
-    select <!-- 컬럼 이름과 프로퍼티 이름이 같기 때문에 따로 resultMap을 만들 필요는 없다! -->
+    select
       m.no,
       m.name
     from pms_member_project mp
       inner join pms_member m on mp.member_no=m.no
-    where
+    where 
       mp.project_no=#{value}
   </select>
 </mapper>

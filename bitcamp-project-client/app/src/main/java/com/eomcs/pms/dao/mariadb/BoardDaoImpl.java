@@ -16,7 +16,10 @@ public class BoardDaoImpl implements BoardDao {
 
   @Override
   public int insert(Board board) throws Exception {
-    return sqlSession.insert("BoardMapper.insert", board);
+    // 이전 작업이 없기 때문에 롤백이 필요없다.
+    int count = sqlSession.insert("BoardMapper.insert", board);
+    sqlSession.commit();
+    return count;
   }
 
   @Override
@@ -26,17 +29,23 @@ public class BoardDaoImpl implements BoardDao {
 
   @Override
   public int update(Board board) throws Exception {
-    return sqlSession.update("BoardMapper", board);
+    int count = sqlSession.update("BoardMapper.update", board);
+    sqlSession.commit();
+    return count;
   }
 
   @Override
   public int updateViewCount(int no) throws Exception {
-    return sqlSession.update("BoardMapper.updateViewCount", no);
+    int count = sqlSession.update("BoardMapper.updateViewCount", no);
+    sqlSession.commit();
+    return count;
   }
 
   @Override
   public int delete(int no) throws Exception {
-    return sqlSession.delete("BoardMapper.delete", no);
+    int count = sqlSession.delete("BoardMapper.delete", no);
+    sqlSession.commit();
+    return count;
   }
 
   @Override
