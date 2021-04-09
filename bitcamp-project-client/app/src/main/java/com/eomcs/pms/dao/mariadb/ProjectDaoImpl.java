@@ -9,6 +9,8 @@ import com.eomcs.pms.domain.Project;
 
 public class ProjectDaoImpl implements ProjectDao {
 
+  // DAO의 경우 sql의 id가 달라야 한다 => 오버로딩하지말자
+
   SqlSession sqlSession;
 
   public ProjectDaoImpl(SqlSession sqlSession) throws Exception {
@@ -17,14 +19,7 @@ public class ProjectDaoImpl implements ProjectDao {
 
   @Override
   public int insert(Project project) throws Exception {
-    // 1) 프로젝트 정보를 입력한다.
-    int count = sqlSession.insert("ProjectMapper.insert", project);
-
-    // 2) 프로젝트의 팀원 정보를 입력한다.
-    insertMembers(project.getNo(), project.getMembers());
-
-    sqlSession.commit();
-    return count;
+    return sqlSession.insert("ProjectMapper.insert", project);
   }
 
   @Override
@@ -55,40 +50,12 @@ public class ProjectDaoImpl implements ProjectDao {
 
   @Override
   public int update(Project project) throws Exception {
-    try {
-      // 1) 프로젝트 정보를 변경한다.
-      int count = sqlSession.update("ProjectMapper.update", project);
-
-      // 2) 프로젝트의 기존 멤버를 모두 삭제한다.
-      deleteMembers(project.getNo());
-
-      // 3) 프로젝트 멤버를 추가한다.
-      insertMembers(project.getNo(), project.getMembers());
-
-      sqlSession.commit();
-      return count;
-    } catch (Exception e) {
-      sqlSession.rollback();
-
-      throw e;
-    }
+    return sqlSession.update("ProjectMapper.update", project);
   }
 
   @Override
   public int delete(int no) throws Exception {
-    try {
-      // 1) 프로젝트에 소속된 팀원 정보 삭제
-      deleteMembers(no);
-
-      // 2) 프로젝트 삭제
-      int count = sqlSession.delete("ProjectMapper.delete", no);
-      sqlSession.commit();
-      return count;
-    } catch (Exception e) {
-      sqlSession.rollback();
-
-      throw e;
-    }
+    return sqlSession.delete("ProjectMapper.delete", no);
   }
 
   @Override
@@ -96,9 +63,7 @@ public class ProjectDaoImpl implements ProjectDao {
     HashMap<String,Object> params = new HashMap<>();
     params.put("projectNo", projectNo);
     params.put("memberNo", memberNo);
-    int count = sqlSession.insert("ProjectMapper.insertMember", params);
-    sqlSession.commit();
-    return count;
+    return sqlSession.insert("ProjectMapper.insertMember", params);
   }
 
   @Override
@@ -106,9 +71,7 @@ public class ProjectDaoImpl implements ProjectDao {
     HashMap<String,Object> params = new HashMap<>();
     params.put("projectNo", projectNo);
     params.put("members", members);
-    int count = sqlSession.insert("ProjectMapper.insertMembers", params);
-    sqlSession.commit();
-    return count;
+    return sqlSession.insert("ProjectMapper.insertMembers", params);
   }
 
   @Override
@@ -118,9 +81,7 @@ public class ProjectDaoImpl implements ProjectDao {
 
   @Override
   public int deleteMembers(int projectNo) throws Exception {
-    int count = sqlSession.delete("ProjectMapper.deleteMembers", projectNo);
-    sqlSession.commit();
-    return count;
+    return sqlSession.delete("ProjectMapper.deleteMembers", projectNo);
   }
 }
 
