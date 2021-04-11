@@ -13,6 +13,8 @@ public class TaskAddHandler implements Command {
   ProjectService projectService;
   MemberValidator memberValidator;
 
+  // TaskAddHandler의 경우 projectService의 기능 중 하나인 프로젝트의 목록을 가져오는
+  // 기능을 사용하여야 하기 때문에 projectService를 생성자의 파라미터로 받아준다.
   public TaskAddHandler(TaskService taskService, ProjectService projectService, MemberValidator memberValidator) {
     this.taskService = taskService;
     this.projectService = projectService;
