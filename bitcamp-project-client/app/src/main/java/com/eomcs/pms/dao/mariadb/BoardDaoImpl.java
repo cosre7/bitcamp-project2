@@ -14,6 +14,8 @@ public class BoardDaoImpl implements BoardDao {
   }
 
   // 커밋/롤백 제어(트랜잭션 처리 코드)는 BoardService에서 제어하도록!
+  // Service 클래스에 트랜잭션 처리 코드를 넘기고
+  // DaoImpl 클래스에서는 DAO의 구현체만을 남기는 형태로 바꾸어 준다.
   @Override
   public int insert(Board board) throws Exception {
     return sqlSession.insert("BoardMapper.insert", board);
