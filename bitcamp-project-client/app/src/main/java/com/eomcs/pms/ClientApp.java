@@ -30,6 +30,7 @@ import com.eomcs.pms.service.impl.DefaultBoardService;
 import com.eomcs.pms.service.impl.DefaultMemberService;
 import com.eomcs.pms.service.impl.DefaultProjectService;
 import com.eomcs.pms.service.impl.DefaultTaskService;
+import com.eomcs.stereotype.Component;
 import com.eomcs.util.Prompt;
 
 public class ClientApp {
@@ -156,37 +157,56 @@ public class ClientApp {
   private void registerCommands() throws Exception {
 
     // 패키지에 소속된 모든 클래스의 타입 정보를 알아낸다.
-    ArrayList<Class<?>> classes = new ArrayList<>();
-    loadClasses("com.eomcs.pms.handler", classes);
+    ArrayList<Class<?>> components = new ArrayList<>();
+    loadComponents("com.eomcs.pms.handler", components);
 
-    for (Class<?> clazz : classes) {
-      // 클래스의 인터페이스 목록을 꺼낸다.
-      Class<?>[] interfaces = clazz.getInterfaces();
+    for (Class<?> clazz : components) {
 
-      // 클래스가 구현한 인터페이스 중에서 Command 인터페이스가 있는지 조사한다.
-      boolean isCommand = false;
-      for (Class<?> i : interfaces) {
-        if (i == Command.class) {
-          isCommand = true;
-          break;
-        }
-      }
-
-      if (!isCommand) {
-        continue;
+      // 클래스 목록에서 클래스 정보를 한 개 꺼내, Command 구현체인지 검사한다.
+      if (!isCommand(clazz)) {
+        continue; // 구현체가 아니라면 그 다음 클래스
       }
 
       // 클래스 정보를 이용하여 객체를 생성한다.
-      Object command = createCommand(clazz);
+      Object command = createCommand(clazz); // 구현체가 맞다면 클래스를 이용해서 객체 생성
+
+      // 클래스 정보에서 @Component 애노테이션 정보를 가져온다.
+      Component compAnno = clazz.getAnnotation(Component.class);
+
+      // 애노테이션 정보에서 맵에 객체를 저장할 때 key로 사용할 문자열을 꺼낸다.
+      String key = null;
+      if (compAnno == null || compAnno.value().length() == 0) {
+        key = clazz.getName(); // 키로 사용할 문자열이 없으면 클래스 이름을 키로 사용한다.
+      } else { 
+        key = compAnno.value(); //compAnno의 값을 키로 사용
+      }
 
       // 생성된 객체를 객체 맵에 보관한다.
-      objMap.put((String)key, command);
+      objMap.put(key, command);
 
       System.out.println("인스턴스 생성 ===> " + command.getClass().getName());
     }
   }
 
-  private void loadClasses(String packageName, ArrayList<Class<?>> classes) throws Exception {
+  private boolean isCommand(Class<?> type) {
+    // 클래스가 아니라 인터페이스라면 무시한다.
+    if (type.isInterface()) {
+      return false;
+    }
+
+    // 클래스의 인터페이스 목록을 꺼낸다.
+    Class<?>[] interfaces = type.getInterfaces();
+
+    // 클래스가 구현한 인터페이스 중에서 Command 인터페이스가 있는지 조사한다.
+    for (Class<?> i : interfaces) {
+      if (i == Command.class) { // 클래스 정보 중복 로딩 불가
+        return true;
+      }
+    }
+
+    return false;
+  }
+  private void loadComponents(String packageName, ArrayList<Class<?>> components) throws Exception {
 
     // 패키지의 '파일 시스템 경로'를 알아낸다.
     File dir = Resources.getResourceAsFile(packageName.replaceAll("\\.", "/"));
@@ -197,11 +217,7 @@ public class ClientApp {
     //    System.out.println(dir.getCanonicalPath()); // 절대 경로 (경로 맞는지 확인)
 
     File[] files = dir.listFiles(f -> {
-      if (f.isDirectory()) { // 디렉토리면 통과
-        return true;
-      } 
-
-      if (f.getName().endsWith(".class")) { // 파일일 경우 .class로 끝나면 통과
+      if (f.isDirectory() || f.getName().endsWith(".class")) { // 하위 디렉토리이거나, .class로 끝나는 파일일 경우 통과
         return true;
       }
       return false;
@@ -209,11 +225,15 @@ public class ClientApp {
 
     for (File file : files) {
       if (file.isDirectory()) {
-        loadClasses(packageName + "." + file.getName(), classes); // 재귀호출 // a패키지 밑의 파일까지 (하위 디렉토리까지)
+        loadComponents(packageName + "." + file.getName(), components); // 재귀호출 // a패키지 밑의 파일까지 (하위 디렉토리까지)
       } else {
         String className = packageName + "." + file.getName().replace(".class", "");
         try {
-          classes.add(Class.forName(className));
+          Class<?> clazz = Class.forName(className);
+          if (clazz.getAnnotation(Component.class) != null) {
+            components.add(clazz);
+          }
+
         } catch (Exception e) {
           System.out.println("클래스 로딩 오류: " + className); // 문제있는 클래스만 로딩 오류 띄우고 다음 클래스로 넘어가기
         }
