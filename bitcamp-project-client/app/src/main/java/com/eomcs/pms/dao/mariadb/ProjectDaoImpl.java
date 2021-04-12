@@ -1,7 +1,7 @@
 package com.eomcs.pms.dao.mariadb;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.ibatis.session.SqlSession;
 import com.eomcs.pms.dao.ProjectDao;
 import com.eomcs.pms.domain.Member;
@@ -21,23 +21,12 @@ public class ProjectDaoImpl implements ProjectDao {
   }
 
   @Override
-  public List<Project> findByKeyword(String item, String keyword) throws Exception {
-
-    HashMap<String,Object> params = new HashMap<>();
-    params.put("item", item);
-    params.put("keyword", keyword);
-
+  public List<Project> findByKeyword(Map<String,Object> params) throws Exception {
     return sqlSession.selectList("ProjectMapper.findByKeyword", params);
   }
 
   @Override
-  public List<Project> findByKeywords(String title, String owner, String member) throws Exception {
-
-    HashMap<String,Object> params = new HashMap<>();
-    params.put("title", title);
-    params.put("owner", owner);
-    params.put("member", member);
-
+  public List<Project> findByKeywords(Map<String,Object> params) throws Exception {
     return sqlSession.selectList("ProjectMapper.findByKeywords", params);
   }
 
@@ -57,18 +46,12 @@ public class ProjectDaoImpl implements ProjectDao {
   }
 
   @Override
-  public int insertMember(int projectNo, int memberNo) throws Exception {
-    HashMap<String,Object> params = new HashMap<>();
-    params.put("projectNo", projectNo);
-    params.put("memberNo", memberNo);
+  public int insertMember(Map<String,Object> params) throws Exception {
     return sqlSession.insert("ProjectMapper.insertMember", params);
   }
 
   @Override
-  public int insertMembers(int projectNo, List<Member> members) throws Exception {
-    HashMap<String,Object> params = new HashMap<>();
-    params.put("projectNo", projectNo);
-    params.put("members", members);
+  public int insertMembers(Map<String,Object> params) throws Exception {
     return sqlSession.insert("ProjectMapper.insertMembers", params);
   }
 

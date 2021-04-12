@@ -2,7 +2,6 @@ package com.eomcs.mybatis;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.List;
 import org.apache.ibatis.session.SqlSession;
 
@@ -18,30 +17,23 @@ public class DaoWorker implements InvocationHandler {
   public Object invoke(Object daoProxy, Method method, Object[] args) throws Throwable {
     // proxy가 만들어준 DAO 구현체가 호출하는 메서드다.
 
-    System.out.printf("%s.%s() 호출됨!\n", 
-        daoProxy.getClass().getInterfaces()[0].getName(), // 어떤 인터페이스를 구현했는지 알아내기
-        method.getName()); // 어떤 메서드를 구현했는지 알아내기
+    // 1) SqlSession의 메서드를 호출할 때 넘겨 줄 SQL ID를 준비한다.
+    // => SQL ID는 인터페이스의 fully-qualified name과 같다고 가정하자.
+    String sqlId = daoProxy.getClass().getInterfaces()[0].getName() + "." + method.getName();
 
-    Parameter[] params = method.getParameters();
-    for (Parameter p : params) {
-      System.out.printf("  %s %s\n", p.getType().getName(), p.getName()); // 파라미터 타입 알아내기
-    }
+    // 2) SqlSession의 메서드를 호출할 때 넘겨 줄 파라미터를 준비한다.
+    Object param = (args == null) ? null : args[0];
 
-    System.out.printf("  ==> %s\n", method.getReturnType().getName()); // 메서드의 리턴타입 알아내기
-
-    // 메서드가 호출됬을 때 어떤 것을 실행할지 알아내기
+    // 3) 메서드의 리턴 타입에 따라 적절한 SqlSession의 메서드를 호출한다.
     if (method.getReturnType() == int.class || 
         method.getReturnType() == void.class) {
-      System.out.println("insert/update/delete 실행");
+      return sqlSession.insert(sqlId, param);
+
     } else if (method.getReturnType() == List.class) {
-      System.out.println("selectList 실행");
+      return sqlSession.selectList(sqlId, param);
+
     } else {
-      System.out.println("selectOne 실행");
+      return sqlSession.selectOne(sqlId, param);
     }
-
-    System.out.println("--------------------------------------------------------");
-
-    return null;
   }
-
 }
