@@ -204,10 +204,10 @@ public class ClientApp {
     });
 
     for (File file : files) {
-      System.out.println(file.getCanonicalPath()); // a패키지 까지만 
-
       if (file.isDirectory()) {
         loadClasses(packageName + "." + file.getName(), classes); // 재귀호출 // a패키지 밑의 파일까지 (하위 디렉토리까지)
+      } else {
+        System.out.println(packageName + "." + file.getName().replace(".class", ""));
       }
     }
   }
