@@ -5,6 +5,8 @@ import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Properties;
+import java.util.Set;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -103,6 +105,16 @@ public class ClientApp {
     MemberService memberService = new DefaultMemberService(sqlSession, memberDao);
     ProjectService projectService = new DefaultProjectService(sqlSession, projectDao, taskDao);
     TaskService taskService = new DefaultTaskService(sqlSession, taskDao);
+
+    Properties commandProps = new Properties();
+    commandProps.load(Resources.getResourceAsStream("com/eomcs/pms/conf/commands.properties"));
+
+    Set<Object> keys = commandProps.keySet();
+    System.out.println("--------------------------------------------------");
+    for (Object key : keys) {
+      System.out.printf("[%s]=[%s]\n", key, commandProps.get(key));
+    }
+    System.out.println("--------------------------------------------------");
 
     // 사용자 명령을 처리하는 객체를 맵에 보관한다.
     HashMap<String,Command> commandMap = new HashMap<>();
