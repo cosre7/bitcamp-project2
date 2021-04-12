@@ -72,7 +72,7 @@ public class ClientApp {
     SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(mybatisConfigStream);
 
     // DAO가 사용할 SqlSession 객체 준비
-    // => 단 auto commit 으로 동작하는 SqlSession 객체를 준비한다.
+    // => 수동 commit 으로 동작하는 SqlSession 객체를 준비한다.
     SqlSession sqlSession = sqlSessionFactory.openSession(false);
 
     // DAO 구현체를 만들어주는 공장 객체를 준비한다.
@@ -172,6 +172,8 @@ public class ClientApp {
 
       // 생성된 객체를 객체 맵에 보관한다.
       objMap.put((String)key, command);
+
+      System.out.println("인스턴스 생성 ===> " + command.getClass().getName());
     }
   }
 
