@@ -9,10 +9,6 @@ import com.eomcs.pms.domain.Project;
 
 public class ProjectDaoImpl implements ProjectDao {
 
-  // DAO의 경우 sql의 id가 달라야 한다 => 오버로딩하지말자
-  // 오버로딩해버리게되면 sql에서 id로 인식되는 값이 중복이 되어버려서 
-  // 제대로된 결과를 받을 수 없게 되어버린다.
-
   SqlSession sqlSession;
 
   public ProjectDaoImpl(SqlSession sqlSession) throws Exception {
