@@ -2,10 +2,11 @@ package com.eomcs.pms.handler;
 
 import com.eomcs.pms.domain.Board;
 import com.eomcs.pms.service.BoardService;
+import com.eomcs.stereotype.Component;
 import com.eomcs.util.Prompt;
 
+@Component(value="/board/update")
 public class BoardUpdateHandler implements Command {
-
 
   //핸들러가 사용할 Service 객체
   BoardService boardService;
