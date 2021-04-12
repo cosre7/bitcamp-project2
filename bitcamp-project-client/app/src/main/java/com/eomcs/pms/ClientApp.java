@@ -159,27 +159,31 @@ public class ClientApp {
     ArrayList<Class<?>> classes = new ArrayList<>();
     loadClasses("com.eomcs.pms.handler", classes);
 
+    for (Class<?> clazz : classes) {
+      // 클래스의 인터페이스 목록을 꺼낸다.
+      Class<?>[] interfaces = clazz.getInterfaces();
 
-    //    Properties commandProps = new Properties();
-    //    commandProps.load(Resources.getResourceAsStream("com/eomcs/pms/conf/commands.properties"));
-    //
-    //    Set<Object> keys = commandProps.keySet();
-    //    for (Object key : keys) {
-    //      // commands.properties 파일에서 클래스 이름을 한 개 가져온다.
-    //      String className = (String) commandProps.get(key);
-    //
-    //      // 클래스 이름을 사용하여 .class 파일을 로딩한다.
-    //      Class<?> clazz = Class.forName(className);
-    //      // clazz = cls = clz = type 이라고도 쓴다.
-    //
-    //      // 클래스 정보를 이용하여 객체를 생성한다.
-    //      Object command = createCommand(clazz);
-    //
-    //      // 생성된 객체를 객체 맵에 보관한다.
-    //      objMap.put((String)key, command);
-    //
-    //      System.out.println("인스턴스 생성 ===> " + command.getClass().getName());
-    //  }
+      // 클래스가 구현한 인터페이스 중에서 Command 인터페이스가 있는지 조사한다.
+      boolean isCommand = false;
+      for (Class<?> i : interfaces) {
+        if (i == Command.class) {
+          isCommand = true;
+          break;
+        }
+      }
+
+      if (!isCommand) {
+        continue;
+      }
+
+      // 클래스 정보를 이용하여 객체를 생성한다.
+      Object command = createCommand(clazz);
+
+      // 생성된 객체를 객체 맵에 보관한다.
+      objMap.put((String)key, command);
+
+      System.out.println("인스턴스 생성 ===> " + command.getClass().getName());
+    }
   }
 
   private void loadClasses(String packageName, ArrayList<Class<?>> classes) throws Exception {
@@ -207,7 +211,12 @@ public class ClientApp {
       if (file.isDirectory()) {
         loadClasses(packageName + "." + file.getName(), classes); // 재귀호출 // a패키지 밑의 파일까지 (하위 디렉토리까지)
       } else {
-        System.out.println(packageName + "." + file.getName().replace(".class", ""));
+        String className = packageName + "." + file.getName().replace(".class", "");
+        try {
+          classes.add(Class.forName(className));
+        } catch (Exception e) {
+          System.out.println("클래스 로딩 오류: " + className); // 문제있는 클래스만 로딩 오류 띄우고 다음 클래스로 넘어가기
+        }
       }
     }
   }
