@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -220,18 +222,41 @@ public class ClientApp {
       Class<?> clazz = Class.forName(className);
       // clazz = cls = clz = type 이라고도 쓴다.
 
+
       // 생성자 정보를 알아낸다. 첫 번째 생성자만 꺼낸다.
       Constructor<?> constructor = clazz.getConstructors()[0];
 
       // 생성자의 파라미터 정보를 알아낸다.
       Parameter[] params = constructor.getParameters();
 
-      // 각 파라미터의 타입을 알아낸다.
-      System.out.println(className);
+      // 생성자를 호출할 때 넘겨 줄 값을 담을 컬렉션을 준비한다.
+      ArrayList<Object> args = new ArrayList<>();
+
+      // 각 파라미터의 타입을 알아낸 후 objMap에서 찾는다.
       for (Parameter p : params) {
-        System.out.println("===> " + p.getType().getName());
+        Class<?> paramType = p.getType();
+
+        args.add(findDependencyInMap(objMap, paramType));
+      }
+
+      // 생성자를 호출하여 인스턴스를 생성한다.
+      Object command = constructor.newInstance(args.toArray());
+
+      // Command 구현체를 맵에 보관한다.
+      objMap.put((String)key, command);
+    }
+  }
+
+  private Object findDependencyInMap(Map<String, Object> objMap, Class<?> type) {
+    // 맵에서 값 목록을 꺼낸다.
+    Collection<?> values = objMap.values();
+
+    for (Object obj : values) {
+      if (type.isInstance(obj)) { //isInstance : 자식클래스까지 내려가서 인스턴스인지 확인해준다.
+        return obj;
       }
     }
+    return null;
   }
 
   private void printCommandHistory(Iterator<String> iterator) {
