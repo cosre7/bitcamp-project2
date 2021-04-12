@@ -84,7 +84,7 @@ public class ClientApp {
     ProjectDao projectDao = daoFactory.createDao(ProjectDao.class);
     TaskDao taskDao = daoFactory.createDao(TaskDao.class);
 
-    // Command 구현체가
+    // Command 구현체가 사용할 의존 객체 준비
     BoardService boardService = new DefaultBoardService(sqlSession, boardDao);
     MemberService memberService = new DefaultMemberService(sqlSession, memberDao);
     ProjectService projectService = new DefaultProjectService(sqlSession, projectDao, taskDao);
@@ -92,14 +92,14 @@ public class ClientApp {
 
     MemberValidator memberValidator = new MemberValidator(memberService);
 
-    // Command 구현체가 사용할 의존 객체를 준비하여 보관해 둔다.
+    // Command 구현체가 사용할 의존 객체를 보관
     objMap.put("boardService", boardService);
     objMap.put("memberService", memberService);
     objMap.put("projectService", projectService);
     objMap.put("taskService", taskService);
     objMap.put("memberValidator", memberValidator);
 
-    // Command 구현체를 자동으로 
+    // Command 구현체를 자동 생성하여 맵에 등록
     registerCommands();
 
     try {
