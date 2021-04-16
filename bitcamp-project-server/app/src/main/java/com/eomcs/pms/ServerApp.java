@@ -26,8 +26,43 @@ public class ServerApp {
       System.out.println("서버 실행!");
 
       while (true) {
-        Socket socket = serverSocket.accept(); 
-        new Thread(() -> processRequest(socket)).start();
+        Socket socket = serverSocket.accept(); // 클라이언트가 접속
+
+        // 1. 중첩클래스 버전
+        //        class MyRunnable implements Runnable {
+        //          @Override
+        //          public void run() {
+        //            processRequest(socket);
+        //          }
+        //        }
+        //        new Thread(new MyRunnable()).start();
+        //
+        // 2. 익명 클래스 버전 (이름이 없는 서브 클래스 = 익명클래스)
+        // MyRunnable이라는 클래스를 단 한번만 new로 생성하고 끝낼 예정.
+        // 심지어 메서드도 Runnable에 있는 메서드를 사용할 예정 
+        // -> 굳이 서브 클래스를 만들 필요가 없을지도 모르겠다.. 싶을 때
+        //    이름이 없는 서브 클래스를 만드는 것 -> 익명 클래스 (구현하거나 상속받거나)
+        //
+        //        Runnable r = new Thread(new Runnable() {
+        //          @Override
+        //          public void run() {
+        //            processRequest(socket);
+        //          }
+        //        }
+        //        new Thread(r).start();
+        //
+        // 2-1. 익명 클래스 변형 -> 확인
+        //        new Thread(new Thread(new Runnable() {
+        //        @Override
+        //        public void run() {
+        //          processRequest(socket);
+        //        }
+        //      }).start();
+        //
+        // 3. 람다 문법 버전
+        //        new Thread(() -> processRequest(socket)).start();
+
+        new Thread(() -> processRequest(socket)).start(); // 러너블 구현체를 포함한 자식 스레드 만들기
       }
 
     } catch (Exception e) {
