@@ -47,6 +47,11 @@ public class ServerApp {
       System.out.println("서버 실행 중 오류 발생!");
       e.printStackTrace();
     }
+
+    // 스레드풀을 모든 스레드를 종료시킨다.
+    // => 단, 현재 접속 중인 스레드에 대해서는 작업을 완료할 때까지 기다린다.
+    threadPool.shutdown();
+
     System.out.println("서버 종료!");
   }
 
