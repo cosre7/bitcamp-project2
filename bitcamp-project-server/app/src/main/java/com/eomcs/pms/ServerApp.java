@@ -11,6 +11,9 @@ public class ServerApp {
 
   int port;
 
+  // 서버의 상태를 설정
+  boolean isStop;
+
   public static void main(String[] args) {
     ServerApp app = new ServerApp(8888);
     app.service();
@@ -20,7 +23,7 @@ public class ServerApp {
     this.port = port;
   }
 
-  public void service() {
+  public void service() { // service -> main 스레드가 호출하는 메서드
 
     // 스레드풀 준비
     ThreadPool threadPool = new ThreadPool();
@@ -33,10 +36,10 @@ public class ServerApp {
       while (true) {
         Socket socket = serverSocket.accept(); // 클라이언트가 접속
 
-        // 예전 방식 : 직접 스레드를 만들어 작업을 실행시킴
-        //new Thread(() -> processRequest(socket)).start(); // 러너블 구현체를 포함한 자식 스레드 만들기
+        if (isStop) { // 서버의 상태가 종료이면,
+          break; // 즉시 반복문을 탈출하여 메인 스레드의 실행을 끝낸다.
+        }
 
-        // 새 방식 : 작업 실행을 스레드풀에 맡긴다.
         threadPool.execute(() -> processRequest(socket)); // 러너블 인터페이스 구현체 : () -> processRequest(socket) => task객체
       }
 
@@ -44,6 +47,7 @@ public class ServerApp {
       System.out.println("서버 실행 중 오류 발생!");
       e.printStackTrace();
     }
+    System.out.println("서버 종료!");
   }
 
   public void processRequest(Socket socket) {
@@ -60,13 +64,22 @@ public class ServerApp {
         // 클라이언트가 보낸 요청을 읽는다.
         String requestLine = in.readLine();
 
+        if (requestLine.equalsIgnoreCase("serverstop")) {
+          in.readLine(); // 요청의 끝을 의미하는 빈 줄을 읽는다.
+          out.println("Server stopped!");
+          out.println();
+          out.flush();
+          terminate(); // terminate: 끝내다
+          return;
+        }
+
         if (requestLine.equalsIgnoreCase("exit") || requestLine.equalsIgnoreCase("quit")) {
           // 읽은게 exit나 quit라면 goodbye 출력하고 끝내기
           in.readLine(); // 요청의 끝을 의미하는 빈 줄을 읽는다.
           out.println("Goodbye!");
           out.println();
           out.flush();
-          break;
+          return;
         }
 
         // 클라이언트가 보낸 명령을 서버 창에 출력한다.
@@ -94,5 +107,22 @@ public class ServerApp {
       System.out.println("클라이언트의 요청을 처리하는 중에 오류 발생!");
       e.printStackTrace();
     }
+  }
+
+  // 서버를 최종적으로 종료하는 일을 한다.
+  private void terminate() {
+    // 서버의 상태를 종료로 설정한다.
+    isStop = true;
+
+    // 그리고 서버가 즉시 종료할 수 있도록 임의의 접속을 수행한다.
+    // => 스스로 클라이언트가 되어 ServerSocket에 접속하면
+    //    accept() 에서 리턴하기 때문에 isStop 변수의 상태에 따라 반복문을 멈출 것이다.
+    // 서버에 접속된 임의의 상태를 만든 후에 서버의 상태를 종료시키기 위함
+    // 클라이언트 앱 실행 후 명령에 serverstop을 해서 서버 종료! 시키기 위함 -> isStop 이 true가 되는 상황
+    try (Socket socket = new Socket("localhost", 8888)) {
+      // 서버를 종료시키기 위해 임의로 접속하는 것이기 때문에 특별히 추가로 해야 할 일이 없다.
+      // 하지만 메인 스레드가 종료되고 다른 스레들이 남아있기 때문에 서버가 종료되고 난 후에도
+      // Console 자체는 종료되지 않고 남아있다 -> 강제종료해야한다.
+    } catch (Exception e) {}
   }
 }
