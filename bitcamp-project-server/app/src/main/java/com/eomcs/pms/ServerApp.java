@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -26,7 +27,6 @@ import com.eomcs.pms.dao.MemberDao;
 import com.eomcs.pms.dao.ProjectDao;
 import com.eomcs.pms.dao.TaskDao;
 import com.eomcs.pms.handler.Command;
-import com.eomcs.pms.handler.MemberValidator;
 import com.eomcs.pms.service.BoardService;
 import com.eomcs.pms.service.MemberService;
 import com.eomcs.pms.service.ProjectService;
@@ -36,6 +36,8 @@ import com.eomcs.pms.service.impl.DefaultMemberService;
 import com.eomcs.pms.service.impl.DefaultProjectService;
 import com.eomcs.pms.service.impl.DefaultTaskService;
 import com.eomcs.stereotype.Component;
+import com.eomcs.util.CommandRequest;
+import com.eomcs.util.CommandResponse;
 
 public class ServerApp {
 
@@ -97,14 +99,14 @@ public class ServerApp {
     TaskService taskService = new DefaultTaskService(sqlSession, taskDao);
 
     // => 도우미 객체 생성
-    MemberValidator memberValidator = new MemberValidator(memberService);
+    //    MemberValidator memberValidator = new MemberValidator(memberService);
 
     // => Command 구현체가 사용할 의존 객체를 보관
     objMap.put("boardService", boardService);
     objMap.put("memberService", memberService);
     objMap.put("projectService", projectService);
     objMap.put("taskService", taskService);
-    objMap.put("memberValidator", memberValidator);
+    //    objMap.put("memberValidator", memberValidator);
 
     // 5) Command 구현체를 자동 생성하여 맵에 등록
     registerCommands();
@@ -172,8 +174,16 @@ public class ServerApp {
         // 클라이언트가 보낸 요청을 읽는다.
         String requestLine = in.readLine();
 
+        // 클라이언트가 보낸 나머지 데이터를 읽는다.
+        while (true) {
+          String line = in.readLine();
+          if (line.length() == 0) {
+            break;
+          }
+          // 지금은 '요청 명령'과 '빈 줄' 사이에 존재하는 데이터는 무시한다. 
+        }
+
         if (requestLine.equalsIgnoreCase("serverstop")) {
-          in.readLine(); // 요청의 끝을 의미하는 빈 줄을 읽는다.
           out.println("Server stopped!");
           out.println();
           out.flush();
@@ -182,31 +192,50 @@ public class ServerApp {
         }
 
         if (requestLine.equalsIgnoreCase("exit") || requestLine.equalsIgnoreCase("quit")) {
-          // 읽은게 exit나 quit라면 goodbye 출력하고 끝내기
-          in.readLine(); // 요청의 끝을 의미하는 빈 줄을 읽는다.
           out.println("Goodbye!");
           out.println();
           out.flush();
           return;
         }
 
-        // 클라이언트가 보낸 명령을 서버 창에 출력한다.
-        System.out.println(requestLine);
-
-        // 클라이언트가 보낸 데이터를 읽는다.
-        while (true) {
-          String line = in.readLine();
-          if (line.length() == 0) {
-            break; // 데이터 읽다가 빈줄 읽으면 끝
-          }
-          // 클라이언트에서 보낸 데이터를 서버 창에 출력해 보자.
-          System.out.println(line);
+        // 클라이언트의 요청을 처리할 Command 구현체를 찾는다.
+        Command command = (Command) objMap.get(requestLine);
+        if (command == null) {
+          out.println("해당 명령을 처리할 수 없습니다!");
+          out.println();
+          out.flush();
+          continue;
         }
-        System.out.println("----------------------------------------------");
 
-        // 클라이언트에게 응답한다.
-        out.println("OK");
-        out.printf("====> %s\n", requestLine);
+        //        class 차량판매점 {
+        //          public Car getCar();
+        //        }
+        // 차량판매점 -> 향후 승용차, 탱크, 공중부양차 등등의 가능성에 대비해서
+        // 추상클래스인 getCar()를 리턴하도록 정의되어있다.
+        //        
+        //        승용차 c = (승용차)차량판매점.getCar(); // 일반적인 경우
+        //        탱크 c2 = (탱크)차량판매점.getCar(); // 군대
+
+        // 클라이언트가 보낸 명령을 Command 구현체에게 전달하기 쉽도록 객체에 담는다.
+        InetSocketAddress remoteAddr = (InetSocketAddress) clientSocket.getRemoteSocketAddress(); 
+        // 원래 리턴 타입은 SocketAddress (추상클래스)
+        // 일반적으로 인터넷을 사용하기 때문에 InetSocketAddress(SocketAddress를 상속)로 사용한다.
+        // 인터넷 통신 프로그램이 아닌 특수한 경우에는 이 코드가 동작하지 않는다.
+        // 하지만 그럴 일은 거의 없다.
+
+        CommandRequest request = new CommandRequest(
+            requestLine,
+            remoteAddr.getHostString(),
+            remoteAddr.getPort());
+
+        CommandResponse response = new CommandResponse(out);
+
+        // Command 구현체를 실행한다.
+        try {
+          command.service(request, response);
+        } catch (Exception e) {
+          out.println("서버 오류 발생!");
+        }
         out.println();
         out.flush();
       }
