@@ -42,7 +42,7 @@ public class ServerApp {
           break; // 즉시 반복문을 탈출하여 메인 스레드의 실행을 끝낸다.
         }
 
-        threadPool.execute(() -> processRequest(socket)); // 러너블 인터페이스 구현체 : () -> processRequest(socket) => task객체
+        threadPool.execute(() -> processRequest(socket)); // 러너블 인터페이스 구현체(run 메서드) : () -> processRequest(socket) => task객체
       }
 
     } catch (Exception e) {
@@ -63,6 +63,8 @@ public class ServerApp {
         System.out.println("아직 실행 중인 스레드가 있습니다.");
 
         // 종료를 재시도한다.
+        // => 대기 중인 작업도 취소한다.
+        // => 실행 중인 스레드 중에서 Not Runnable 상태에 있을 경우에도 강제로 종료시킨다.
         threadPool.shutdownNow();
 
         while (!threadPool.awaitTermination(10, TimeUnit.SECONDS)) {
