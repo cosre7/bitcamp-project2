@@ -170,6 +170,22 @@ public class ServerApp {
         PrintWriter out = new PrintWriter(clientSocket.getOutputStream());
         ) {
 
+      //    class 차량판매점 {
+      //          public Car getCar();
+      //        }
+      // 차량판매점 -> 향후 승용차, 탱크, 공중부양차 등등의 가능성에 대비해서
+      // 추상클래스인 getCar()를 리턴하도록 정의되어있다.
+      //        
+      //        승용차 c = (승용차)차량판매점.getCar(); // 일반적인 경우
+      //        탱크 c2 = (탱크)차량판매점.getCar(); // 군대
+
+      // 클라이언트가 보낸 명령을 Command 구현체에게 전달하기 쉽도록 객체에 담는다.
+      InetSocketAddress remoteAddr = (InetSocketAddress) clientSocket.getRemoteSocketAddress(); 
+      // 원래 리턴 타입은 SocketAddress (추상클래스)
+      // 일반적으로 인터넷을 사용하기 때문에 InetSocketAddress(SocketAddress를 상속)로 사용한다.
+      // 인터넷 통신 프로그램이 아닌 특수한 경우에는 이 코드가 동작하지 않는다.
+      // 하지만 그럴 일은 거의 없다.
+
       while (true) {
         // 클라이언트가 보낸 요청을 읽는다.
         String requestLine = in.readLine();
@@ -182,6 +198,9 @@ public class ServerApp {
           }
           // 지금은 '요청 명령'과 '빈 줄' 사이에 존재하는 데이터는 무시한다. 
         }
+
+        // 클라이언트 요청에 대해 기록(log)을 남긴다.
+        System.out.printf("[%s:%d] %s\n", remoteAddr.getHostString(), remoteAddr.getPort(), requestLine);
 
         if (requestLine.equalsIgnoreCase("serverstop")) {
           out.println("Server stopped!");
@@ -206,22 +225,6 @@ public class ServerApp {
           out.flush();
           continue;
         }
-
-        //        class 차량판매점 {
-        //          public Car getCar();
-        //        }
-        // 차량판매점 -> 향후 승용차, 탱크, 공중부양차 등등의 가능성에 대비해서
-        // 추상클래스인 getCar()를 리턴하도록 정의되어있다.
-        //        
-        //        승용차 c = (승용차)차량판매점.getCar(); // 일반적인 경우
-        //        탱크 c2 = (탱크)차량판매점.getCar(); // 군대
-
-        // 클라이언트가 보낸 명령을 Command 구현체에게 전달하기 쉽도록 객체에 담는다.
-        InetSocketAddress remoteAddr = (InetSocketAddress) clientSocket.getRemoteSocketAddress(); 
-        // 원래 리턴 타입은 SocketAddress (추상클래스)
-        // 일반적으로 인터넷을 사용하기 때문에 InetSocketAddress(SocketAddress를 상속)로 사용한다.
-        // 인터넷 통신 프로그램이 아닌 특수한 경우에는 이 코드가 동작하지 않는다.
-        // 하지만 그럴 일은 거의 없다.
 
         CommandRequest request = new CommandRequest(
             requestLine,
