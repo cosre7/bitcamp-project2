@@ -5,7 +5,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import com.eomcs.util.concurrent.ThreadPool;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class ServerApp {
 
@@ -26,7 +28,7 @@ public class ServerApp {
   public void service() { // service -> main 스레드가 호출하는 메서드
 
     // 스레드풀 준비
-    ThreadPool threadPool = new ThreadPool();
+    ExecutorService threadPool = Executors.newCachedThreadPool();
 
     // 클라이언트 연결을 기다리는 서버 소켓 생성
     try (ServerSocket serverSocket = new ServerSocket(this.port)) {
@@ -48,10 +50,30 @@ public class ServerApp {
       e.printStackTrace();
     }
 
-    // 스레드풀을 모든 스레드를 종료시킨다.
-    // => 단, 현재 접속 중인 스레드에 대해서는 작업을 완료할 때까지 기다린다.
-    threadPool.shutdown();
+    // 스레드풀에 대기하고 있는 모든 스레드를 종료시킨다.
+    // => 단, 현재 실행 중인 스레드에 대해서는 작업을 완료한 후 종료하도록 설정한다.
+    threadPool.shutdown(); // 스레드 풀에서 대기하고 있는 스레드만 종료시킨다.
+    System.out.println("서버 종료 중...");
 
+    // 만약 현재 실행 중인 스레드를 강제로 종료시키고 싶다면 
+    // 다음 코드를 참고하라!
+    // 10초 동안 기다려도 종료가 안됬는지 다시 확인!
+    try {
+      if (!threadPool.awaitTermination(10, TimeUnit.SECONDS)) {
+        System.out.println("아직 실행 중인 스레드가 있습니다.");
+
+        // 종료를 재시도한다.
+        threadPool.shutdownNow();
+
+        while (!threadPool.awaitTermination(10, TimeUnit.SECONDS)) {
+          System.out.println("아직 실행 중인 스레드가 있습니다.");
+        } 
+
+        System.out.println("모든 스레드를 종료했습니다.");
+      }
+    } catch (Exception e) {
+      System.out.println("스레드 강제 종료 중에 오류 발생!");
+    }
     System.out.println("서버 종료!");
   }
 
