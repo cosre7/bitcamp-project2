@@ -21,10 +21,11 @@ public class TaskListHandler implements Command {
   @Override
   public void service(CommandRequest request, CommandResponse response) throws Exception {
     PrintWriter out = response.getWriter();
+    Prompt prompt = request.getPrompt();
 
-    System.out.println("[작업 목록]");
+    out.println("[작업 목록]");
 
-    String input = Prompt.inputString("프로젝트 번호?(전체: 빈 문자열 또는 0) ");
+    String input = prompt.inputString("프로젝트 번호?(전체: 빈 문자열 또는 0) ");
 
     // 1) 사용자가 입력한 문자열을 프로젝트 번호로 바꾼다.
     int projectNo = 0;
@@ -33,7 +34,7 @@ public class TaskListHandler implements Command {
         projectNo = Integer.parseInt(input);
       }
     }catch (Exception e) {
-      System.out.println("프로젝트 번호를 입력하세요.");
+      out.println("프로젝트 번호를 입력하세요.");
       return;
     }
 
@@ -46,17 +47,17 @@ public class TaskListHandler implements Command {
     }
 
     if (tasks.size() == 0) {
-      System.out.println("해당 번호의 프로젝트가 없거나 또는 등록된 작업이 없습니다.");
+      out.println("해당 번호의 프로젝트가 없거나 또는 등록된 작업이 없습니다.");
       return;
     }
 
     projectNo = 0;
     for (Task t : tasks) {
       if (projectNo != t.getProjectNo()) {
-        System.out.printf("'%s' 작업 목록: \n", t.getProjectTitle());
+        out.printf("'%s' 작업 목록: \n", t.getProjectTitle());
         projectNo = t.getProjectNo();
       }
-      System.out.printf("%d, %s, %s, %s, %s\n", 
+      out.printf("%d, %s, %s, %s, %s\n", 
           t.getNo(), 
           t.getContent(), 
           t.getDeadline(),

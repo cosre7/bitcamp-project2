@@ -38,6 +38,7 @@ import com.eomcs.pms.service.impl.DefaultTaskService;
 import com.eomcs.stereotype.Component;
 import com.eomcs.util.CommandRequest;
 import com.eomcs.util.CommandResponse;
+import com.eomcs.util.Prompt;
 
 public class ServerApp {
 
@@ -163,28 +164,15 @@ public class ServerApp {
   public void processRequest(Socket socket) {
     try (
         Socket clientSocket = socket; 
-        // socket.close를 여기에서 처리하기 위해서 Socket을 여기 다시 선언!
-        // 아니면 auto close되지않는다! 
-        // try 블럭을 나가기 전에 socket.close를 하기 위함!
         BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         PrintWriter out = new PrintWriter(clientSocket.getOutputStream());
         ) {
 
-      //    class 차량판매점 {
-      //          public Car getCar();
-      //        }
-      // 차량판매점 -> 향후 승용차, 탱크, 공중부양차 등등의 가능성에 대비해서
-      // 추상클래스인 getCar()를 리턴하도록 정의되어있다.
-      //        
-      //        승용차 c = (승용차)차량판매점.getCar(); // 일반적인 경우
-      //        탱크 c2 = (탱크)차량판매점.getCar(); // 군대
-
       // 클라이언트가 보낸 명령을 Command 구현체에게 전달하기 쉽도록 객체에 담는다.
       InetSocketAddress remoteAddr = (InetSocketAddress) clientSocket.getRemoteSocketAddress(); 
-      // 원래 리턴 타입은 SocketAddress (추상클래스)
-      // 일반적으로 인터넷을 사용하기 때문에 InetSocketAddress(SocketAddress를 상속)로 사용한다.
-      // 인터넷 통신 프로그램이 아닌 특수한 경우에는 이 코드가 동작하지 않는다.
-      // 하지만 그럴 일은 거의 없다.
+
+      // 클라이언트로부터 값을 입력 받을 때 사용할 객체를 준비한다.
+      Prompt prompt = new Prompt(in, out);
 
       while (true) {
         // 클라이언트가 보낸 요청을 읽는다.
@@ -229,7 +217,8 @@ public class ServerApp {
         CommandRequest request = new CommandRequest(
             requestLine,
             remoteAddr.getHostString(),
-            remoteAddr.getPort());
+            remoteAddr.getPort(),
+            prompt);
 
         CommandResponse response = new CommandResponse(out);
 
