@@ -21,7 +21,6 @@ public class ProjectListHandler implements Command {
   @Override
   public void service(CommandRequest request, CommandResponse response) throws Exception {
     PrintWriter out = response.getWriter();
-
     out.println("[프로젝트 목록]");
 
     List<Project> projects = projectService.list();

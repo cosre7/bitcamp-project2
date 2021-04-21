@@ -9,7 +9,7 @@ import com.eomcs.util.CommandRequest;
 import com.eomcs.util.CommandResponse;
 import com.eomcs.util.Prompt;
 
-public class MemberValidator { // handler는 아니지만 member에게 있어 보좌관 같은 역할 -> handler와 구성이 비슷
+public class MemberValidator {
 
   MemberService memberService;
 

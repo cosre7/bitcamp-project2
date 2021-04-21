@@ -20,7 +20,6 @@ public class MemberListHandler implements Command {
   @Override
   public void service(CommandRequest request, CommandResponse response) throws Exception {
     PrintWriter out = response.getWriter();
-
     out.println("[회원 목록]");
 
     List<Member> list = memberService.list();

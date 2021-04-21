@@ -40,7 +40,6 @@ import com.eomcs.stereotype.Component;
 import com.eomcs.util.CommandRequest;
 import com.eomcs.util.CommandResponse;
 import com.eomcs.util.Prompt;
-import com.eomcs.util.Session;
 
 public class ServerApp {
 
@@ -49,7 +48,7 @@ public class ServerApp {
   // 서버의 상태를 설정
   boolean isStop;
 
-  //객체를 보관할 컨테이너 준비
+  // 객체를 보관할 컨테이너 준비
   Map<String,Object> objMap = new HashMap<>();
 
   public static void main(String[] args) {
@@ -59,7 +58,7 @@ public class ServerApp {
       app.service();
 
     } catch (Exception e) {
-      System.out.println("서버를 시작 하는 중에 오류 발생!");
+      System.out.println("서버를 시작하는 중에 오류 발생!");
       e.printStackTrace();
     }
   }
@@ -68,7 +67,7 @@ public class ServerApp {
     this.port = port;
   }
 
-  public void service() throws Exception { // service -> main 스레드가 호출하는 메서드
+  public void service() throws Exception {
 
     // 스레드풀 준비
     ExecutorService threadPool = Executors.newCachedThreadPool();
@@ -83,7 +82,7 @@ public class ServerApp {
 
     // => DAO가 사용할 SqlSession 객체 준비
     //    - 수동 commit 으로 동작하는 SqlSession 객체를 준비한다.
-    SqlSession sqlSession = sqlSessionFactory.openSession(false);// Mybatis 설정 파일을 읽을 입력 스트림 객체 준비
+    SqlSession sqlSession = sqlSessionFactory.openSession(false);
 
     // 2) DAO 구현체를 자동으로 만들어주는 공장 객체를 준비한다.
     MybatisDaoFactory daoFactory = new MybatisDaoFactory(sqlSession);
@@ -104,7 +103,7 @@ public class ServerApp {
     // => 도우미 객체 생성
     MemberValidator memberValidator = new MemberValidator(memberService);
 
-    // => Command 구현체가 사용할 의존 객체를 보관
+    // => Command 구현체가 사용할 의존 객체 보관
     objMap.put("boardService", boardService);
     objMap.put("memberService", memberService);
     objMap.put("projectService", projectService);
@@ -120,13 +119,12 @@ public class ServerApp {
       System.out.println("서버 실행!");
 
       while (true) {
-        Socket socket = serverSocket.accept(); // 클라이언트가 접속
-
+        Socket socket = serverSocket.accept();
         if (isStop) { // 서버의 상태가 종료이면,
-          break; // 즉시 반복문을 탈출하여 메인 스레드의 실행을 끝낸다.
+          break; // 즉시 반복문을 탈출하여 main 스레드의 실행을 끝낸다.
         }
 
-        threadPool.execute(() -> processRequest(socket)); // 러너블 인터페이스 구현체(run 메서드) : () -> processRequest(socket) => task객체
+        threadPool.execute(() -> processRequest(socket));
       }
 
     } catch (Exception e) {
@@ -135,18 +133,17 @@ public class ServerApp {
     }
 
     // 스레드풀에 대기하고 있는 모든 스레드를 종료시킨다.
-    // => 단, 현재 실행 중인 스레드에 대해서는 작업을 완료한 후 종료하도록 설정한다.
-    threadPool.shutdown(); // 스레드 풀에서 대기하고 있는 스레드만 종료시킨다.
+    // => 단 현재 실행 중인 스레드에 대해서는 작업을 완료한 후 종료하도록 설정한다.
+    threadPool.shutdown();
     System.out.println("서버 종료 중...");
 
     // 만약 현재 실행 중인 스레드를 강제로 종료시키고 싶다면 
     // 다음 코드를 참고하라!
-    // 10초 동안 기다려도 종료가 안됬는지 다시 확인!
     try {
       if (!threadPool.awaitTermination(10, TimeUnit.SECONDS)) {
         System.out.println("아직 실행 중인 스레드가 있습니다.");
 
-        // 종료를 재시도한다.
+        // 종료를 재시도 한다.
         // => 대기 중인 작업도 취소한다.
         // => 실행 중인 스레드 중에서 Not Runnable 상태에 있을 경우에도 강제로 종료시킨다.
         threadPool.shutdownNow();
@@ -160,25 +157,22 @@ public class ServerApp {
     } catch (Exception e) {
       System.out.println("스레드 강제 종료 중에 오류 발생!");
     }
+
     System.out.println("서버 종료!");
   }
 
-  // 클라이언트가 접속했을 때 스레드가 호출하는 메서드
   public void processRequest(Socket socket) {
     try (
-        Socket clientSocket = socket; 
+        Socket clientSocket = socket;
         BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         PrintWriter out = new PrintWriter(clientSocket.getOutputStream());
         ) {
 
       // 클라이언트가 보낸 명령을 Command 구현체에게 전달하기 쉽도록 객체에 담는다.
-      InetSocketAddress remoteAddr = (InetSocketAddress) clientSocket.getRemoteSocketAddress(); 
+      InetSocketAddress remoteAddr = (InetSocketAddress) clientSocket.getRemoteSocketAddress();
 
       // 클라이언트로부터 값을 입력 받을 때 사용할 객체를 준비한다.
       Prompt prompt = new Prompt(in, out);
-
-      // 클라이언트가 접속해 있는 동안 사용할 저장소를 준비한다.
-      Session session = new Session();
 
       while (true) {
         // 클라이언트가 보낸 요청을 읽는다.
@@ -190,18 +184,20 @@ public class ServerApp {
           if (line.length() == 0) {
             break;
           }
-          // 지금은 '요청 명령'과 '빈 줄' 사이에 존재하는 데이터는 무시한다. 
+          // 지금은 '요청 명령' 과 '빈 줄' 사이에 존재하는 데이터는 무시한다.
         }
 
         // 클라이언트 요청에 대해 기록(log)을 남긴다.
-        System.out.printf("[%s:%d] %s\n", remoteAddr.getHostString(), remoteAddr.getPort(), requestLine);
+        System.out.printf("[%s:%d] %s\n", 
+            remoteAddr.getHostString(), remoteAddr.getPort(), requestLine);
+
 
         if (requestLine.equalsIgnoreCase("serverstop")) {
           out.println("Server stopped!");
           out.println();
           out.flush();
-          terminate(); // terminate: 끝내다
-          return;
+          terminate();
+          return; 
         }
 
         if (requestLine.equalsIgnoreCase("exit") || requestLine.equalsIgnoreCase("quit")) {
@@ -221,11 +217,10 @@ public class ServerApp {
         }
 
         CommandRequest request = new CommandRequest(
-            requestLine,
+            requestLine, 
             remoteAddr.getHostString(),
-            remoteAddr.getPort(),
-            prompt,
-            session);
+            remoteAddr.getPort(), 
+            prompt);
 
         CommandResponse response = new CommandResponse(out);
 
@@ -248,18 +243,14 @@ public class ServerApp {
 
   // 서버를 최종적으로 종료하는 일을 한다.
   private void terminate() {
-    // 서버의 상태를 종료로 설정한다.
+    // 서버 상태를 종료로 설정한다.
     isStop = true;
 
     // 그리고 서버가 즉시 종료할 수 있도록 임의의 접속을 수행한다.
-    // => 스스로 클라이언트가 되어 ServerSocket에 접속하면
-    //    accept() 에서 리턴하기 때문에 isStop 변수의 상태에 따라 반복문을 멈출 것이다.
-    // 서버에 접속된 임의의 상태를 만든 후에 서버의 상태를 종료시키기 위함
-    // 클라이언트 앱 실행 후 명령에 serverstop을 해서 서버 종료! 시키기 위함 -> isStop 이 true가 되는 상황
+    // => 스스로 클라이언트가 되어 ServerSocket 에 접속하면 
+    //    accept()에서 리턴하기 때문에 isStop 변수의 상태에 따라 반복문을 멈출 것이다.
     try (Socket socket = new Socket("localhost", 8888)) {
       // 서버를 종료시키기 위해 임의로 접속하는 것이기 때문에 특별히 추가로 해야 할 일이 없다.
-      // 하지만 메인 스레드가 종료되고 다른 스레들이 남아있기 때문에 서버가 종료되고 난 후에도
-      // Console 자체는 종료되지 않고 남아있다 -> 강제종료해야한다.
     } catch (Exception e) {}
   }
 
@@ -379,4 +370,5 @@ public class ServerApp {
     }
     return null;
   }
+
 }

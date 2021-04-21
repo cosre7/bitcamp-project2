@@ -7,7 +7,7 @@ import java.sql.Date;
 public class Prompt {
 
   private BufferedReader in;
-  private PrintWriter out; 
+  private PrintWriter out;
 
   public Prompt(BufferedReader in, PrintWriter out) {
     this.in = in;
