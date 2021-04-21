@@ -18,10 +18,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import com.eomcs.mybatis.MybatisDaoFactory;
+import com.eomcs.mybatis.SqlSessionFactoryProxy;
 import com.eomcs.pms.dao.BoardDao;
 import com.eomcs.pms.dao.MemberDao;
 import com.eomcs.pms.dao.ProjectDao;
@@ -80,14 +80,16 @@ public class ServerApp {
     // => SqlSessionFactory 객체 준비
     SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(mybatisConfigStream);
 
-    // => DAO가 사용할 SqlSession 객체 준비
-    //    - 수동 commit 으로 동작하는 SqlSession 객체를 준비한다.
-    SqlSession sqlSession = sqlSessionFactory.openSession(false);
+    // => 트랜잭션 상태에 따라 SqlSession 객체를 만들어주는 SqlSessionFactory 대행자를 준비한다.
+    SqlSessionFactoryProxy sqlSessionFactoryProxy = new SqlSessionFactoryProxy(sqlSessionFactory);
 
     // 2) DAO 구현체를 자동으로 만들어주는 공장 객체를 준비한다.
-    MybatisDaoFactory daoFactory = new MybatisDaoFactory(sqlSessionFactory);
+    // => 오리지널 SqlSessionFactory 대신에 트랜잭션 상태에 따라 SqlSession 객체를 만들어주는
+    ///   SqlSessionFactory 대행자를 주입한다.
+    MybatisDaoFactory daoFactory = new MybatisDaoFactory(sqlSessionFactoryProxy);
 
     // 3) 서비스 객체가 사용할 DAO 객체 준비
+    // => DAO 객체는 SqlSession 객체가 필요할 때마다 SqlSessionFactory 대행자에게 요구할 것이다.
     BoardDao boardDao = daoFactory.createDao(BoardDao.class);
     MemberDao memberDao = daoFactory.createDao(MemberDao.class);
     ProjectDao projectDao = daoFactory.createDao(ProjectDao.class);
