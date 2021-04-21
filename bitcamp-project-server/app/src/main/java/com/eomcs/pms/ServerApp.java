@@ -85,7 +85,7 @@ public class ServerApp {
     SqlSession sqlSession = sqlSessionFactory.openSession(false);
 
     // 2) DAO 구현체를 자동으로 만들어주는 공장 객체를 준비한다.
-    MybatisDaoFactory daoFactory = new MybatisDaoFactory(sqlSession);
+    MybatisDaoFactory daoFactory = new MybatisDaoFactory(sqlSessionFactory);
 
     // 3) 서비스 객체가 사용할 DAO 객체 준비
     BoardDao boardDao = daoFactory.createDao(BoardDao.class);
@@ -95,10 +95,10 @@ public class ServerApp {
 
     // 4) Command 구현체가 사용할 의존 객체(서비스 객체 + 도우미 객체) 준비
     // => 서비스 객체 생성
-    BoardService boardService = new DefaultBoardService(sqlSession, boardDao);
-    MemberService memberService = new DefaultMemberService(sqlSession, memberDao);
-    ProjectService projectService = new DefaultProjectService(sqlSession, projectDao, taskDao);
-    TaskService taskService = new DefaultTaskService(sqlSession, taskDao);
+    BoardService boardService = new DefaultBoardService(sqlSessionFactory, boardDao);
+    MemberService memberService = new DefaultMemberService(sqlSessionFactory, memberDao);
+    ProjectService projectService = new DefaultProjectService(sqlSessionFactory, projectDao, taskDao);
+    TaskService taskService = new DefaultTaskService(sqlSessionFactory, taskDao);
 
     // => 도우미 객체 생성
     MemberValidator memberValidator = new MemberValidator(memberService);
