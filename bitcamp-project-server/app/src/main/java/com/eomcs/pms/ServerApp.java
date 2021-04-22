@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -52,6 +53,9 @@ public class ServerApp {
 
   // 객체를 보관할 컨테이너 준비
   Map<String,Object> objMap = new HashMap<>();
+
+  // 세션을 보관할 저장소 
+  Map<String, Session> sessionMap = new HashMap<>();
 
   public static void main(String[] args) {
 
@@ -182,19 +186,42 @@ public class ServerApp {
       // 클라이언트로부터 값을 입력 받을 때 사용할 객체를 준비한다.
       Prompt prompt = new Prompt(in, out);
 
-      // 클라이언트가 접속해 있는 동안 사용할 저장소를 준비한다.
-      Session session = new Session();
-
       // 클라이언트가 보낸 요청을 읽는다.
       String requestLine = in.readLine();
 
-      // 클라이언트가 보낸 나머지 데이터를 읽는다.
+      // 클라이언트가 사용할 저장소
+      Session session = null;
+
+      // 세션 객체를 새로 만들었는지 여부
+      boolean isNewSession = false;
+
+      // 클라이언트를 구분할 때 사용할 세션 아이디
+      String sessionId = null;
+      // 클라이언트가 보낸 요청 헤더를 읽는다.
       while (true) {
         String line = in.readLine();
         if (line.length() == 0) {
           break;
         }
-        // 지금은 '요청 명령' 과 '빈 줄' 사이에 존재하는 데이터는 무시한다.
+        // 만약 읽은 헤더가 sessionid 라면,
+        if (line.startsWith("SESSION_ID:")) { // 11부터 읽어야 : 다음부터 읽음
+          sessionId = line.substring(11);
+
+          // 세션 아이디에 해당하는 세션 객체를 찾는다.
+          session = sessionMap.get(sessionId);
+        }
+      }
+
+      // 클라이언트가 세션 아이디를 보내오지 않았거나,
+      // 보내오긴 했지만 무효한 세션 아이디일 경우
+      // 새로 세션 객체를 만든다.
+      if (session == null) {
+        session = new Session();
+        sessionId = UUID.randomUUID().toString(); // 파일 업로드할 때 많이 사용하는 클래스
+        isNewSession = true;
+        // 세션 객체를 새로 만들었으면, 
+        // 다음에 같은 클라이언트가 또 사용할 수 있도록 세션 보관소에 저장해 둔다.
+        sessionMap.put(sessionId, session);
       }
 
       // 클라이언트 요청에 대해 기록(log)을 남긴다.
@@ -227,6 +254,14 @@ public class ServerApp {
           session);
 
       CommandResponse response = new CommandResponse(out);
+
+      // 클라이언트가 요청한 작업을 처리한 후 응답 데이터를 보내기 전에 
+      // 먼저 클라이언트에게 응답 헤더를 보낸다.
+      out.println("OK");
+      if (isNewSession) {
+        out.printf("SESSION_ID:%s\n", sessionId);
+      }
+      out.println();
 
       // Command 구현체를 실행한다.
       try {

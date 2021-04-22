@@ -8,6 +8,8 @@ import com.eomcs.util.Prompt;
 
 public class ClientApp {
 
+  String sessionId;
+
   public static void main(String[] args) {
     ClientApp app = new ClientApp();
 
@@ -72,8 +74,31 @@ public class ClientApp {
 
       // 서버에게 명령을 보낸다.
       out.println(command); // command CRLF
+      if (sessionId != null) {
+        out.printf("SESSION_ID:%s\n", sessionId);
+      }
       out.println(); // CRLF(엔터) 
       out.flush();
+
+      // 서버가 보내온 응답 헤더를 읽는다.
+      // => 상태 값을 읽는다.
+      in.readLine(); // 상태 값은 당장 사용하지는 않는다.
+
+      // => 응답 헤더를 읽는다.
+      while (true) {
+        String line = in.readLine();
+        if (line.length() == 0) {
+          break;
+        }
+
+        // 서버가 세션 아이디를 보내 주면 보관해 뒀다가,
+        // 서버에 요청할 때마다 요청 헤더로 다시 보내 준다.
+        // 왜?
+        // 클라이언트를 구분할 수 있도록 하기 위함이다.
+        if (line.startsWith("SESSION_ID:")) {
+          sessionId = line.substring(11);
+        }
+      }
 
       // 서버가 응답한 데이터를 출력한다.
       String line = null;
