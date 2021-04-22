@@ -18,10 +18,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import com.eomcs.mybatis.MybatisDaoFactory;
+import com.eomcs.mybatis.SqlSessionFactoryProxy;
+import com.eomcs.mybatis.TransactionManager;
 import com.eomcs.pms.dao.BoardDao;
 import com.eomcs.pms.dao.MemberDao;
 import com.eomcs.pms.dao.ProjectDao;
@@ -81,25 +82,31 @@ public class ServerApp {
     // => SqlSessionFactory 객체 준비
     SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(mybatisConfigStream);
 
-    // => DAO가 사용할 SqlSession 객체 준비
-    //    - 수동 commit 으로 동작하는 SqlSession 객체를 준비한다.
-    SqlSession sqlSession = sqlSessionFactory.openSession(false);
+    // => 트랜잭션 상태에 따라 SqlSession 객체를 만들어주는 SqlSessionFactory 대행자를 준비한다.
+    SqlSessionFactoryProxy sqlSessionFactoryProxy = new SqlSessionFactoryProxy(sqlSessionFactory);
 
     // 2) DAO 구현체를 자동으로 만들어주는 공장 객체를 준비한다.
-    MybatisDaoFactory daoFactory = new MybatisDaoFactory(sqlSession);
+    // => 오리지널 SqlSessionFactory 대신에 트랜잭션 상태에 따라 SqlSession 객체를 만들어주는
+    //    SqlSessionFactory 대행자를 주입한다.
+    MybatisDaoFactory daoFactory = new MybatisDaoFactory(sqlSessionFactoryProxy);
 
     // 3) 서비스 객체가 사용할 DAO 객체 준비
+    // => DAO 객체는 SqlSession 객체가 필요할 때마다 SqlSessionFactory 대행자에게 요구할 것이다.
     BoardDao boardDao = daoFactory.createDao(BoardDao.class);
     MemberDao memberDao = daoFactory.createDao(MemberDao.class);
     ProjectDao projectDao = daoFactory.createDao(ProjectDao.class);
     TaskDao taskDao = daoFactory.createDao(TaskDao.class);
 
+    // => 서비스 객체가 사용할 트랜잭션 관리자를 준비한다.
+    TransactionManager txManager = new TransactionManager(sqlSessionFactoryProxy);
+
     // 4) Command 구현체가 사용할 의존 객체(서비스 객체 + 도우미 객체) 준비
     // => 서비스 객체 생성
-    BoardService boardService = new DefaultBoardService(sqlSession, boardDao);
-    MemberService memberService = new DefaultMemberService(sqlSession, memberDao);
-    ProjectService projectService = new DefaultProjectService(sqlSession, projectDao, taskDao);
-    TaskService taskService = new DefaultTaskService(sqlSession, taskDao);
+    // => 기존에 주입하던 SqlSessionFactory 대신 TransactionManager를 주입한다. 
+    BoardService boardService = new DefaultBoardService(boardDao);
+    MemberService memberService = new DefaultMemberService(memberDao);
+    ProjectService projectService = new DefaultProjectService(txManager, projectDao, taskDao);
+    TaskService taskService = new DefaultTaskService(taskDao);
 
     // => 도우미 객체 생성
     MemberValidator memberValidator = new MemberValidator(memberService);
@@ -162,7 +169,6 @@ public class ServerApp {
     System.out.println("서버 종료!");
   }
 
-  // 클라이언트가 접속했을 때 스레드가 호출하는 메서드
   public void processRequest(Socket socket) {
     try (
         Socket clientSocket = socket;
@@ -179,66 +185,60 @@ public class ServerApp {
       // 클라이언트가 접속해 있는 동안 사용할 저장소를 준비한다.
       Session session = new Session();
 
+      // 클라이언트가 보낸 요청을 읽는다.
+      String requestLine = in.readLine();
+
+      // 클라이언트가 보낸 나머지 데이터를 읽는다.
       while (true) {
-        // 클라이언트가 보낸 요청을 읽는다.
-        String requestLine = in.readLine();
-
-        // 클라이언트가 보낸 나머지 데이터를 읽는다.
-        while (true) {
-          String line = in.readLine();
-          if (line.length() == 0) {
-            break;
-          }
-          // 지금은 '요청 명령' 과 '빈 줄' 사이에 존재하는 데이터는 무시한다.
+        String line = in.readLine();
+        if (line.length() == 0) {
+          break;
         }
+        // 지금은 '요청 명령' 과 '빈 줄' 사이에 존재하는 데이터는 무시한다.
+      }
 
-        // 클라이언트 요청에 대해 기록(log)을 남긴다.
-        System.out.printf("[%s:%d] %s\n", 
-            remoteAddr.getHostString(), remoteAddr.getPort(), requestLine);
+      // 클라이언트 요청에 대해 기록(log)을 남긴다.
+      System.out.printf("[%s:%d] %s\n", 
+          remoteAddr.getHostString(), remoteAddr.getPort(), requestLine);
 
 
-        if (requestLine.equalsIgnoreCase("serverstop")) {
-          out.println("Server stopped!");
-          out.println();
-          out.flush();
-          terminate();
-          return; 
-        }
-
-        if (requestLine.equalsIgnoreCase("exit") || requestLine.equalsIgnoreCase("quit")) {
-          out.println("Goodbye!");
-          out.println();
-          out.flush();
-          return;
-        }
-
-        // 클라이언트의 요청을 처리할 Command 구현체를 찾는다.
-        Command command = (Command) objMap.get(requestLine);
-        if (command == null) {
-          out.println("해당 명령을 처리할 수 없습니다!");
-          out.println();
-          out.flush();
-          continue;
-        }
-
-        CommandRequest request = new CommandRequest(
-            requestLine, 
-            remoteAddr.getHostString(),
-            remoteAddr.getPort(), 
-            prompt,
-            session);
-
-        CommandResponse response = new CommandResponse(out);
-
-        // Command 구현체를 실행한다.
-        try {
-          command.service(request, response);
-        } catch (Exception e) {
-          out.println("서버 오류 발생!");
-          e.printStackTrace();
-        }
+      if (requestLine.equalsIgnoreCase("serverstop")) {
+        out.println("Server stopped!");
         out.println();
         out.flush();
+        terminate();
+        return; 
+      }
+
+      // 클라이언트의 요청을 처리할 Command 구현체를 찾는다.
+      Command command = (Command) objMap.get(requestLine);
+      if (command == null) {
+        out.println("해당 명령을 처리할 수 없습니다!");
+        out.println();
+        out.flush();
+        return;
+      }
+
+      CommandRequest request = new CommandRequest(
+          requestLine, 
+          remoteAddr.getHostString(),
+          remoteAddr.getPort(), 
+          prompt,
+          session);
+
+      CommandResponse response = new CommandResponse(out);
+
+      // Command 구현체를 실행한다.
+      try {
+        command.service(request, response);
+        out.println();
+        out.flush();
+
+      } catch (Exception e) {
+        out.println("서버 오류 발생!");
+        out.println();
+        out.flush();
+        throw e;
       }
 
     } catch (Exception e) {

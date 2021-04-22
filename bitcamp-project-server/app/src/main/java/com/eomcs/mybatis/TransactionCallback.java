@@ -1,6 +1,6 @@
 package com.eomcs.mybatis;
 
-// TransactionTemplate이 작업 객체를 실행할 때 
+// TransactionTemplate이 작업 객체를 실행할 때, 
 // 호출할 메서드의 규칙을 정의한 것.
 //
 public interface TransactionCallback {

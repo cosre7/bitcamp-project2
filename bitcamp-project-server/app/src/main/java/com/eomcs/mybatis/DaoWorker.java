@@ -19,7 +19,7 @@ public class DaoWorker implements InvocationHandler {
     // Proxy 가 만들어준 DAO 구현체가 호출하는 메서드다.
 
     // SQL을 실행할 SqlSession 객체를 생성한다.
-    SqlSession sqlSession = sqlSessionFactory.openSession(false); // true : 오토커밋 false : 수동커밋
+    SqlSession sqlSession = sqlSessionFactory.openSession(false);
 
     // 1) SqlSession의 메서드를 호출할 때 넘겨 줄 SQL ID를 준비한다.
     // => SQL ID는 인터페이스의 fully-qualified name 과 같다고 가정하자.

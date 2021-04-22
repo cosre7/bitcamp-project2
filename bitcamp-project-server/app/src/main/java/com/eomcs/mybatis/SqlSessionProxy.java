@@ -10,23 +10,23 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 
-// SqlSessionFactory 객체가 만들어 주는 SqlSession의 일부 기능을 바꾸고 싶다.
+// SqlSessionFactory 객체가 만들어 주는 SqlSession 의 일부 기능을 바꾸고 싶다.
 // 그렇다고 기존의 오리지널 코드를 변경할 수는 없다.
-// 그럼 해결책은?
+// 그럼 해결책은? 
 // 다음 클래스처럼 기존 클래스의 기능을 그대로 흉내 내면서 
 // 오리지널 객체의 일부 기능만 변경하도록 프록시 객체를 만들면 된다.
-// 
+//
 public class SqlSessionProxy implements SqlSession {
 
   SqlSession original;
-  boolean isInTransaction; // 지금 트랜잭션 중이야?
+  boolean isInTransaction;
 
   public SqlSessionProxy(SqlSession sqlSession, boolean transaction) {
     this.original = sqlSession;
     this.isInTransaction = transaction;
   }
 
-  // 트랜잭션을 완료한 상태일 때 
+  // 트랜잭션을 완료한 상태일 때  
   // SqlSession 객체를 완전히 자원 해제하기 위해
   // 트랜잭션 관리자가 다음 메서드를 호출할 것이다.
   public void realClose() {
@@ -43,6 +43,7 @@ public class SqlSessionProxy implements SqlSession {
     }
     original.close();
   }
+
 
   @Override
   public <T> T selectOne(String statement) {
@@ -173,6 +174,7 @@ public class SqlSessionProxy implements SqlSession {
   public List<BatchResult> flushStatements() {
     return original.flushStatements();
   }
+
 
   @Override
   public void clearCache() {

@@ -1,7 +1,7 @@
 package com.eomcs.mybatis;
 
 // 트랜잭션 제어 코드를 캡슐화 한다.
-// 
+//
 public class TransactionTemplate {
 
   private TransactionManager txManager;
