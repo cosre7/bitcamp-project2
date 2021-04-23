@@ -39,8 +39,10 @@ import com.eomcs.pms.service.impl.DefaultMemberService;
 import com.eomcs.pms.service.impl.DefaultProjectService;
 import com.eomcs.pms.service.impl.DefaultTaskService;
 import com.eomcs.stereotype.Component;
+import com.eomcs.util.CommandFilter;
 import com.eomcs.util.CommandRequest;
 import com.eomcs.util.CommandResponse;
+import com.eomcs.util.FilterList;
 import com.eomcs.util.Prompt;
 import com.eomcs.util.Session;
 
@@ -255,6 +257,15 @@ public class ServerApp {
 
       CommandResponse response = new CommandResponse(out);
 
+      // 필터 목록을 관리할 객체를 준비한다.
+      FilterList filterList = new FilterList();
+
+      // Command 구현체를 실행할 필터를 준비한다.
+      CommandFilter commandFilter = new CommandFilter(command);
+
+      // 필터를 FilterList에 보관한다.
+      filterList.add(commandFilter);
+
       // 클라이언트가 요청한 작업을 처리한 후 응답 데이터를 보내기 전에 
       // 먼저 클라이언트에게 응답 헤더를 보낸다.
       out.println("OK");
@@ -265,7 +276,10 @@ public class ServerApp {
 
       // Command 구현체를 실행한다.
       try {
-        command.service(request, response);
+        // 직접 Command 구현체를 호출하는 대신 필터 체인을 통해 실행한다.
+        // => 필터 목록에서 맨 앞의 필터 체인을 꺼내서 실행한다.
+        filterList.getHeaderChain().doFilter(request, response);
+
         out.println();
         out.flush();
 
