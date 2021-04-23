@@ -1,10 +1,12 @@
 package com.eomcs.pms.filter;
 
+import com.eomcs.stereotype.Component;
 import com.eomcs.util.CommandRequest;
 import com.eomcs.util.CommandResponse;
 import com.eomcs.util.Filter;
 import com.eomcs.util.FilterChain;
 
+@Component
 public class LoginCheckFilter implements Filter {
   @Override
   public void doFilter(CommandRequest request, CommandResponse response, FilterChain nextChain)
