@@ -19,6 +19,10 @@ eclipse {
     }
 }
 
+war {
+  archiveBaseName = "pms"
+}
+
 repositories {
     jcenter()
 }
