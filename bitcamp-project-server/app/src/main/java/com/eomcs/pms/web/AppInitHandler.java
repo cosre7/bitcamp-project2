@@ -34,6 +34,10 @@ import com.eomcs.pms.service.impl.DefaultTaskService;
     value="/init", // 클라이언트에서 요청할 때 사용할 명령이다.
     loadOnStartup = 1 // 톰캣 서버를 실행할 때 이 객체를 생성하라고 지정한다. // 첫번째로 실행해! 
     )
+// loadOnStartup이 지정되지 않은 경우, 
+// 클라이언트가 실행을 요청할 때 서블릿 객체를 생성한다.
+// 물론 한 번 객체를 생성하면 그 생성된 객체를 계속 사용한다.
+// 즉 두 개의 객체를 생성하진 않는다.
 public class AppInitHandler implements Servlet {
 
   @Override
