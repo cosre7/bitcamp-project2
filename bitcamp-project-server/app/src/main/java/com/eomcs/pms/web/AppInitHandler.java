@@ -2,7 +2,6 @@ package com.eomcs.pms.web;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -31,12 +30,52 @@ import com.eomcs.pms.service.impl.DefaultTaskService;
 
 // 톰캣서버를 실행 후 제일 처음에 한번 실행해야 한다.
 // 그렇지 않으면 NullpointException 에러가 발생된다.
-@WebServlet("/init") 
+@WebServlet(
+    value="/init", // 클라이언트에서 요청할 때 사용할 명령이다.
+    loadOnStartup = 1 // 톰캣 서버를 실행할 때 이 객체를 생성하라고 지정한다. // 첫번째로 실행해! 
+    )
 public class AppInitHandler implements Servlet {
 
   @Override
   public void init(ServletConfig config) throws ServletException {
+    // 서블릿 객체를 생성할 때 톰캣 서버가 호출하는 메서드
+    // => 보통 서블릿들이 사용할 의존 객체를 준비하는 등의 일을 한다.
 
+    try {
+      // 1) Mybatis 관련 객체 준비 
+      InputStream mybatisConfigStream = Resources.getResourceAsStream(
+          "com/eomcs/pms/conf/mybatis-config.xml");
+      SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(mybatisConfigStream);
+      SqlSessionFactoryProxy sqlSessionFactoryProxy = new SqlSessionFactoryProxy(sqlSessionFactory);
+      MybatisDaoFactory daoFactory = new MybatisDaoFactory(sqlSessionFactoryProxy);
+
+      // 2) DAO 관련 객체 준비
+      BoardDao boardDao = daoFactory.createDao(BoardDao.class);
+      MemberDao memberDao = daoFactory.createDao(MemberDao.class);
+      ProjectDao projectDao = daoFactory.createDao(ProjectDao.class);
+      TaskDao taskDao = daoFactory.createDao(TaskDao.class);
+
+      // 3) 서비스 관련 객체 준비
+      TransactionManager txManager = new TransactionManager(sqlSessionFactoryProxy);
+
+      BoardService boardService = new DefaultBoardService(boardDao);
+      MemberService memberService = new DefaultMemberService(memberDao);
+      ProjectService projectService = new DefaultProjectService(txManager, projectDao, taskDao);
+      TaskService taskService = new DefaultTaskService(taskDao);
+
+      // 4) 서비스 객체를 ServletContext 보관소에 저장한다.
+      ServletContext servletContext = config.getServletContext();
+
+      servletContext.setAttribute("boardService", boardService);
+      servletContext.setAttribute("memberService", memberService);
+      servletContext.setAttribute("projectService", projectService);
+      servletContext.setAttribute("taskService", taskService);
+
+      System.out.println("의존 객체를 모두 준비하였습니다.");
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
@@ -58,38 +97,7 @@ public class AppInitHandler implements Servlet {
   public void service(ServletRequest request, ServletResponse response)
       throws ServletException, IOException {
 
-    // 1) Mybatis 관련 객체 준비 
-    InputStream mybatisConfigStream = Resources.getResourceAsStream(
-        "com/eomcs/pms/conf/mybatis-config.xml");
-    SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(mybatisConfigStream);
-    SqlSessionFactoryProxy sqlSessionFactoryProxy = new SqlSessionFactoryProxy(sqlSessionFactory);
-    MybatisDaoFactory daoFactory = new MybatisDaoFactory(sqlSessionFactoryProxy);
 
-    // 2) DAO 관련 객체 준비
-    BoardDao boardDao = daoFactory.createDao(BoardDao.class);
-    MemberDao memberDao = daoFactory.createDao(MemberDao.class);
-    ProjectDao projectDao = daoFactory.createDao(ProjectDao.class);
-    TaskDao taskDao = daoFactory.createDao(TaskDao.class);
-
-    // 3) 서비스 관련 객체 준비
-    TransactionManager txManager = new TransactionManager(sqlSessionFactoryProxy);
-
-    BoardService boardService = new DefaultBoardService(boardDao);
-    MemberService memberService = new DefaultMemberService(memberDao);
-    ProjectService projectService = new DefaultProjectService(txManager, projectDao, taskDao);
-    TaskService taskService = new DefaultTaskService(taskDao);
-
-    // 4) 서비스 객체를 ServletContext 보관소에 저장한다.
-    ServletContext servletContext = request.getServletContext();
-
-    servletContext.setAttribute("boardService", boardService);
-    servletContext.setAttribute("memberService", memberService);
-    servletContext.setAttribute("projectService", projectService);
-    servletContext.setAttribute("taskService", taskService);
-
-    response.setContentType("text/plain;charset=UTF-8"); // 한글이 깨지지 않게 하기 위함
-    PrintWriter out = response.getWriter();
-    out.println("의존 객체를 모두 준비하였습니다.");
   }
 
 }
