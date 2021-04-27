@@ -3,19 +3,17 @@ package com.eomcs.pms.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.Date;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.eomcs.pms.domain.Member;
 import com.eomcs.pms.domain.Task;
 import com.eomcs.pms.service.TaskService;
 
 @SuppressWarnings("serial")
-@WebServlet("/task/add")
-public class TaskAddHandler extends HttpServlet {
+@WebServlet("/task/detail")
+public class TaskDetailHandler extends HttpServlet {
 
   @Override
   protected void service(HttpServletRequest request, HttpServletResponse response)
@@ -26,22 +24,23 @@ public class TaskAddHandler extends HttpServlet {
     response.setContentType("text/plain;charset=UTF-8");
     PrintWriter out = response.getWriter();
 
-    out.println("[작업 등록]");
+    out.println("[작업 상세보기]");
 
     try {
-      Task t = new Task();
-      t.setProjectNo(Integer.parseInt(request.getParameter("projectNo")));
-      t.setContent(request.getParameter("content"));
-      t.setDeadline(Date.valueOf(request.getParameter("deadline")));
-      // 신규(0), 진행중(1), 완료(2)
-      t.setStatus(Integer.parseInt(request.getParameter("status")));
+      int no = Integer.parseInt(request.getParameter("no"));
 
-      Member owner = new Member();
-      owner.setNo(Integer.parseInt(request.getParameter("owner")));
+      Task task = taskService.get(no);
 
-      taskService.add(t);
+      if (task == null) {
+        out.println("해당 번호의 작업이 없습니다.");
+        return;
+      }
 
-      out.println("작업을 등록했습니다.");
+      out.printf("프로젝트: %s\n", task.getProjectTitle());
+      out.printf("내용: %s\n", task.getContent());
+      out.printf("마감일: %s\n", task.getDeadline());
+      out.printf("상태: %s\n", Task.getStatusLabel(task.getStatus()));
+      out.printf("담당자: %s\n", task.getOwner().getName());
 
     } catch (Exception e) {
       StringWriter strWriter = new StringWriter();
