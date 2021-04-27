@@ -44,13 +44,6 @@ public class ProjectMemberUpdateHandler extends HttpServlet {
         return;
       }
 
-      out.printf("프로젝트 명: %s\n", project.getTitle());
-      out.println("멤버:");
-      for (Member m : project.getMembers()) {
-        out.printf("  %s(%d)\n", m.getName(), m.getNo());
-      }
-      out.println("---------------------------");
-
       // ...&member=1&member=2&member=23
       String[] values = request.getParameterValues("member"); // 여러개의 같은 이름의 파라미터
       ArrayList<Member> memberList = new ArrayList<>();

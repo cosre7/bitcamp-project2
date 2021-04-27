@@ -43,13 +43,6 @@ public class ProjectMemberDeleteHandler extends HttpServlet {
         return;
       }
 
-      out.printf("프로젝트 명: %s\n", project.getTitle());
-      out.println("멤버:");
-      for (Member m : project.getMembers()) {
-        out.printf("  %s(%d)\n", m.getName(), m.getNo());
-      }
-      out.println("---------------------------");
-
       // 프로젝트의 기존 멤버를 모두 삭제한다.
       projectService.deleteMembers(no);
 
