@@ -38,31 +38,23 @@ public class MemberListHandler implements Servlet {
             m.getTel());
       }
     } catch (Exception e) {
-      // 상세 오류 내용을 StringWriter로 출력한다.
       StringWriter strWriter = new StringWriter();
       PrintWriter printWriter = new PrintWriter(strWriter);
       e.printStackTrace(printWriter);
-
-      // StringWriter에 들어 있는 출력 내용을 꺼내 클라이언트로 보낸다.
       out.println(strWriter.toString());
     }
   }
 
   @Override
   public void init(ServletConfig config) throws ServletException {
-    // TODO Auto-generated method stub
-
   }
 
   @Override
   public void destroy() {
-    // TODO Auto-generated method stub
-
   }
 
   @Override
   public ServletConfig getServletConfig() {
-    // TODO Auto-generated method stub
     return null;
   }
 
