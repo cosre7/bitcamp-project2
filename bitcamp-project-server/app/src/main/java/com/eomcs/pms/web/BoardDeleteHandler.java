@@ -3,23 +3,21 @@ package com.eomcs.pms.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import javax.servlet.GenericServlet;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import com.eomcs.pms.domain.Board;
+import com.eomcs.pms.domain.Member;
 import com.eomcs.pms.service.BoardService;
 
 @SuppressWarnings("serial")
-@WebServlet("/board/detail")
-public class BoardDetailHandler extends GenericServlet {
-
-  SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+@WebServlet("/board/delete")
+public class BoardDeleteHandler extends HttpServlet {
 
   @Override
-  public void service(ServletRequest request, ServletResponse response)
+  protected void service(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
     BoardService boardService = (BoardService) request.getServletContext().getAttribute("boardService");
@@ -27,24 +25,25 @@ public class BoardDetailHandler extends GenericServlet {
     response.setContentType("text/plain;charset=UTF-8");
     PrintWriter out = response.getWriter();
 
-    int no = Integer.parseInt(request.getParameter("no"));
-
-    out.println("[게시글 상세보기]");
+    out.println("[게시글 삭제]");
 
     try {
-      Board b = boardService.get(no);
-      if (b == null) {
+      int no = Integer.parseInt(request.getParameter("no"));
+
+      Board oldBoard = boardService.get(no);
+      if (oldBoard == null) {
         out.println("해당 번호의 게시글이 없습니다.");
         return;
       }
 
-      out.printf("제목: %s\n", b.getTitle());
-      out.printf("내용: %s\n", b.getContent());
-      out.printf("작성자: %s\n", b.getWriter().getName());
-      out.printf("등록일: %s\n", formatter.format(b.getRegisteredDate()));
-      out.printf("조회수: %s\n", b.getViewCount());
-      out.printf("좋아요: %s\n", b.getLike());
+      Member loginUser = (Member) request.getSession().getAttribute("loginUser");
+      if (oldBoard.getWriter().getNo() != loginUser.getNo()) {
+        out.println("삭제 권한이 없습니다!");
+        return;
+      }
 
+      boardService.delete(no);
+      out.println("게시글을 삭제하였습니다.");
     } catch (Exception e) {
       StringWriter strWriter = new StringWriter();
       PrintWriter printWriter = new PrintWriter(strWriter);
@@ -52,7 +51,6 @@ public class BoardDetailHandler extends GenericServlet {
       out.println(strWriter.toString());
     }
   }
-
 }
 
 
