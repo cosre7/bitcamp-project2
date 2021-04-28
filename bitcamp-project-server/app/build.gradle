@@ -1,6 +1,8 @@
 plugins {
     id 'java'
-    id 'eclipse'
+    
+    // 이클립스 IDE에서 사용할 기본 설정 파일 및 엡 프로젝트 설정 파일을 만들어주는 플러그인 
+    id 'eclipse-wtp'
     
     // 웹 애플리케이션 패키지 파일('war')을 생성할 때 사용할 플러그인 등록
     id 'war'
