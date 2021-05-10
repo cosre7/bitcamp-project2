@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>새 프로젝트</title>
+</head>
+<body>
+<h1>새 프로젝트</h1>
+<form action="add" method="post"> 
+제목: <input type="text" name="title"><br>
+내용: <textarea name="content" rows="10" cols="60"></textarea><br>
+시작일: <input type="date" name="startDate"><br>
+종료일: <input type="date" name="endDate"><br>
+팀원: <select name="member" multiple>
+  <option value="100">홍길동</option>
+  <option value="101">임꺽정</option>
+  <option value="102">유관순</option> 
+  <!-- html은 데이터베이스에서 가져 온 데이터를 출력할 수 없다! 
+       해결방법?
+       servlet 을 사용해야 한다.-->
+</select><br>
+<input type="submit" value="등록">
+</form>
+</body>
+</html>
