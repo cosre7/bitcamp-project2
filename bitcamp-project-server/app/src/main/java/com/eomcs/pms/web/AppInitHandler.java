@@ -71,7 +71,7 @@ public class AppInitHandler extends HttpServlet {
       servletContext.setAttribute("projectService", projectService);
       servletContext.setAttribute("taskService", taskService);
 
-      System.out.println("의존 객체를 모두 준비하였습니다.");
+      System.out.println("AppInitHandler: 의존 객체를 모두 준비하였습니다.");
 
     } catch (Exception e) {
       e.printStackTrace();
