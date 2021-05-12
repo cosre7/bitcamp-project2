@@ -37,7 +37,7 @@ public class BoardUpdateHandler extends HttpServlet {
 
       Board oldBoard = boardService.get(no);
       if (oldBoard == null) {
-        out.println("해당 번호의 게시글이 없습니다.");
+        throw new Exception ("해당 번호의 게시글이 없습니다.");
       }
 
       Member loginUser = (Member) request.getSession().getAttribute("loginUser");

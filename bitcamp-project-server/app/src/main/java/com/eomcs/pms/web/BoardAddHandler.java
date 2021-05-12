@@ -44,8 +44,6 @@ public class BoardAddHandler extends HttpServlet {
     out.println("<head>");
     out.println("<title>게시글 등록</title>");
 
-    out.println("[게시글 등록]");
-
     try {
       boardService.add(b);
 

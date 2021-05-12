@@ -64,6 +64,7 @@ public class ProjectDetailHandler extends HttpServlet {
       }
 
       out.println("<input type='submit' value='변경'>");
+      out.printf("<a href='delete?no=%d'>삭제</a>\n", project.getNo());
       out.println("</form>");
 
     } catch (Exception e) {
