@@ -21,6 +21,17 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
   
+<!-- 서블릿 등록 및 서블릿의 URL 설정 -->
+  <servlet>
+    <servlet-name>AppInitHandler</servlet-name>
+    <servlet-class>com.eomcs.pms.web.AppInitHandler</servlet-class>
+    <init-param>
+      <param-name>mybatis-config</param-name>
+      <param-value>com/eomcs/pms/conf/mybatis-config.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup> <!-- 작은 숫자 부터 실행된다. (서블릿이 여러 개 있을 때) -->
+  </servlet>
+  
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 		<welcome-file>index.htm</welcome-file>
