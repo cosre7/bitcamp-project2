@@ -33,7 +33,6 @@ public class BoardDeleteHandler extends HttpServlet {
     try {
       int no = Integer.parseInt(request.getParameter("no"));
 
-      // 서버쪽은 무조건 게시글 번호 확인, 삭제 권한 등의 보안 기능을 강화해두어야만 한다. 
       Board oldBoard = boardService.get(no);
       if (oldBoard == null) {
         throw new Exception("해당 번호의 게시글이 없습니다.");
@@ -46,7 +45,7 @@ public class BoardDeleteHandler extends HttpServlet {
 
       boardService.delete(no);
 
-      out.println("<meta http-equiv='Refresh' content='1;url=list'>");  
+      out.println("<meta http-equiv='Refresh' content='1;url=list'>");
       out.println("</head>");
       out.println("<body>");
       out.println("<h1>게시글 삭제</h1>");
@@ -57,10 +56,10 @@ public class BoardDeleteHandler extends HttpServlet {
       PrintWriter printWriter = new PrintWriter(strWriter);
       e.printStackTrace(printWriter);
 
-      out.println("</head>"); // add하다가 에러가 발생하면 바로 head 멈춤
+      out.println("</head>");
       out.println("<body>");
       out.println("<h1>게시글 삭제 오류</h1>");
-      out.printf("<p>%s<p>\n", e.getMessage()); // 오류 내용 출력
+      out.printf("<p>%s</p>\n", e.getMessage());
       out.printf("<pre>%s</pre>\n", strWriter.toString());
       out.println("<p><a href='list'>목록</a></p>");
     }

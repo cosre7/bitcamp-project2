@@ -20,15 +20,14 @@ import com.eomcs.pms.service.ProjectService;
 @WebServlet("/project/add")
 public class ProjectAddHandler extends HttpServlet {
 
-  // GET 요청이 들어올 때 -> doGet 호출
-  // POST 요청이 들어올 때 -> doPost 호출
   @Override
+  // 클라이언트 입장
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
     MemberService memberService = (MemberService) request.getServletContext().getAttribute("memberService");
 
-    response.setContentType("text/html;charset=UTF-8"); 
+    response.setContentType("text/html;charset=UTF-8");
     PrintWriter out = response.getWriter();
 
     out.println("<!DOCTYPE html>");
@@ -44,30 +43,25 @@ public class ProjectAddHandler extends HttpServlet {
     out.println("내용: <textarea name='content' rows='10' cols='60'></textarea><br>");
     out.println("시작일: <input type='date' name='startDate'><br>");
     out.println("종료일: <input type='date' name='endDate'><br>");
-    // 팀원 방법1
-    //    out.println("팀원: <select name='member' multiple>"); 
-    // 팀원 방법2
     out.println("팀원: <br>");
-    // servlet을 사용해서 데이터베이스에 있는 내용을 html 로 꺼내오는 방법
     try {
-      List<Member> members = memberService.list();
+      List<Member> members = memberService.list(null);
       for (Member m : members) {
-        // 팀원 방법1
-        //        out.printf("<option value='%d'>%s</option>\n", m.getNo(), m.getName());
-        // 팀원 방법2
         out.printf("  <input type='checkbox' name='member' value='%d'>%s<br>\n", m.getNo(), m.getName());
       }
     } catch (Exception e) {
       throw new ServletException(e);
     }
-    //    out.println("</select><br>");
-    out.println("<input type='submit' value='등록'>");
+    out.println("<p><input type='submit' value='등록'>");
+    out.println("<a href='list'>목록</a></p>");
+
     out.println("</form>");
     out.println("</body>");
     out.println("</html>");
   }
 
   @Override
+  // 서버 입장
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
@@ -94,37 +88,36 @@ public class ProjectAddHandler extends HttpServlet {
       Member loginUser = (Member) request.getSession().getAttribute("loginUser");
       p.setOwner(loginUser);
 
-      // ...&member=1&member=2&member=23
-      String[] values = request.getParameterValues("member"); // 여러개의 같은 이름의 파라미터
+      // ...&member=1&member=18&member=23
+      String[] values = request.getParameterValues("member"); // 같은 이름의 파라미터 값이 여러 개 넘어올 때 사용 -> 배열로!
       ArrayList<Member> memberList = new ArrayList<>();
-      for (String value : values) {
-        Member member = new Member();
-        member.setNo(Integer.parseInt(value));
-        memberList.add(member);
+      if (values != null) { // 멤버가 하나도 안넘어올 때 -> null이 되는데 그 땐 처리 안하기
+        for (String value : values) {
+          Member member = new Member();
+          member.setNo(Integer.parseInt(value));
+          memberList.add(member);
+        }
       }
-
       p.setMembers(memberList);
 
       projectService.add(p);
 
-      out.println("<meta http-equiv='Refresh' content='1;url=list'>");  
-      // '1;list': 1초 후에 다시 list를 요청하세요~ => 무조건 head 안에 들어있어야 하는 내용!
+      out.println("<meta http-equiv='Refresh' content='1;url=list'>");
       out.println("</head>");
       out.println("<body>");
       out.println("<h1>프로젝트 등록</h1>");
       out.println("<p>프로젝트를 등록했습니다.</p>");
 
     } catch (Exception e) {
-      // 상세 오류 내용을 StringWriter로 출력한다.
       StringWriter strWriter = new StringWriter();
       PrintWriter printWriter = new PrintWriter(strWriter);
       e.printStackTrace(printWriter);
 
-      out.println("</head>"); // add하다가 에러가 발생하면 바로 head 멈춤
+      out.println("</head>");
       out.println("<body>");
-      out.println("<h1>프로젝트 등록오류</h1>");
+      out.println("<h1>프로젝트 등록 오류</h1>");
       out.printf("<pre>%s</pre>\n", strWriter.toString());
-      out.println("<p><a href='list'>목록</a></p>"); // 목록으로 돌아갈 수 있는 링크
+      out.println("<p><a href='list'>목록</a></p>");
     }
 
     out.println("</body>");

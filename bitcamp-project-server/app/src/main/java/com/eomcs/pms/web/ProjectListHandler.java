@@ -23,7 +23,7 @@ public class ProjectListHandler extends HttpServlet {
 
     ProjectService projectService = (ProjectService) request.getServletContext().getAttribute("projectService");
 
-    response.setContentType("text/html;charset=UTF-8"); 
+    response.setContentType("text/html;charset=UTF-8");
     PrintWriter out = response.getWriter();
 
     out.println("<!DOCTYPE html>");
@@ -34,10 +34,29 @@ public class ProjectListHandler extends HttpServlet {
     out.println("<body>");
     out.println("<h1>프로젝트</h1>");
 
-    out.println("<p><a href='add'>새 프로젝트</a></p>"); // => /project/add의 doGet 실행
+    out.println("<p><a href='add'>새 프로젝트</a></p>");
 
     try {
-      List<Project> projects = projectService.list();
+      List<Project> projects = null;
+
+      String item = request.getParameter("item");
+      String keyword = request.getParameter("keyword");
+      String title = request.getParameter("title");
+      String owner = request.getParameter("owner");
+      String member = request.getParameter("member");
+
+      // keyword가 있으면 키워드 결과, 없으면 전체 목록
+      if (item != null && keyword != null && keyword.length() > 0) {
+        projects = projectService.search(item, keyword);
+
+      } else if ((title != null && title.length() > 0) ||
+          (owner != null && owner.length() > 0) ||
+          (member != null && member.length() > 0)) {
+        projects = projectService.search(title, owner, member);
+
+      } else {
+        projects = projectService.list();
+      }
 
       out.println("<table border='1'>");
       out.println("<thead>");
@@ -49,7 +68,6 @@ public class ProjectListHandler extends HttpServlet {
 
       for (Project p : projects) {
 
-        // 1) 프로젝트의 팀원 목록 가져오기
         StringBuilder strBuilder = new StringBuilder();
         List<Member> members = p.getMembers();
         for (Member m : members) {
@@ -59,26 +77,56 @@ public class ProjectListHandler extends HttpServlet {
           strBuilder.append(m.getName());
         }
 
-        // 2) 프로젝트 정보를 출력
         out.printf("<tr>"
             + " <td>%d</td>"
-            + " <td><a href='detail?no=%1$d'>%s</a></td>" // board/detail을 보고 싶을 때 -> list와 앞까지는 같은 경루 => 상대경로 detail만 적는다.
+            + " <td><a href='detail?no=%1$d'>%s</a></td>"
             + " <td>%s ~ %s</td>"
             + " <td>%s</td>"
-            + " <td>%s</td> </tr>\n",  
+            + " <td>%s</td> </tr>\n", 
             p.getNo(), 
             p.getTitle(), 
             p.getStartDate(),
             p.getEndDate(),
             p.getOwner().getName(),
             strBuilder.toString());
-      }
+      } 
       out.println("</tbody>");
       out.println("</table>");
 
-      out.println("<form action='search' method='get'>");
-      out.println("<input type='text' name='keyword'>");
-      out.println("<button type='submit'>검색</button>"); //type='submit' 생략하면 기본이 submit
+      out.println("<form method='get'>");
+      out.println("<select name='item'>");
+      out.printf("  <option value='0' %s>전체</option>\n",
+          (item != null && item.equals("0")) ? "selected" : "");
+      out.printf("  <option value='1' %s>프로젝트명</option>\n",
+          (item != null && item.equals("1")) ? "selected" : "");
+      out.printf("  <option value='2' %s>관리자</option>\n",
+          (item != null && item.equals("2")) ? "selected" : "");
+      out.printf("  <option value='3' %s>팀원</option>\n",
+          (item != null && item.equals("3")) ? "selected" : "");
+      out.println("</select>");
+      out.printf("<input type='search' name='keyword' value='%s'> \n",
+          keyword != null ? keyword : "");
+      out.println("<button>검색</button>");
+      out.println("</form>");
+
+      out.println("<form method='get'>");
+      out.println("<fieldset>");
+      out.println("  <legend>상세 검색</legend>");
+      out.println("  <table border='1'>");
+      out.println("  <tbody>");
+      out.printf("  <tr> <th>프로젝트명</th>"
+          + " <td><input type='search' name='title' value='%s'></td> </tr>\n", 
+          title != null ? title : ""); //findByKeywords 에 맞추기 위함
+      out.printf("  <tr> <th>관리자</th>"
+          + " <td><input type='search' name='owner' value='%s'></td> </tr>\n", 
+          owner != null ? owner : ""); //findByKeywords 에 맞추기 위함
+      out.printf("  <tr> <th>팀원</th>"
+          + " <td><input type='search' name='member' value='%s'></td> </tr>\n", 
+          member != null ? member : ""); //findByKeywords 에 맞추기 위함
+      out.println("  <tr> <td colspan='2'><button>검색</button></td> </tr>");
+      out.println("  </tbody>");
+      out.println("  </table>");
+      out.println("</fieldset>");
       out.println("</form>");
 
     } catch (Exception e) {
@@ -87,6 +135,7 @@ public class ProjectListHandler extends HttpServlet {
       PrintWriter printWriter = new PrintWriter(strWriter);
       e.printStackTrace(printWriter);
 
+      // StringWriter 에 들어 있는 출력 내용을 꺼내 클라이언트로 보낸다.
       out.printf("<pre>%s</pre>\n", strWriter.toString());
     }
 

@@ -46,7 +46,7 @@ public class ProjectDeleteHandler extends HttpServlet {
 
       projectService.delete(no);
 
-      out.println("<meta http-equiv='Refresh' content='1;url=list'>");  
+      out.println("<meta http-equiv='Refresh' content='1;url=list'>");
       out.println("</head>");
       out.println("<body>");
       out.println("<h1>프로젝트 삭제</h1>");
@@ -57,10 +57,10 @@ public class ProjectDeleteHandler extends HttpServlet {
       PrintWriter printWriter = new PrintWriter(strWriter);
       e.printStackTrace(printWriter);
 
-      out.println("</head>"); 
+      out.println("</head>");
       out.println("<body>");
       out.println("<h1>프로젝트 삭제 오류</h1>");
-      out.printf("<p>%s<p>\n", e.getMessage()); 
+      out.printf("<p>%s</p>\n", e.getMessage());
       out.printf("<pre>%s</pre>\n", strWriter.toString());
       out.println("<p><a href='list'>목록</a></p>");
     }

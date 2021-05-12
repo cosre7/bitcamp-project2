@@ -46,12 +46,11 @@ public class BoardDetailHandler extends HttpServlet {
         out.println("</html>");
         return;
       }
-
       out.println("<form action='update' method='post'>");
       out.println("<table border='1'>");
       out.println("<tbody>");
       out.printf("<tr><th>번호</th>"
-          + " <td><input type='text' name='no' value='%d' readonly></td></tr>\n", b.getNo()); // readonly 어트리뷰트 -> 읽는거만 가능하고 편집은 불가능하게 된다.
+          + " <td><input type='text' name='no' value='%d' readonly></td></tr>\n", b.getNo());
       out.printf("<tr><th>제목</th>"
           + " <td><input name='title' type='text' value='%s'></td></tr>\n", b.getTitle());
       out.printf("<tr><th>내용</th>"
@@ -63,20 +62,18 @@ public class BoardDetailHandler extends HttpServlet {
       out.println("</tbody>");
 
       Member loginUser = (Member) request.getSession().getAttribute("loginUser");
-      if (loginUser != null && b.getWriter().getNo() == loginUser.getNo()) { 
-        // 로그인 유저가 글을 보면 변경, 삭제 버튼이 보이고 아니라면 보이지 않게 한다.
-        // 로그인한 유저가 없다면 변경, 삭제 버튼이 안보인다.
+      if (loginUser != null && b.getWriter().getNo() == loginUser.getNo()) {
         out.println("<tfoot>");
         out.println("<tr><td colspan='2'>");
-        out.println("<input type='submit' value='변경'>"
-            + "<a href='delete?no=" + b.getNo() + "'>삭제</a>");
+        out.println("<input type='submit' value='변경'> "
+            + "<a href='delete?no=" + b.getNo() + "'>삭제</a> ");
         out.println("</td></tr>");
         out.println("</tfoot>");
       }
-      // 정상적으로 권한이 있는 사람 -> tfoot 태그 안쪽이 모두 보인다.
-      // 권한 없는 사람-> tfoot 태그 자체가 안보인다
+
       out.println("</table>");
       out.println("</form>");
+
 
     } catch (Exception e) {
       StringWriter strWriter = new StringWriter();
@@ -89,7 +86,6 @@ public class BoardDetailHandler extends HttpServlet {
     out.println("</body>");
     out.println("</html>");
   }
-
 }
 
 

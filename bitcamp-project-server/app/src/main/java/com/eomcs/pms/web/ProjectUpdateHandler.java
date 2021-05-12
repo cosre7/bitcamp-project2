@@ -41,12 +41,12 @@ public class ProjectUpdateHandler extends HttpServlet {
       Project oldProject = projectService.get(no);
 
       if (oldProject == null) {
-        throw new Exception ("해당 번호의 프로젝트가 없습니다.");
-      }
+        throw new Exception("해당 번호의 프로젝트가 없습니다.");
+      } 
 
       Member loginUser = (Member) request.getSession().getAttribute("loginUser");
       if (oldProject.getOwner().getNo() != loginUser.getNo()) {
-        throw new Exception ("변경 권한이 없습니다!");
+        throw new Exception("변경 권한이 없습니다!");
       }
 
       // 사용자에게서 변경할 데이터를 입력 받는다.
@@ -58,19 +58,22 @@ public class ProjectUpdateHandler extends HttpServlet {
       project.setEndDate(Date.valueOf(request.getParameter("endDate")));
       project.setOwner(loginUser);
 
-      // ...&member=1&member=2&member=23
-      String[] values = request.getParameterValues("member"); // 여러개의 같은 이름의 파라미터
+      // ...&member=1&member=18&member=23
+      String[] values = request.getParameterValues("member");
       ArrayList<Member> memberList = new ArrayList<>();
-      for (String value : values) {
-        Member member = new Member();
-        member.setNo(Integer.parseInt(value));
-        memberList.add(member);
+      if (values != null) {
+        for (String value : values) {
+          Member member = new Member();
+          member.setNo(Integer.parseInt(value));
+          memberList.add(member);
+        }
       }
       project.setMembers(memberList);
 
       // DBMS에게 프로젝트 변경을 요청한다.
       projectService.update(project);
-      out.println("<meta http-equiv='Refresh' content='1;url=list'>");  
+
+      out.println("<meta http-equiv='Refresh' content='1;url=list'>");
       out.println("</head>");
       out.println("<body>");
       out.println("<h1>프로젝트 변경</h1>");
@@ -81,10 +84,10 @@ public class ProjectUpdateHandler extends HttpServlet {
       PrintWriter printWriter = new PrintWriter(strWriter);
       e.printStackTrace(printWriter);
 
-      out.println("</head>"); 
+      out.println("</head>");
       out.println("<body>");
       out.println("<h1>프로젝트 변경 오류</h1>");
-      out.printf("<p>%s<p>\n", e.getMessage()); // 오류 내용 출력
+      out.printf("<p>%s</p>\n", e.getMessage());
       out.printf("<pre>%s</pre>\n", strWriter.toString());
       out.println("<p><a href='list'>목록</a></p>");
     }

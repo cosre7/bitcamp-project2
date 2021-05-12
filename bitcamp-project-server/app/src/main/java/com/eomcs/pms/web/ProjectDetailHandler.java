@@ -52,18 +52,17 @@ public class ProjectDetailHandler extends HttpServlet {
       out.printf("내용: <textarea name='content' rows='10' cols='60'>%s</textarea><br>\n", project.getContent());
       out.printf("시작일: <input type='date' name='startDate' value='%s'><br>\n", project.getStartDate());
       out.printf("종료일: <input type='date' name='endDate' value='%s'><br>\n", project.getEndDate());
-      out.printf("관리자: %s <br>\n", project.getOwner().getName());
+      out.printf("관리자: %s<br>\n", project.getOwner().getName());
       out.println("팀원: <br>");
 
       MemberService memberService = (MemberService) request.getServletContext().getAttribute("memberService");
-      List<Member> members = memberService.list();
+      List<Member> members = memberService.list(null);
       for (Member m : members) {
-        out.printf("  <input type='checkbox' name='member' value='%d' %s>%s<br>\n",
+        out.printf("  <input type='checkbox' name='member' value='%d' %s>%s<br>\n", 
             m.getNo(), contain(project.getMembers(), m.getNo()) ? "checked" : "", m.getName());
-        // checked : 조건이 만족되면 체크해놓기 (체크여부)
       }
 
-      out.println("<input type='submit' value='변경'>");
+      out.println("<input type='submit' value='변경'> ");
       out.printf("<a href='delete?no=%d'>삭제</a>\n", project.getNo());
       out.println("</form>");
 

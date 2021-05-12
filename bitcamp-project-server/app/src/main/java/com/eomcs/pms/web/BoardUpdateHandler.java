@@ -12,7 +12,6 @@ import com.eomcs.pms.domain.Board;
 import com.eomcs.pms.domain.Member;
 import com.eomcs.pms.service.BoardService;
 
-
 @SuppressWarnings("serial")
 @WebServlet("/board/update")
 public class BoardUpdateHandler extends HttpServlet {
@@ -20,7 +19,6 @@ public class BoardUpdateHandler extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-
     BoardService boardService = (BoardService) request.getServletContext().getAttribute("boardService");
 
     response.setContentType("text/html;charset=UTF-8");
@@ -37,12 +35,12 @@ public class BoardUpdateHandler extends HttpServlet {
 
       Board oldBoard = boardService.get(no);
       if (oldBoard == null) {
-        throw new Exception ("해당 번호의 게시글이 없습니다.");
-      }
+        throw new Exception("해당 번호의 게시글이 없습니다.");
+      } 
 
       Member loginUser = (Member) request.getSession().getAttribute("loginUser");
       if (oldBoard.getWriter().getNo() != loginUser.getNo()) {
-        throw new Exception ("변경 권한이 없습니다!");
+        throw new Exception("변경 권한이 없습니다!");
       }
 
       Board board = new Board();
@@ -51,7 +49,7 @@ public class BoardUpdateHandler extends HttpServlet {
       board.setContent(request.getParameter("content"));
       boardService.update(board);
 
-      out.println("<meta http-equiv='Refresh' content='1;url=list'>");  
+      out.println("<meta http-equiv='Refresh' content='1;url=list'>");
       out.println("</head>");
       out.println("<body>");
       out.println("<h1>게시글 변경</h1>");
@@ -62,16 +60,17 @@ public class BoardUpdateHandler extends HttpServlet {
       PrintWriter printWriter = new PrintWriter(strWriter);
       e.printStackTrace(printWriter);
 
-      out.println("</head>"); // add하다가 에러가 발생하면 바로 head 멈춤
+      out.println("</head>");
       out.println("<body>");
       out.println("<h1>게시글 변경 오류</h1>");
-      out.printf("<p>%s<p>\n", e.getMessage()); // 오류 내용 출력
+      out.printf("<p>%s</p>\n", e.getMessage());
       out.printf("<pre>%s</pre>\n", strWriter.toString());
       out.println("<p><a href='list'>목록</a></p>");
     }
 
     out.println("</body>");
     out.println("</html>");
+
   }
 }
 

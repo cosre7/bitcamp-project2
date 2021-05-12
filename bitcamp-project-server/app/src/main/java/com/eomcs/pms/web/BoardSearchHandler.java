@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.eomcs.pms.domain.Board;
 import com.eomcs.pms.service.BoardService;
 
-
 @SuppressWarnings("serial")
 @WebServlet("/board/search")
 public class BoardSearchHandler extends HttpServlet {
@@ -23,7 +22,7 @@ public class BoardSearchHandler extends HttpServlet {
 
     String keyword = request.getParameter("keyword");
 
-    response.setContentType("text/html;charset=UTF-8"); 
+    response.setContentType("text/html;charset=UTF-8");
     PrintWriter out = response.getWriter();
 
     out.println("<!DOCTYPE html>");
@@ -33,12 +32,10 @@ public class BoardSearchHandler extends HttpServlet {
     out.println("</head>");
     out.println("<body>");
     out.printf("<h1>게시글 검색 결과 : %s</h1>\n", keyword);
-    // 키워드를 입력받은 후 기본적인 정보를 출력했다.
-
 
     try {
-      if (keyword == null || keyword.length() == 0) { // 키워드가 null 이거나 길이가 0이면
-        throw new SearchException("검색어를 입력하세요."); // 검색어가 입력되어 있지 않은 상태 => 입력하라고 한다
+      if (keyword == null || keyword.length() == 0) {
+        throw new SearchException("검색어를 입력하세요.");
       }
 
       BoardService boardService = (BoardService) request.getServletContext().getAttribute("boardService");
@@ -58,10 +55,10 @@ public class BoardSearchHandler extends HttpServlet {
       for (Board b : list) {
         out.printf("<tr>"
             + " <td>%d</td>"
-            + " <td><a href='detail?no=%1$d'>%s</a></td>" 
+            + " <td><a href='detail?no=%1$d'>%s</a></td>"
             + " <td>%s</td>"
             + " <td>%s</td>"
-            + " <td>%d</td> </tr>\n",  
+            + " <td>%d</td> </tr>\n", 
             b.getNo(), 
             b.getTitle(), 
             b.getWriter().getName(),
