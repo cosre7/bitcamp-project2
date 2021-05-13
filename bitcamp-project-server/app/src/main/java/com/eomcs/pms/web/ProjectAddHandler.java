@@ -48,7 +48,9 @@ public class ProjectAddHandler extends HttpServlet {
         out.printf("  <input type='checkbox' name='member' value='%d'>%s<br>\n", m.getNo(), m.getName());
       }
     } catch (Exception e) {
-      throw new ServletException(e);
+      request.setAttribute("exception", e); 
+      request.getRequestDispatcher("/error").forward(request, response);
+      return;
     }
     out.println("<p><input type='submit' value='등록'>");
     out.println("<a href='list'>목록</a></p>");
