@@ -2,7 +2,6 @@ package com.eomcs.pms.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -106,12 +105,9 @@ public class MemberAddHandler extends HttpServlet {
       // - 정보 설정 전에 이미 버퍼가 쌓여버리면 서버로 보내져버려서 리프레시가 되지 않는다.
 
     } catch (Exception e) {
-      StringWriter strWriter = new StringWriter();
-      PrintWriter printWriter = new PrintWriter(strWriter);
-      e.printStackTrace(printWriter);
-
-      out.printf("<pre>%s</pre>\n", strWriter.toString()); 
-      out.println("<p><a href='list'>목록</a></p>"); // 오류가 발생했을 때에는 리프레시가 자동으로 안된다.
+      request.setAttribute("exception", e); 
+      request.getRequestDispatcher("/error").forward(request, response);
+      return;
     }
 
     out.println("</body>");

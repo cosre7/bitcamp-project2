@@ -2,7 +2,6 @@ package com.eomcs.pms.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,6 @@ import com.eomcs.pms.service.ProjectService;
 public class ProjectAddHandler extends HttpServlet {
 
   @Override
-  // 클라이언트 입장
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
@@ -61,19 +59,10 @@ public class ProjectAddHandler extends HttpServlet {
   }
 
   @Override
-  // 서버 입장
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
     ProjectService projectService = (ProjectService) request.getServletContext().getAttribute("projectService");
-
-    response.setContentType("text/html;charset=UTF-8");
-    PrintWriter out = response.getWriter();
-
-    out.println("<!DOCTYPE html>");
-    out.println("<html>");
-    out.println("<head>");
-    out.println("<title>프로젝트 등록</title>");
 
     try {
       Project p = new Project();
@@ -86,9 +75,9 @@ public class ProjectAddHandler extends HttpServlet {
       p.setOwner(loginUser);
 
       // ...&member=1&member=18&member=23
-      String[] values = request.getParameterValues("member"); // 같은 이름의 파라미터 값이 여러 개 넘어올 때 사용 -> 배열로!
+      String[] values = request.getParameterValues("member");
       ArrayList<Member> memberList = new ArrayList<>();
-      if (values != null) { // 멤버가 하나도 안넘어올 때 -> null이 되는데 그 땐 처리 안하기
+      if (values != null) {
         for (String value : values) {
           Member member = new Member();
           member.setNo(Integer.parseInt(value));
@@ -99,26 +88,13 @@ public class ProjectAddHandler extends HttpServlet {
 
       projectService.add(p);
 
-      out.println("<meta http-equiv='Refresh' content='1;url=list'>");
-      out.println("</head>");
-      out.println("<body>");
-      out.println("<h1>프로젝트 등록</h1>");
-      out.println("<p>프로젝트를 등록했습니다.</p>");
+      response.sendRedirect("list");
 
     } catch (Exception e) {
-      StringWriter strWriter = new StringWriter();
-      PrintWriter printWriter = new PrintWriter(strWriter);
-      e.printStackTrace(printWriter);
-
-      out.println("</head>");
-      out.println("<body>");
-      out.println("<h1>프로젝트 등록 오류</h1>");
-      out.printf("<pre>%s</pre>\n", strWriter.toString());
-      out.println("<p><a href='list'>목록</a></p>");
+      request.setAttribute("exception", e); 
+      request.getRequestDispatcher("/error").forward(request, response);
+      return;
     }
-
-    out.println("</body>");
-    out.println("</html>");
   }
 }
 

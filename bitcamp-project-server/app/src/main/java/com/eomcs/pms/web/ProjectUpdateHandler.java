@@ -2,7 +2,6 @@ package com.eomcs.pms.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.Date;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
@@ -77,16 +76,9 @@ public class ProjectUpdateHandler extends HttpServlet {
       out.println("<p>프로젝트를 변경하였습니다.</p>");
 
     } catch (Exception e) {
-      StringWriter strWriter = new StringWriter();
-      PrintWriter printWriter = new PrintWriter(strWriter);
-      e.printStackTrace(printWriter);
-
-      out.println("</head>");
-      out.println("<body>");
-      out.println("<h1>프로젝트 변경 오류</h1>");
-      out.printf("<p>%s</p>\n", e.getMessage());
-      out.printf("<pre>%s</pre>\n", strWriter.toString());
-      out.println("<p><a href='list'>목록</a></p>");
+      request.setAttribute("exception", e); 
+      request.getRequestDispatcher("/error").forward(request, response);
+      return;
     }
 
     out.println("</body>");
