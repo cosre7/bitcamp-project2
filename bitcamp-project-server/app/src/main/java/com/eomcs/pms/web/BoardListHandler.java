@@ -64,10 +64,10 @@ public class BoardListHandler extends HttpServlet {
       out.println("</tbody>");
       out.println("</table>");
 
-      // 일부러 만든 예외사항
-      if (request.getParameter("okok") == null) {
-        throw new Exception("테스트하기 위해 일부러 오류를 발생시킨다.");
-      }
+      //      // 일부러 만든 예외사항
+      //      if (request.getParameter("okok") == null) {
+      //        throw new Exception("테스트하기 위해 일부러 오류를 발생시킨다.");
+      //      }
 
       out.println("<form action='search' method='get'>");
       out.println("<input type='text' name='keyword'> ");
@@ -85,7 +85,7 @@ public class BoardListHandler extends HttpServlet {
       요청배달자.forward(request, response);
 
       // 리턴이 된다면 이 코드가 출력될 것.
-      System.out.println("===========> 오호라!!! "); // 얘는 콘솔 출력
+      //      System.out.println("===========> 오호라!!! "); // 얘는 콘솔 출력
       // 다른 서블릿으로 포워딩 한 이후, 그 서블릿의 실행을 마친 후 되돌아온다. 
       // 되돌아 온 이후에 클라이언트로 출력하는 작업은 모두 무시된다. // 밑의 </body>, </html> 코드는 실행되지 않는다.
       // 그러니 다음 문장을 실행할 이유가 없다.
