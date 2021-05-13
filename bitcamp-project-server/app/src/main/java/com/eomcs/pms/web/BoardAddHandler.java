@@ -49,7 +49,7 @@ public class BoardAddHandler extends HttpServlet {
       out.println("<p>게시글을 등록했습니다.</p>");
 
     } catch (Exception e) {
-      request.setAttribute("exception", e); // ErrorHandler가 exception 이라는 이름으로 꺼낼 수 있도록
+      request.setAttribute("exception", e); 
       request.getRequestDispatcher("/error").forward(request, response);
       return;
     }
