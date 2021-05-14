@@ -68,9 +68,7 @@ public class TaskAddHandler extends HttpServlet {
       out.println("</form>");
 
     } catch (Exception e) {
-      request.setAttribute("exception", e); 
-      request.getRequestDispatcher("/error").forward(request, response);
-      return;
+      throw new ServletException(e);
     }
     out.println("</body>");
     out.println("</html>");
@@ -110,9 +108,7 @@ public class TaskAddHandler extends HttpServlet {
       out.println("<p>작업을 등록했습니다.</p>");
 
     } catch (Exception e) {
-      request.setAttribute("exception", e); 
-      request.getRequestDispatcher("/error").forward(request, response);
-      return;
+      throw new ServletException(e);
     }
 
     out.println("</body>");

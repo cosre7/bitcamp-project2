@@ -3,7 +3,6 @@ package com.eomcs.pms.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -64,10 +63,10 @@ public class BoardListHandler extends HttpServlet {
       out.println("</tbody>");
       out.println("</table>");
 
-      //      // 일부러 만든 예외사항
-      //      if (request.getParameter("okok") == null) {
-      //        throw new Exception("테스트하기 위해 일부러 오류를 발생시킨다.");
-      //      }
+      // 배치 파일을 통한 예외 처리 설정을 테스트하기 위해 일부러 예외를 발생시킴
+      if (request.getParameter("okok") == null) {
+        throw new Exception("테스트하기 위해 일부러 오류를 발생시킨다.");
+      }
 
       out.println("<form action='search' method='get'>");
       out.println("<input type='text' name='keyword'> ");
@@ -76,23 +75,7 @@ public class BoardListHandler extends HttpServlet {
 
 
     } catch (Exception e) {
-      // 예외가 발생하면 예외 정보를 ServletRequest 보관소에 담는다.
-      request.setAttribute("exception", e); // ErrorHandler가 exception 이라는 이름으로 꺼낼 수 있도록
-
-      // 예외 내용을 출력하기 위해 ErrorHandler 에게 실행을 넘긴다. (포워딩)
-      // - 이때 이 서블릿이 버퍼로 출력한 내용은 모두 버려질 것이다.
-      RequestDispatcher 요청배달자 = request.getRequestDispatcher("/error"); // 에러를 처리하는 url로 넘기기
-      요청배달자.forward(request, response);
-
-      // 리턴이 된다면 이 코드가 출력될 것.
-      //      System.out.println("===========> 오호라!!! "); // 얘는 콘솔 출력
-      // 다른 서블릿으로 포워딩 한 이후, 그 서블릿의 실행을 마친 후 되돌아온다. 
-      // 되돌아 온 이후에 클라이언트로 출력하는 작업은 모두 무시된다. // 밑의 </body>, </html> 코드는 실행되지 않는다.
-      // 그러니 다음 문장을 실행할 이유가 없다.
-      // 따라서 forwarding을 수행하고 리턴한 이후에 의미없이 명령을 실행하지 않도록
-      // 이 메서드를 종료하게 만드는 것이 좋다.
-      return; // 어차피 출력을 안할 것이기 때문에 안써도 되지만
-      // return 을 적어주지 않으면 그 이후 출력에는 의미가 없으면서 실행은 계속 되는 수가..
+      throw new ServletException(e);
     }
 
     // 이건 클라이언트로 출력

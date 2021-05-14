@@ -76,9 +76,7 @@ public class ProjectUpdateHandler extends HttpServlet {
       out.println("<p>프로젝트를 변경하였습니다.</p>");
 
     } catch (Exception e) {
-      request.setAttribute("exception", e); 
-      request.getRequestDispatcher("/error").forward(request, response);
-      return;
+      throw new ServletException(e);
     }
 
     out.println("</body>");

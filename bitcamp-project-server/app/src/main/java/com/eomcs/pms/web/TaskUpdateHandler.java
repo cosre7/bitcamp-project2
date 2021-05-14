@@ -59,9 +59,7 @@ public class TaskUpdateHandler extends HttpServlet {
       out.println("<p>작업을 변경했습니다.</p>");
 
     } catch (Exception e) {
-      request.setAttribute("exception", e); 
-      request.getRequestDispatcher("/error").forward(request, response);
-      return;
+      throw new ServletException(e);
     }
 
     out.println("</body>");

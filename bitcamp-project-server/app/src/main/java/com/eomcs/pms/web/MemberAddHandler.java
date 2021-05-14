@@ -105,9 +105,7 @@ public class MemberAddHandler extends HttpServlet {
       // - 정보 설정 전에 이미 버퍼가 쌓여버리면 서버로 보내져버려서 리프레시가 되지 않는다.
 
     } catch (Exception e) {
-      request.setAttribute("exception", e); 
-      request.getRequestDispatcher("/error").forward(request, response);
-      return;
+      throw new ServletException(e);
     }
 
     out.println("</body>");
