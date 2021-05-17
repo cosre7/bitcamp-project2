@@ -37,9 +37,10 @@ String checked(List<Member> members, int memberNo) {
 //  projectMembers = new java.util.ArrayList();
 //}
 for (Member m : members) {
+  pageContext.setAttribute("m", m);
 %> 
   <input type='checkbox' name='member' 
-         value='<%=m.getNo()%>' <%=checked(projectMembers, m.getNo())%>><%=m.getName()%><br>
+         value='${m.no}' <%=checked(projectMembers, m.getNo())%>>${m.name}<br>
 <%
 }
 %>
