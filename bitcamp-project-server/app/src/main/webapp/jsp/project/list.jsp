@@ -65,6 +65,7 @@ if (keyword == null) {
 <input type='search' name='keyword' value='<%=keyword%>'> 
 <button>검색</button>
 </form>
+
 <%
 String title = request.getParameter("title");
 if (title == null) {
