@@ -1,7 +1,6 @@
 package com.eomcs.pms.web;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Date;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,14 +20,6 @@ public class TaskUpdateHandler extends HttpServlet {
       throws ServletException, IOException {
 
     TaskService taskService = (TaskService) request.getServletContext().getAttribute("taskService");
-
-    response.setContentType("text/html;charset=UTF-8");
-    PrintWriter out = response.getWriter();
-
-    out.println("<!DOCTYPE html>");
-    out.println("<html>");
-    out.println("<head>");
-    out.println("<title>작업 변경</title>");
 
     try {
       int no = Integer.parseInt(request.getParameter("no"));
@@ -52,17 +43,10 @@ public class TaskUpdateHandler extends HttpServlet {
 
       taskService.update(task);
 
-      out.println("<meta http-equiv='Refresh' content='1;url=list'>");
-      out.println("</head>");
-      out.println("<body>");
-      out.println("<h1>작업 변경</h1>");
-      out.println("<p>작업을 변경했습니다.</p>");
+      response.sendRedirect("list");
 
     } catch (Exception e) {
       throw new ServletException(e);
     }
-
-    out.println("</body>");
-    out.println("</html>");
   }
 }

@@ -11,16 +11,15 @@ import javax.servlet.http.HttpServletRequest;
 
 // POST 요청 파라미터에 대해 문자 집합을 설정하는 필터
 //
-//@WebFilter(value="/*") // 모든 요청에 대해 배치한다.
-// => web.xml 에 필터 배치 정보를 설정한다.
+//@WebFilter(value="/*") => web.xml 에 필터 배치 정보를 설정한다. 
 public class CharacterEncodingFilter implements Filter {
 
-  String encoding;
+  String encoding; 
 
   @Override
-  public void init(FilterConfig filterConfig) throws ServletException { // web.xml에 있는 <init param>의 값을 꺼내줌
+  public void init(FilterConfig filterConfig) throws ServletException {
     this.encoding = filterConfig.getInitParameter("encoding");
-    if (encoding == null) { // <init param> 이 없으면 실행
+    if (encoding == null) {
       encoding = "UTF-8";
     }
   }
@@ -37,19 +36,10 @@ public class CharacterEncodingFilter implements Filter {
 
     chain.doFilter(request, response);
 
+
   }
 
 }
-
-
-
-
-
-
-
-
-
-
 
 
 

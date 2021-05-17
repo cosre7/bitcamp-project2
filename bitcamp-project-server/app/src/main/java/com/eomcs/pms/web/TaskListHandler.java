@@ -82,9 +82,9 @@ public class TaskListHandler extends HttpServlet {
         out.println("<tr><td colspan='5'>해당 번호의 프로젝트가 없거나 또는 등록된 작업이 없습니다.</td></tr>");
 
       } else {
-        projectNo = 0; // 현재 프로젝트 번호
+        projectNo = 0;
         for (Task t : tasks) {
-          if (projectNo != t.getProjectNo()) { // 현재 프로젝트번호와 가져온 번호가 다르다 -> 새 프로젝트
+          if (projectNo != t.getProjectNo()) {
             out.printf("<tr><td colspan='5'>프로젝트: '%s'</td></tr>\n", t.getProjectTitle());
             projectNo = t.getProjectNo();
           }

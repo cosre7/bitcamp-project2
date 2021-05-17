@@ -72,15 +72,14 @@
   
   <select id="findByKeyword" resultMap="projectMap" parameterType="map">
     <include refid="select1"/>
-    <!-- 전체는 item이 0이면 실행 -->
     <where>
-		    <if test="item == 1 or item == 0"> <!-- item이 1이면 실행 -->
+		    <if test="item == 1 or item == 0">
 		    p.title like concat('%', #{keyword}, '%')
 		    </if>
-		    <if test="item == 2 or item == 0"> <!-- item이 2면 실행 -->
+		    <if test="item == 2 or item == 0">
 		    or m.name like concat('%', #{keyword}, '%')
 		    </if>
-		    <if test="item == 3 or item == 0"><!-- item이 3이면 실행 -->
+		    <if test="item == 3 or item == 0">
 		    or m2.name like concat('%', #{keyword}, '%')
 		    </if>
     </where>

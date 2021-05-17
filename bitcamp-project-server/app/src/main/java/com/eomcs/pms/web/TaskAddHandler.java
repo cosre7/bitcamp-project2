@@ -80,14 +80,6 @@ public class TaskAddHandler extends HttpServlet {
 
     TaskService taskService = (TaskService) request.getServletContext().getAttribute("taskService");
 
-    response.setContentType("text/html;charset=UTF-8");
-    PrintWriter out = response.getWriter();
-
-    out.println("<!DOCTYPE html>");
-    out.println("<html>");
-    out.println("<head>");
-    out.println("<title>작업 등록</title>");
-
     try {
       Task t = new Task();
       t.setProjectNo(Integer.parseInt(request.getParameter("projectNo")));
@@ -101,17 +93,11 @@ public class TaskAddHandler extends HttpServlet {
 
       taskService.add(t);
 
-      out.println("<meta http-equiv='Refresh' content='1;url=list'>");
-      out.println("</head>");
-      out.println("<body>");
-      out.println("<h1>작업 등록</h1>");
-      out.println("<p>작업을 등록했습니다.</p>");
+      response.sendRedirect("list");
 
     } catch (Exception e) {
       throw new ServletException(e);
     }
 
-    out.println("</body>");
-    out.println("</html>");
   }
 }

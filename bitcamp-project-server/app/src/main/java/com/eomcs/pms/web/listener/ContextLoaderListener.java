@@ -27,8 +27,6 @@ import com.eomcs.pms.service.impl.DefaultTaskService;
 // 즉 톰캣 서버가 웹 애플리케이션을 시작하거나 종료하면 리스너 규칙에 따라 메서드를 호출한다는 뜻이다.
 // 
 public class ContextLoaderListener implements ServletContextListener {
-
-  //웹 애플리케이션을 시작할 때
   @Override
   public void contextInitialized(ServletContextEvent sce) {
     try {
@@ -36,9 +34,7 @@ public class ContextLoaderListener implements ServletContextListener {
 
       // 1) Mybatis 관련 객체 준비
       InputStream mybatisConfigStream = Resources.getResourceAsStream(
-          servletContext.getInitParameter("mybatis-config")); // web.xml 의 <init-param> 의 <param-name>과 같은 이름
-      // <context-param>에서 값을 찾는다.
-
+          servletContext.getInitParameter("mybatis-config"));
       SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(mybatisConfigStream);
       SqlSessionFactoryProxy sqlSessionFactoryProxy = new SqlSessionFactoryProxy(sqlSessionFactory);
 
@@ -68,6 +64,5 @@ public class ContextLoaderListener implements ServletContextListener {
     } catch (Exception e) {
       e.printStackTrace();
     }
-  }  
-
+  }
 }

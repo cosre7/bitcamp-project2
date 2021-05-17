@@ -39,7 +39,7 @@ public class DefaultProjectService implements ProjectService {
         // 1) 프로젝트 정보를 입력한다.
         int count = projectDao.insert(project); 
 
-        if (project.getMembers().size() > 0) { // 멤버 정보가 등록될 때만 insertMembers를 실행하겠다.
+        if (project.getMembers().size() > 0) {
           // 2) 멤버를 입력한다.
           HashMap<String,Object> params = new HashMap<>();
           params.put("projectNo", project.getNo());
@@ -86,6 +86,9 @@ public class DefaultProjectService implements ProjectService {
 
           projectDao.insertMembers(params);
         }
+        // 다른 스레드가 작업할 시간을 준다.
+        // => 즉 다른 스레드가 현재 스레드의 트랜잭션 작업을 간섭할 수 있는지 확인하기 위함이다.
+        //        Thread.sleep(30000);
 
         return count;
       }

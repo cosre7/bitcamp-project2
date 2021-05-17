@@ -61,7 +61,7 @@ public class ProjectDetailHandler extends HttpServlet {
       // 프로젝트 팀원 출력은 다른 서블릿에게 맡긴다.
       // 프로젝트 팀원을 출력할 때 기존 멤버의 경우 선택된 상태로 출력해야 한다.
       // 이를 위해 프로젝트 기존 멤버 정보를 해당 서블릿에게 넘긴다.
-      request.setAttribute("members", project.getMembers()); // 일을 시키기 전에 미리 정보를 넘긴다.
+      request.setAttribute("members", project.getMembers());
       request.getRequestDispatcher("/project/member/list").include(request, response);
 
       out.println("<input type='submit' value='변경'> ");

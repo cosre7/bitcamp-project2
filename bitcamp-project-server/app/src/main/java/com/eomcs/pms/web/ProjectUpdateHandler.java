@@ -1,7 +1,6 @@
 package com.eomcs.pms.web;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Date;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
@@ -22,14 +21,6 @@ public class ProjectUpdateHandler extends HttpServlet {
       throws ServletException, IOException {
 
     ProjectService projectService = (ProjectService) request.getServletContext().getAttribute("projectService");
-
-    response.setContentType("text/html;charset=UTF-8");
-    PrintWriter out = response.getWriter();
-
-    out.println("<!DOCTYPE html>");
-    out.println("<html>");
-    out.println("<head>");
-    out.println("<title>프로젝트 변경</title>");
 
     try {
       int no = Integer.parseInt(request.getParameter("no"));
@@ -69,18 +60,11 @@ public class ProjectUpdateHandler extends HttpServlet {
       // DBMS에게 프로젝트 변경을 요청한다.
       projectService.update(project);
 
-      out.println("<meta http-equiv='Refresh' content='1;url=list'>");
-      out.println("</head>");
-      out.println("<body>");
-      out.println("<h1>프로젝트 변경</h1>");
-      out.println("<p>프로젝트를 변경하였습니다.</p>");
+      response.sendRedirect("list");
 
     } catch (Exception e) {
       throw new ServletException(e);
     }
-
-    out.println("</body>");
-    out.println("</html>");
   }
 }
 
