@@ -8,7 +8,7 @@
 <title>프로젝트 상세</title>
 </head>
 <body>
-<h1>프로젝트 상세보기(JSP + JSP 액션태그)</h1>
+<h1>프로젝트 상세보기(JSP + JSP 액션태그 + 선언 엘리먼트)</h1>
 <jsp:useBean id="project" type="com.eomcs.pms.domain.Project" scope="request"/>
 <form action='update' method='post'>
 번호: <input type='text' name='no' value='<%=project.getNo()%>' readonly><br>
