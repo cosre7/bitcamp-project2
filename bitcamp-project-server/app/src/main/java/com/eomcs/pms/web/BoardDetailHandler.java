@@ -1,41 +1,28 @@
 package com.eomcs.pms.web;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import com.eomcs.pms.domain.Board;
 import com.eomcs.pms.service.BoardService;
 
-@SuppressWarnings("serial")
-@WebServlet("/board/detail")
-public class BoardDetailHandler extends HttpServlet {
+@Controller
+public class BoardDetailHandler {
 
-  SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+  BoardService boardService;
 
-  @Override
-  protected void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  public BoardDetailHandler(BoardService boardService) {
+    this.boardService = boardService;
+  }
 
-    BoardService boardService = (BoardService) request.getServletContext().getAttribute("boardService");
-
-    response.setContentType("text/html;charset=UTF-8");
-
+  @RequestMapping("/board/detail")
+  public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
     int no = Integer.parseInt(request.getParameter("no"));
+    Board board = boardService.get(no);
+    request.setAttribute("board", board);
+    return "/jsp/board/detail.jsp";
 
-    try {
-      Board board = boardService.get(no);
-      request.setAttribute("board", board);
-
-      response.setContentType("text/html;charset=UTF-8");
-      request.getRequestDispatcher("/jsp/board/detail.jsp").include(request, response);
-
-    } catch (Exception e) {
-      throw new ServletException(e);
-    }
   }
 }
 

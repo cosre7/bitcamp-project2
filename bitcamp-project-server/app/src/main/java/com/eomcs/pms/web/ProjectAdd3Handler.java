@@ -31,7 +31,7 @@ public class ProjectAdd3Handler extends HttpServlet {
       request.setAttribute("members", members);
 
       response.setContentType("text/html;charset=UTF-8");
-      request.getRequestDispatcher("/jsp/project/form3.jsp").include(request, response);
+      request.setAttribute("viewUrl", "/jsp/project/form3.jsp");
 
     } catch (Exception e) {
       throw new ServletException(e);

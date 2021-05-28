@@ -16,7 +16,7 @@ public class ProjectAdd1Handler extends HttpServlet {
       throws ServletException, IOException {
 
     response.setContentType("text/html;charset=UTF-8");
-    request.getRequestDispatcher("/jsp/project/form1.jsp").include(request, response);
+    request.setAttribute("viewUrl", "/jsp/project/form1.jsp");
   }
 }
 

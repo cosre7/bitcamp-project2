@@ -29,7 +29,7 @@ public class TaskAddHandler extends HttpServlet {
       request.setAttribute("members", memberService.list(null));
 
       response.setContentType("text/html;charset=UTF-8");
-      request.getRequestDispatcher("/jsp/task/form.jsp").include(request, response);
+      request.setAttribute("viewUrl", "/jsp/task/form.jsp");
 
     } catch (Exception e) {
       throw new ServletException(e);
@@ -55,7 +55,7 @@ public class TaskAddHandler extends HttpServlet {
 
       taskService.add(t);
 
-      response.sendRedirect("list");
+      request.setAttribute("redirect", "list");
 
     } catch (Exception e) {
       throw new ServletException(e);

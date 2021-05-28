@@ -86,7 +86,7 @@ public class MemberUpdateHandler extends HttpServlet {
       }
 
       memberService.update(member);
-      response.sendRedirect("list");
+      request.setAttribute("redirect", "list");
 
     } catch (Exception e) {
       throw new ServletException(e);

@@ -46,7 +46,7 @@ public class TaskListHandler extends HttpServlet {
       request.setAttribute("tasks", tasks);
 
       response.setContentType("text/html;charset=UTF-8");
-      request.getRequestDispatcher("/jsp/task/list.jsp").include(request, response);
+      request.setAttribute("viewUrl", "/jsp/task/list.jsp");
 
     } catch (Exception e) {
       throw new ServletException(e);
