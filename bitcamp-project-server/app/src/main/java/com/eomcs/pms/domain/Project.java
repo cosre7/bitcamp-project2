@@ -17,6 +17,7 @@ public class Project {
     if (members == null || members.size() == 0) {
       return null;
     }
+
     StringBuilder strBuilder = new StringBuilder();
     for (Member m : members) {
       if (strBuilder.length() > 0) {

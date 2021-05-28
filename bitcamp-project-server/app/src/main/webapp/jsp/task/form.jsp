@@ -2,7 +2,7 @@
     contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
     trimDirectiveWhitespaces="true"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>    
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,7 +10,7 @@
 <title>새 작업</title>
 </head>
 <body>
-<h1>새 작업(JSP + JSP 액션태그)</h1>
+<h1>새 작업(JSP + JSP 액션태그 + EL + JSTL)</h1>
 <form action='add' method='post'>
 프로젝트: <select name='projectNo'>
 
@@ -35,3 +35,4 @@
 </form>
 </body>
 </html>
+    

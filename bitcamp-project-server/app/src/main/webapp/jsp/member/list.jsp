@@ -19,6 +19,7 @@
 </tr>
 </thead>
 <tbody>
+
 <c:forEach items="${list}" var="m">
   <c:if test="${not empty m.photo}">
     <c:set var="photoUrl">../upload/${m.photo}_30x30.jpg</c:set>
@@ -32,7 +33,7 @@
 	  <td><a href='detail?no=${m.no}'>${m.name}</a></td> 
 	  <td>${m.email}</td> 
 	  <td>${m.tel}</td> 
-  </tr>
+	</tr>
 </c:forEach>
 
 </tbody>

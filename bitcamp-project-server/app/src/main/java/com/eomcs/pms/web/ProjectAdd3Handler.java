@@ -14,13 +14,10 @@ import com.eomcs.pms.service.MemberService;
 @SuppressWarnings("serial")
 @WebServlet("/project/add3")
 public class ProjectAdd3Handler extends HttpServlet {
-  // jsp 에서 <%! %> 안에 작성된 코드가 놓이는 위치
 
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-
-    // <% %> 안에 작성된 코드가 놓이는 위치
 
     // 클라이언트에서 보낸 값을 세션에 보관한다.
     HttpSession session = request.getSession();
