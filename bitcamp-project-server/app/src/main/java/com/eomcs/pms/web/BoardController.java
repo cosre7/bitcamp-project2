@@ -2,7 +2,7 @@ package com.eomcs.pms.web;
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,19 +21,17 @@ public class BoardController {
   }
 
   @RequestMapping(path="add", method = RequestMethod.GET) 
-  public String form(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public String form() throws Exception {
     return "/jsp/board/form.jsp";
   }
 
   @RequestMapping(path="add", method = RequestMethod.POST) 
-  public String add(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public String add(String title, String content, HttpSession session) throws Exception {
     Board b = new Board();
-    b.setTitle(request.getParameter("title"));
-    b.setContent(request.getParameter("content"));
+    b.setTitle(title);
+    b.setContent(content);
 
-    // 작성자는 로그인 사용자이다.
-    HttpServletRequest httpRequest = request;
-    Member loginUser = (Member) httpRequest.getSession().getAttribute("loginUser");
+    Member loginUser = (Member) session.getAttribute("loginUser");
     b.setWriter(loginUser);
 
     boardService.add(b);
@@ -41,16 +39,14 @@ public class BoardController {
   }
 
   @RequestMapping(path = "delete", method = RequestMethod.GET) // path와 value 는 같다
-  public String delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-    int no = Integer.parseInt(request.getParameter("no"));
+  public String delete(int no, HttpSession session) throws Exception {
 
     Board oldBoard = boardService.get(no);
     if (oldBoard == null) {
       throw new Exception("해당 번호의 게시글이 없습니다.");
     }
 
-    Member loginUser = (Member) request.getSession().getAttribute("loginUser");
+    Member loginUser = (Member) session.getAttribute("loginUser");
     if (oldBoard.getWriter().getNo() != loginUser.getNo()) {
       throw new Exception("삭제 권한이 없습니다!");
     }
@@ -61,16 +57,14 @@ public class BoardController {
   }
 
   @RequestMapping(path = "detail", method = RequestMethod.GET)
-  public String detail(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    int no = Integer.parseInt(request.getParameter("no"));
+  public String detail(int no, HttpServletRequest request) throws Exception {
     Board board = boardService.get(no);
     request.setAttribute("board", board);
     return "/jsp/board/detail.jsp";
   }
 
   @RequestMapping(value = "list", method = RequestMethod.GET)
-  public String list(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    String keyword = request.getParameter("keyword");
+  public String list(String keyword, HttpServletRequest request) throws Exception {
     List<Board> boards = null;
     if (keyword != null && keyword.length() > 0) {
       boards = boardService.search(keyword);
@@ -84,23 +78,22 @@ public class BoardController {
   }
 
   @RequestMapping(value = "update", method = RequestMethod.POST)
-  public String update(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    int no = Integer.parseInt(request.getParameter("no"));
+  public String update(int no, String title, String content, HttpSession session) throws Exception {
 
     Board oldBoard = boardService.get(no);
     if (oldBoard == null) {
       throw new Exception("해당 번호의 게시글이 없습니다.");
     } 
 
-    Member loginUser = (Member) request.getSession().getAttribute("loginUser");
+    Member loginUser = (Member) session.getAttribute("loginUser");
     if (oldBoard.getWriter().getNo() != loginUser.getNo()) {
       throw new Exception("변경 권한이 없습니다!");
     }
 
     Board board = new Board();
     board.setNo(oldBoard.getNo());
-    board.setTitle(request.getParameter("title"));
-    board.setContent(request.getParameter("content"));
+    board.setTitle(title);
+    board.setContent(content);
     boardService.update(board);
 
     return "redirect:list";
