@@ -9,20 +9,20 @@ import com.eomcs.pms.domain.Member;
 import com.eomcs.pms.service.MemberService;
 
 @Controller
-public class LoginHandler {
+public class AuthController {
 
   MemberService memberService;
 
-  public LoginHandler(MemberService memberService) {
+  public AuthController(MemberService memberService) {
     this.memberService = memberService;
   }
 
   @RequestMapping("/login")
-  public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public String login(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
     if (request.getMethod().equals("GET")) {
       return "/jsp/login_form.jsp";
-    }
+    } 
 
     String email = request.getParameter("email");
     String password = request.getParameter("password");
@@ -42,15 +42,24 @@ public class LoginHandler {
     Member member = memberService.get(email, password);
 
     if (member == null) {
-      // 로그인 실패한다면 세션 객체의 모든 내용을 삭제한다.
       request.getSession().invalidate(); 
       return "/jsp/login_fail.jsp";
 
     } else {
-      // 로그인 성공한다면, 로그인 사용자 정보를 세션 객체에 보관한다.
       request.getSession().setAttribute("loginUser", member);
       return "/jsp/login_success.jsp";
     }
+  }
+
+  @RequestMapping("/logout")
+  public String logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    request.getSession().invalidate();
+    return "redirect:login";
+  }
+
+  @RequestMapping("/userInfo")
+  public String userInfo(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    return "/jsp/user_info.jsp";
   }
 }
 

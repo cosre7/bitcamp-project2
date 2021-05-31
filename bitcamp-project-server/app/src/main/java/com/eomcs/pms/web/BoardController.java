@@ -11,11 +11,11 @@ import com.eomcs.pms.service.BoardService;
 
 @Controller
 @RequestMapping("/board/") // 위아래 url이 합해짐 -> 뒤의 / 를 안붙여도 상관없다.
-public class BoardHandler {
+public class BoardController {
 
   BoardService boardService;
 
-  public BoardHandler(BoardService boardService) {
+  public BoardController(BoardService boardService) {
     this.boardService = boardService;
   }
 

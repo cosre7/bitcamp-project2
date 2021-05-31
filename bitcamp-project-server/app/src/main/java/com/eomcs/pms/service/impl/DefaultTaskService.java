@@ -6,11 +6,6 @@ import com.eomcs.pms.dao.TaskDao;
 import com.eomcs.pms.domain.Task;
 import com.eomcs.pms.service.TaskService;
 
-// 서비스 객체
-// - 비즈니스 로직을 담고 있다.
-// - 업무에 따라 트랜잭션을 제어하는 일을 한다.
-// - 서비스 객체의 메서드는 가능한 업무 관련 용어를 사용하여 메서드를 정의한다.
-//
 @Service
 public class DefaultTaskService implements TaskService {
 

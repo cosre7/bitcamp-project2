@@ -13,11 +13,6 @@ import com.eomcs.pms.domain.Member;
 import com.eomcs.pms.domain.Project;
 import com.eomcs.pms.service.ProjectService;
 
-// 서비스 객체
-// - 비즈니스 로직을 담고 있다.
-// - 업무에 따라 트랜잭션을 제어하는 일을 한다.
-// - 서비스 객체의 메서드는 가능한 업무 관련 용어를 사용하여 메서드를 정의한다.
-//
 @Service
 public class DefaultProjectService implements ProjectService {
 
@@ -26,7 +21,7 @@ public class DefaultProjectService implements ProjectService {
   ProjectDao projectDao;
   TaskDao taskDao;
 
-  public DefaultProjectService(PlatformTransactionManager txManager, ProjectDao projectDao, TaskDao taskDao) {
+  public DefaultProjectService(PlatformTransactionManager  txManager, ProjectDao projectDao, TaskDao taskDao) {
     this.transactionTemplate = new TransactionTemplate(txManager);
     this.projectDao = projectDao;
     this.taskDao = taskDao;
@@ -35,7 +30,7 @@ public class DefaultProjectService implements ProjectService {
   // 등록 업무 
   @Override
   public int add(Project project) throws Exception {
-    return transactionTemplate.execute(new TransactionCallback<Integer>() {
+    return transactionTemplate.execute(new TransactionCallback<Integer>(){
       @Override
       public Integer doInTransaction(TransactionStatus status) {
         try {
@@ -53,7 +48,7 @@ public class DefaultProjectService implements ProjectService {
           }
 
           return count;
-        }catch (Exception e) {
+        } catch (Exception e) {
           throw new RuntimeException(e);
         }
       }
@@ -160,7 +155,7 @@ public class DefaultProjectService implements ProjectService {
   }
 
   @Override
-  public int updateMembers(int projectNo, List<Member> members) {
+  public int updateMembers(int projectNo, List<Member> members) throws Exception {
     return transactionTemplate.execute(new TransactionCallback<Integer>() {
       @Override
       public Integer doInTransaction(TransactionStatus status) {
@@ -172,8 +167,7 @@ public class DefaultProjectService implements ProjectService {
           params.put("members", members);
 
           return projectDao.insertMembers(params);
-
-        }  catch (Exception e) {
+        } catch (Exception e) {
           throw new RuntimeException(e);
         }
       }
