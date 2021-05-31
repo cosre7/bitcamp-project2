@@ -5,6 +5,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.eomcs.pms.domain.Member;
 import com.eomcs.pms.domain.Task;
@@ -26,13 +28,15 @@ public class TaskController {
     this.memberService = memberService;
   }
 
-  @RequestMapping("add")
+  @GetMapping("add")
+  public String form(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    request.setAttribute("projects", projectService.list());
+    request.setAttribute("members", memberService.list(null));
+    return "/jsp/task/form.jsp";
+  }
+
+  @PostMapping("add")
   public String add(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    if (request.getMethod().equals("GET")) {
-      request.setAttribute("projects", projectService.list());
-      request.setAttribute("members", memberService.list(null));
-      return "/jsp/task/form.jsp";
-    }
 
     Task t = new Task();
     t.setProjectNo(Integer.parseInt(request.getParameter("projectNo")));
@@ -64,7 +68,7 @@ public class TaskController {
     return "redirect:list";
   }
 
-  @RequestMapping("detail")
+  @GetMapping("detail")
   public String detail(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
     int no = Integer.parseInt(request.getParameter("no"));
@@ -79,7 +83,7 @@ public class TaskController {
     return "/jsp/task/detail.jsp";
   }
 
-  @RequestMapping("list")
+  @GetMapping("list")
   public String list(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
     String input  = request.getParameter("projectNo");
@@ -106,7 +110,7 @@ public class TaskController {
     return "/jsp/task/list.jsp";
   }
 
-  @RequestMapping("update")
+  @PostMapping("update")
   public String update(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
     int no = Integer.parseInt(request.getParameter("no"));

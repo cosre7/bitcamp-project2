@@ -4,6 +4,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.eomcs.pms.domain.Member;
 import com.eomcs.pms.service.MemberService;
@@ -17,12 +19,13 @@ public class AuthController {
     this.memberService = memberService;
   }
 
-  @RequestMapping("/login")
-  public String login(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  @GetMapping("/login")
+  public String form(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    return "/jsp/login_form.jsp";
+  } 
 
-    if (request.getMethod().equals("GET")) {
-      return "/jsp/login_form.jsp";
-    } 
+  @PostMapping("/login")
+  public String login(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
     String email = request.getParameter("email");
     String password = request.getParameter("password");
