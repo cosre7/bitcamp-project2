@@ -3,7 +3,6 @@ package com.eomcs.pms.web;
 import java.util.List;
 import java.util.UUID;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import org.springframework.stereotype.Controller;
@@ -31,7 +30,7 @@ public class MemberController {
   }
 
   @GetMapping("add")
-  public String form(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public String form() throws Exception {
     return "/jsp/member/form.jsp";
   }
 
