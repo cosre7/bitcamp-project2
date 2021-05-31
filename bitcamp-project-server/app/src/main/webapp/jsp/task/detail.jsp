@@ -34,7 +34,7 @@
     <input type='radio' name='status' value='2' ${task.status == 2 ? "checked" : ""}>완료 </td></tr>
 <tr>
   <th>담당자</th> 
-  <td><select name='ownerNo'>
+  <td><select name='owner.no'> <!-- owner 객체를 만들고 no 프로퍼티 값을 넣어라  -->
   
 <c:forEach items="${members}" var="m">
   <option value='${m.no}' ${task.owner.no == m.no ? "selected" : ""}>${m.name}</option>

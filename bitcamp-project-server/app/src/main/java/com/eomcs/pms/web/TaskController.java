@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import com.eomcs.pms.domain.Member;
 import com.eomcs.pms.domain.Task;
 import com.eomcs.pms.service.MemberService;
 import com.eomcs.pms.service.ProjectService;
@@ -35,19 +34,14 @@ public class TaskController {
   }
 
   @PostMapping("add")
-  public String add(Task task, int ownerNo) throws Exception {
-
-    Member owner = new Member();
-    owner.setNo(ownerNo);
-    task.setOwner(owner);
-
+  public String add(Task task) throws Exception {
     taskService.add(task);
-
     return "redirect:list";
   }
 
   @RequestMapping("delete")
-  public String delete(int no) throws Exception {
+  public String delete(int no) throws Exception { 
+    /// owner.no를 사용 -> Task에 있는 owner의 객체를 만든 후에 Member로 가서 no를 보고 owner의 no를 갖고온다.
     if (taskService.delete(no) == 0) {
       throw new Exception("해당 번호의 작업이 없습니다.");
     }
@@ -84,16 +78,10 @@ public class TaskController {
   }
 
   @PostMapping("update")
-  public String update(Task task, int ownerNo) throws Exception {
-
-    Member owner = new Member();
-    owner.setNo(ownerNo);
-    task.setOwner(owner);
-
+  public String update(Task task) throws Exception {
     if (taskService.update(task) == 0) {
       throw new Exception("해당 번호의 회원이 없습니다.");
     } 
-
     return "redirect:list";
   }
 }
