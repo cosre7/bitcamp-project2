@@ -26,11 +26,8 @@ public class BoardController {
   }
 
   @RequestMapping(path="add", method = RequestMethod.POST) 
-  public String add(String title, String content, HttpSession session) throws Exception {
-    Board b = new Board();
-    b.setTitle(title);
-    b.setContent(content);
-
+  public String add(Board b, HttpSession session) throws Exception { 
+    // 파라미터 타입과 setter, getter(프로퍼티명)가 같으면 Board만 넣어주면 된다.
     Member loginUser = (Member) session.getAttribute("loginUser");
     b.setWriter(loginUser);
 
@@ -78,9 +75,9 @@ public class BoardController {
   }
 
   @RequestMapping(value = "update", method = RequestMethod.POST)
-  public String update(int no, String title, String content, HttpSession session) throws Exception {
+  public String update(Board board, HttpSession session) throws Exception {
 
-    Board oldBoard = boardService.get(no);
+    Board oldBoard = boardService.get(board.getNo());
     if (oldBoard == null) {
       throw new Exception("해당 번호의 게시글이 없습니다.");
     } 
@@ -90,10 +87,6 @@ public class BoardController {
       throw new Exception("변경 권한이 없습니다!");
     }
 
-    Board board = new Board();
-    board.setNo(oldBoard.getNo());
-    board.setTitle(title);
-    board.setContent(content);
     boardService.update(board);
 
     return "redirect:list";
