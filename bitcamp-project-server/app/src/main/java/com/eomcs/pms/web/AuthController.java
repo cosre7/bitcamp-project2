@@ -19,9 +19,8 @@ public class AuthController {
     this.memberService = memberService;
   }
 
-  @GetMapping("/login")
-  public String form() throws Exception {
-    return "/jsp/login_form.jsp";
+  @GetMapping("/login_form")
+  public void form() throws Exception {
   } 
 
   @PostMapping("/login")
@@ -43,23 +42,22 @@ public class AuthController {
 
     if (member == null) {
       session.invalidate(); 
-      return "/jsp/login_fail.jsp";
+      return "login_fail";
 
     } else {
       session.setAttribute("loginUser", member);
-      return "/jsp/login_success.jsp";
+      return "login_success";
     }
   }
 
   @RequestMapping("/logout")
   public String logout(HttpSession session) throws Exception {
     session.invalidate();
-    return "redirect:login";
+    return "redirect:login_form";
   }
 
-  @RequestMapping("/userInfo")
-  public String userInfo() throws Exception {
-    return "/jsp/user_info.jsp";
+  @RequestMapping("/user_info")
+  public void userInfo() throws Exception {
   }
 }
 

@@ -21,9 +21,10 @@ public class BoardController {
     this.boardService = boardService;
   }
 
-  @RequestMapping(path="add", method = RequestMethod.GET) 
-  public String form() throws Exception {
-    return "/jsp/board/form.jsp";
+  @RequestMapping(path="form", method = RequestMethod.GET) 
+  /// void가 되면 board/add.jsp를 찾게 될 것이다. -> return 필요
+  /// 또는 path를 form으로 바꾼다.
+  public void form() throws Exception {
   }
 
   @RequestMapping(path="add", method = RequestMethod.POST) 
@@ -55,13 +56,12 @@ public class BoardController {
   }
 
   @RequestMapping(path = "detail", method = RequestMethod.GET)
-  public String detail(int no, Model model) throws Exception {
+  public void detail(int no, Model model) throws Exception {
     model.addAttribute("board", boardService.get(no));
-    return "/jsp/board/detail.jsp";
   }
 
-  @RequestMapping(value = "list", method = RequestMethod.GET)
-  public String list(String keyword, HttpServletRequest request) throws Exception {
+  @RequestMapping(value = "list", method = RequestMethod.GET) /// 주소를 리턴하지 않으면 board/list를 jsp의 주소로도 사용한다.
+  public void list(String keyword, HttpServletRequest request) throws Exception {
     List<Board> boards = null;
     if (keyword != null && keyword.length() > 0) {
       boards = boardService.search(keyword);
@@ -69,9 +69,7 @@ public class BoardController {
       boards = boardService.list();
     }
 
-    request.setAttribute("list", boards);
-
-    return "/jsp/board/list.jsp";
+    request.setAttribute("list", boards); /// list.jsp 사라짐
   }
 
   @RequestMapping(value = "update", method = RequestMethod.POST)

@@ -26,11 +26,10 @@ public class TaskController {
     this.memberService = memberService;
   }
 
-  @GetMapping("add")
-  public String form(Model model) throws Exception {
+  @GetMapping("form")
+  public void form(Model model) throws Exception {
     model.addAttribute("projects", projectService.list());
     model.addAttribute("members", memberService.list(null));
-    return "/jsp/task/form.jsp";
   }
 
   @PostMapping("add")
@@ -49,7 +48,7 @@ public class TaskController {
   }
 
   @GetMapping("detail")
-  public String detail(int no, Model model) throws Exception {
+  public void detail(int no, Model model) throws Exception {
     Task task = taskService.get(no);
     if (task == null) {
       throw new Exception("해당 번호의 작업이 없습니다.");
@@ -57,11 +56,10 @@ public class TaskController {
 
     model.addAttribute("task", task);
     model.addAttribute("members", memberService.list(null));
-    return "/jsp/task/detail.jsp";
   }
 
   @GetMapping("list")
-  public String list(@RequestParam(defaultValue = "0") int projectNo, Model model) throws Exception {
+  public void list(@RequestParam(defaultValue = "0") int projectNo, Model model) throws Exception {
     /// 항상 파라미터들은 문자열로 받기 때문에 기본 값은 0 이 아니라 "0"이 된다.
     /// 스트링의 경우에는 문제가 없지만 int의 경우 원래 String인 것을 int 로 바꿔야 하기 때문에 이 방법을 쓴다.
     List<Task> tasks = null;
@@ -74,7 +72,6 @@ public class TaskController {
     model.addAttribute("projectNo", projectNo);
     model.addAttribute("projects", projectService.list());
     model.addAttribute("tasks", tasks);
-    return "/jsp/task/list.jsp";
   }
 
   @PostMapping("update")
