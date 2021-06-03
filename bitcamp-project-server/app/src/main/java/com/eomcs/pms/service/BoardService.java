@@ -7,7 +7,9 @@ public interface BoardService {
 
   int add(Board board) throws Exception;
 
-  List<Board> list() throws Exception;
+  List<Board> list(int pageNo, int pageSize) throws Exception;
+
+  int count(String keyword) throws Exception;
 
   Board get(int no) throws Exception;
 
@@ -15,7 +17,7 @@ public interface BoardService {
 
   int delete(int no) throws Exception;
 
-  List<Board> search(String keyword) throws Exception;
+  List<Board> search(String keyword, int pageNo, int pageSize) throws Exception;
 }
 
 

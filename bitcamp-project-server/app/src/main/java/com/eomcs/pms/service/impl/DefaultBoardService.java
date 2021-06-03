@@ -1,5 +1,6 @@
 package com.eomcs.pms.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import com.eomcs.pms.dao.BoardDao;
@@ -23,8 +24,17 @@ public class DefaultBoardService implements BoardService {
 
   // 게시글 목록 조회 업무
   @Override
-  public List<Board> list() throws Exception {
-    return boardDao.findByKeyword(null);
+  public List<Board> list(int pageNo, int pageSize) throws Exception {
+    HashMap<String,Object> params = new HashMap<>();
+    params.put("offset", pageSize * (pageNo - 1));
+    params.put("length", pageSize);
+
+    return boardDao.findByKeyword(params);
+  }
+
+  @Override
+  public int count (String keyword) throws Exception {
+    return boardDao.countByKeyword(keyword);
   }
 
   // 게시글 상세 조회 업무
@@ -51,8 +61,13 @@ public class DefaultBoardService implements BoardService {
 
   // 게시글 검색 업무
   @Override
-  public List<Board> search(String keyword) throws Exception {
-    return boardDao.findByKeyword(keyword);
+  public List<Board> search(String keyword, int pageNo, int pageSize) throws Exception {
+    HashMap<String,Object> params = new HashMap<>();
+    params.put("offset", pageSize * (pageNo - 1));
+    params.put("length", pageSize);
+    params.put("keyword", keyword);
+
+    return boardDao.findByKeyword(params);
   }
 }
 
