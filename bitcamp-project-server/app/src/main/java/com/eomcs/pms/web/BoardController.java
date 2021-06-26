@@ -4,6 +4,7 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -58,6 +59,12 @@ public class BoardController {
   @RequestMapping(path = "detail", method = RequestMethod.GET)
   public void detail(int no, Model model) throws Exception {
     model.addAttribute("board", boardService.get(no));
+  }
+
+  @RequestMapping(path = "{no}", method = RequestMethod.GET)
+  public String detail2(@PathVariable int no, Model model) throws Exception {
+    model.addAttribute("board", boardService.get(no));
+    return "board/detail";
   }
 
   @RequestMapping(value = "list", method = RequestMethod.GET) /// 주소를 리턴하지 않으면 board/list를 jsp의 주소로도 사용한다.

@@ -7,8 +7,11 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 import com.eomcs.pms.domain.Member;
 import com.eomcs.pms.domain.Project;
 import com.eomcs.pms.service.MemberService;
@@ -16,6 +19,7 @@ import com.eomcs.pms.service.ProjectService;
 
 @Controller
 @RequestMapping("/project/")
+@SessionAttributes({"title", "content", "startDate", "endDate"})
 public class ProjectController {
 
   MemberService memberService;
@@ -31,26 +35,37 @@ public class ProjectController {
   }
 
   @PostMapping("form2")
-  public void form2(String title, HttpSession session) throws Exception {
-    session.setAttribute("title", title);
+  public void form2(String title, Model model) throws Exception {
+    model.addAttribute("title", title);
   }
 
   @PostMapping("form3")
-  public void form3(String content, String startDate, String endDate, HttpSession session, Model model) throws Exception {
-    session.setAttribute("content", content);
-    session.setAttribute("startDate", startDate);
-    session.setAttribute("endDate", endDate);
+  public void form3(
+      String content, 
+      Date startDate, 
+      Date endDate, 
+      Model model) throws Exception {
+    model.addAttribute("content", content);
+    model.addAttribute("startDate", startDate);
+    model.addAttribute("endDate", endDate);
     model.addAttribute("members", memberService.list(null));
   }
 
   @PostMapping("add")
-  public String add(int[] memberNos, HttpSession session) throws Exception {
+  public String add(
+      int[] memberNos, 
+      @ModelAttribute("title") String title,
+      @ModelAttribute("content") String content,
+      @ModelAttribute("startDate") Date startDate,
+      @ModelAttribute("endDate") Date endDate,
+      HttpSession session,
+      SessionStatus status) throws Exception {
 
     Project p = new Project();
-    p.setTitle((String) session.getAttribute("title"));
-    p.setContent((String) session.getAttribute("content"));
-    p.setStartDate(Date.valueOf((String) session.getAttribute("startDate")));
-    p.setEndDate(Date.valueOf((String) session.getAttribute("endDate")));
+    p.setTitle(title);
+    p.setContent(content);
+    p.setStartDate(startDate);
+    p.setEndDate(endDate);
 
     Member loginUser = (Member) session.getAttribute("loginUser");
     p.setOwner(loginUser);
@@ -66,6 +81,10 @@ public class ProjectController {
     p.setMembers(memberList);
 
     projectService.add(p);
+
+    // 프로젝트를 등록하는 동안 잠시 세션에 보관된 값만 지운다.
+    // => @SessionAttributes에 등록한 값만 지운다.
+    status.setComplete();
 
     return "redirect:list";
   }
